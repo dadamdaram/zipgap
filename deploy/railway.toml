@@ -1,0 +1,26 @@
+# ═══════════════════════════════════════════════════════════════
+#  Railway 배포 설정 (railway.toml)
+#  https://railway.app → New Project → Deploy from GitHub
+#
+#  환경변수: Railway 대시보드 > Variables > MOLIT_KEY 설정
+# ═══════════════════════════════════════════════════════════════
+
+[build]
+builder = "nixpacks"
+buildCommand = """
+python3 -m venv .venv &&
+source .venv/bin/activate &&
+pip install -r requirements.txt &&
+mkdir -p data &&
+echo "window.__ENV__ = { MOLIT_KEY: \"$MOLIT_KEY\", generated: \"$(date -u)\" };" > frontend/env.js
+"""
+
+[deploy]
+startCommand = """
+source .venv/bin/activate &&
+uvicorn backend.main:app --host 0.0.0.0 --port $PORT --workers 2 --proxy-headers
+"""
+healthcheckPath = "/api/status"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3

@@ -1,0 +1,4933 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>가설 분석 — 집값추적기</title>
+    <script src="env.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.30.0/plotly.min.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        /* BRAND COLORS - Professional Real Estate Palette */
+        --primary-50: #f8f9fa;
+        --primary-100: #e9ecef;
+        --primary-200: #dee2e6;
+        --primary-300: #ced4da;
+        --primary-400: #adb5bd;
+        --primary-500: #6c757d;
+        --primary-600: #495057;
+        --primary-700: #343a40;
+        --primary-800: #212529;
+        --primary-900: #1a1d20;
+
+        /* BRAND ACCENTS */
+        --accent-blue: #2563eb;
+        --accent-blue-light: #3b82f6;
+        --accent-blue-dark: #1d4ed8;
+        --accent-blue-bg: rgba(37, 99, 235, 0.1);
+
+        --accent-emerald: #10b981;
+        --accent-emerald-light: #34d399;
+        --accent-emerald-dark: #059669;
+        --accent-emerald-bg: rgba(16, 185, 129, 0.1);
+
+        --accent-amber: #f59e0b;
+        --accent-amber-light: #fbbf24;
+        --accent-amber-dark: #d97706;
+        --accent-amber-bg: rgba(245, 158, 11, 0.1);
+
+        --accent-red: #ef4444;
+        --accent-red-light: #f87171;
+        --accent-red-dark: #dc2626;
+        --accent-red-bg: rgba(239, 68, 68, 0.1);
+
+        /* NEUTRAL PALETTE */
+        --cream: #f8fafc;
+        --cream2: #f1f5f9;
+        --cream3: #e2e8f0;
+        --warm-white: #ffffff;
+        --sand: #cbd5e1;
+        --sand2: #94a3b8;
+        --sand3: #64748b;
+        --bark: #475569;
+        --bark2: #334155;
+        --bark3: #1e293b;
+        --ink: #0f172a;
+        --ink2: #1e293b;
+        --ink3: #334155;
+        --ink4: #475569;
+
+        /* LEGACY COMPATIBILITY */
+        --accent: var(--accent-blue);
+        --accent-lt: var(--accent-blue-light);
+        --accent-bg: var(--accent-blue-bg);
+        --green: var(--accent-emerald);
+        --green-lt: var(--accent-emerald-light);
+        --green-bg: var(--accent-emerald-bg);
+        --red: var(--accent-red);
+        --red-bg: var(--accent-red-bg);
+        --amber: var(--accent-amber);
+
+        --bd: rgba(107, 91, 69, 0.12);
+        --bd2: rgba(107, 91, 69, 0.2);
+        --bd3: rgba(107, 91, 69, 0.32);
+        --shadow-sm: 0 1px 3px rgba(42, 37, 32, 0.08);
+        --shadow: 0 2px 12px rgba(42, 37, 32, 0.1);
+        --shadow-lg: 0 8px 32px rgba(42, 37, 32, 0.14);
+        --brand: var(--bark);
+        --brand-lt: var(--accent-lt);
+        --bg: var(--cream);
+        --s1: var(--warm-white);
+        --s2: var(--cream2);
+        --s3: var(--cream3);
+        --glass: rgba(245, 240, 232, 0.94);
+        --tx: var(--ink);
+        --tx2: var(--ink2);
+        --tx3: var(--ink3);
+        --mu: var(--ink2);
+        --fa: var(--ink3);
+        --ac: var(--accent-lt);
+        --pass: var(--green);
+        --fail: var(--red);
+        --wait: var(--accent);
+        --gold: var(--amber);
+        --pu: #a78bfa;
+        --mono: "DM Mono", monospace;
+        --serif: "Noto Serif KR", Georgia, serif;
+        --sans: "Noto Sans KR", -apple-system, system-ui, sans-serif;
+        --nav-h: 58px;
+        --bot-h: 64px;
+        --safe-b: env(safe-area-inset-bottom, 0px);
+        --r: 12px;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--tx);
+        font-family: var(--sans);
+        font-weight: 300;
+        min-height: 100vh;
+      }
+      ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--sand);
+        border-radius: 4px;
+      }
+      canvas {
+        transition: opacity 0.25s ease;
+        opacity: 1;
+      }
+      .adv-img-wrap {
+        width: 100%;
+        min-height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 8px;
+        background: var(--s2);
+      }
+      .adv-img-wrap img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 8px;
+      }
+      .adv-loading {
+        color: var(--mu);
+        font-size: 0.8rem;
+        padding: 2rem;
+      }
+      .adv-err {
+        color: var(--fail);
+        font-size: 0.78rem;
+        padding: 1rem;
+        text-align: center;
+      }
+      canvas.updating {
+        opacity: 0.6;
+      }
+
+      /* LOADING STATES */
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          var(--cream2) 25%,
+          var(--cream3) 50%,
+          var(--cream2) 75%
+        );
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: var(--r);
+      }
+      @keyframes loading {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(248, 250, 252, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+      }
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--cream2);
+        border-top: 3px solid var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ═══ TOP NAV ═══ */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 500;
+        height: var(--nav-h);
+        padding: 0 16px;
+        padding-top: env(safe-area-inset-top, 0px);
+        background: var(--glass);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--bd);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        flex-shrink: 0;
+        text-decoration: none;
+      }
+      .nav-logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+        box-shadow: 0 3px 10px rgba(59, 130, 246, 0.2);
+      }
+      .nav-title-wrap {
+        display: flex;
+        flex-direction: column;
+      }
+      .nav-title {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--tx);
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+      .nav-sub {
+        display: none;
+      }
+
+      .nav-search {
+        flex: 1;
+        max-width: 420px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+      }
+      .nav-link {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--tx3);
+        text-decoration: none;
+        transition: all 0.15s;
+        padding: 10px 5px;
+        height: var(--nav-h);
+        display: flex;
+        align-items: center;
+      }
+      .nav-link:hover {
+        color: var(--tx);
+      }
+      .nav-link.active {
+        color: var(--brand-lt);
+        border-bottom: 2px solid var(--brand-lt);
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-shrink: 0;
+      }
+      .nav-status {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.65rem;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .ns-demo {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--brand-lt);
+        border: 1px solid rgba(59, 130, 246, 0.22);
+      }
+      .ns-live {
+        background: rgba(34, 211, 160, 0.08);
+        color: var(--pass);
+        border: 1px solid rgba(34, 211, 160, 0.22);
+      }
+      .ns-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      /* ═══ 하단 탭바 ═══ */
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 400;
+        height: calc(var(--bot-h) + var(--safe-b));
+        padding-bottom: var(--safe-b);
+        background: var(--glass);
+        backdrop-filter: blur(28px) saturate(200%);
+        -webkit-backdrop-filter: blur(28px) saturate(200%);
+        border-top: 1px solid var(--bd);
+        display: none;
+        align-items: stretch;
+      }
+      @media (max-width: 820px) {
+        .bottom-nav {
+          display: flex;
+        }
+        .nav-search {
+          display: none;
+        }
+      }
+      .bot-tab {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        cursor: pointer;
+        color: var(--tx3);
+        transition: all 0.15s;
+        padding-bottom: 2px;
+      }
+      .bot-tab.on {
+        color: var(--brand-lt);
+      }
+      .bot-tab:hover {
+        color: var(--tx2);
+      }
+      .bot-icon {
+        font-size: 1.1rem;
+        line-height: 1;
+      }
+      .bot-label {
+        font-size: 0.58rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      .shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: var(--nav-h) 2rem 4rem;
+        margin-top: 20px;
+      }
+      .pg-hd {
+        padding: 1.4rem 0 1rem;
+        border-bottom: 1px solid var(--bd);
+        margin-bottom: 1.2rem;
+      }
+      .pg-eye {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        color: var(--mu);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 0.5rem;
+      }
+      .pg-title {
+        font-family: var(--serif);
+        font-size: clamp(1.45rem, 2.3vw, 1.9rem);
+        color: var(--tx);
+        font-weight: 300;
+        line-height: 1.25;
+      }
+      .pg-title em {
+        color: var(--ac);
+        font-style: italic;
+      }
+      .pg-desc {
+        font-size: 0.76rem;
+        color: var(--mu);
+        margin-top: 0.45rem;
+        max-width: 620px;
+        line-height: 1.65;
+      }
+
+      /* ── Controls ── */
+      .ctrl-bar {
+        background: var(--s1);
+        border: 1px solid var(--bd);
+        border-radius: var(--r);
+        padding: 0.9rem 1.3rem;
+        display: flex;
+        gap: 1.1rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin-bottom: 1.2rem;
+      }
+      .ctrl {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .ctrl-lbl-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .ctrl-lbl {
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        color: var(--mu);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      /* 필터 설명 버튼 */
+      .info-btn {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: rgba(94, 158, 245, 0.15);
+        border: 1px solid rgba(94, 158, 245, 0.3);
+        color: var(--wait);
+        font-size: 0.62rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+        flex-shrink: 0;
+        font-family: var(--mono);
+      }
+      .info-btn:hover {
+        background: rgba(94, 158, 245, 0.3);
+        transform: scale(1.1);
+      }
+      .brow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--s3);
+        border: 1px solid var(--bd2);
+        border-radius: 6px;
+        padding: 0 10px;
+        height: 34px;
+        transition: border-color 0.2s;
+      }
+      .brow:focus-within {
+        border-color: rgba(184, 224, 74, 0.35);
+      }
+      .bi {
+        width: 52px;
+        border: none;
+        outline: none;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        text-align: right;
+        background: transparent;
+        color: var(--tx);
+      }
+      .bu {
+        font-size: 0.68rem;
+        color: var(--mu);
+      }
+      .bdisp {
+        font-family: var(--mono);
+        font-size: 0.64rem;
+        color: var(--mu);
+        margin-top: 3px;
+        min-height: 12px;
+      }
+      select {
+        background: var(--s3);
+        border: 1px solid var(--bd2);
+        color: var(--tx);
+        font-family: var(--sans);
+        font-size: 0.76rem;
+        padding: 0 9px;
+        border-radius: 6px;
+        cursor: pointer;
+        outline: none;
+        height: 34px;
+        transition: border-color 0.2s;
+      }
+      select:hover {
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+      .btn {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        letter-spacing: 0.04em;
+        border: none;
+        transition: opacity 0.15s;
+      }
+      .btn-ac {
+        background: var(--ac);
+        color: #0a0b0e;
+        font-weight: 500;
+      }
+      .btn-ac:hover {
+        opacity: 0.85;
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid var(--bd2);
+        color: var(--mu);
+      }
+      .btn-ghost:hover {
+        color: var(--tx);
+      }
+      .spinner {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        border-top-color: var(--ac);
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        vertical-align: middle;
+        margin-right: 5px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .hidden {
+        display: none !important;
+      }
+
+      /* api bar */
+      .api-bar {
+        background: var(--s2);
+        border: 1px solid var(--bd);
+        border-radius: var(--r);
+        padding: 0.85rem 1.3rem;
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .api-lbl {
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        color: var(--mu);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+      }
+      .api-input {
+        flex: 1;
+        min-width: 200px;
+        background: var(--s3);
+        border: 1px solid var(--bd2);
+        border-radius: 6px;
+        color: var(--tx);
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        padding: 7px 11px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .api-input:focus {
+        border-color: rgba(184, 224, 74, 0.35);
+      }
+      .api-hint {
+        flex-basis: 100%;
+        font-size: 0.66rem;
+        color: var(--mu);
+      }
+      .api-hint a {
+        color: var(--wait);
+        text-decoration: none;
+      }
+
+      /* Metrics */
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        margin-bottom: 1.5rem;
+      }
+      @media (max-width: 780px) {
+        .metrics {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .metric {
+        background: var(--s1);
+        border: 1px solid var(--bd);
+        border-radius: var(--r);
+        padding: 0.8rem 0.95rem;
+      }
+      .ml {
+        font-family: var(--mono);
+        font-size: 0.58rem;
+        color: var(--mu);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+      .mv {
+        font-family: var(--mono);
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: var(--tx);
+        line-height: 1;
+      }
+      .ms {
+        font-size: 0.62rem;
+        color: var(--mu);
+        margin-top: 3px;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        border-bottom: 1px solid var(--bd);
+        margin-bottom: 1.5rem;
+      }
+      .tab {
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        padding: 8px 14px;
+        cursor: pointer;
+        color: var(--mu);
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .tab:hover:not(.active) {
+        color: var(--tx);
+      }
+      .tab.active {
+        color: var(--ac);
+        border-bottom-color: var(--ac);
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+
+      /* Hypothesis cards */
+      .hypo-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 1.8rem;
+      }
+      .hypo-card {
+        background: var(--s1);
+        border-left: 3px solid var(--fa);
+        border-top: 1px solid var(--bd);
+        border-right: 1px solid var(--bd);
+        border-bottom: 1px solid var(--bd);
+        border-radius: 0 var(--r) var(--r) 0;
+        padding: 1.2rem 1.5rem;
+        display: grid;
+        grid-template-columns: 52px 1fr 110px;
+        gap: 0 1.2rem;
+        align-items: start;
+        transition: border-left-color 0.35s;
+      }
+      .hypo-card.pass {
+        border-left-color: var(--pass);
+      }
+      .hypo-card.fail {
+        border-left-color: var(--fail);
+      }
+      .hnum {
+        font-family: var(--mono);
+        font-size: 1.8rem;
+        font-weight: 500;
+        color: var(--fa);
+        line-height: 1;
+        padding-top: 2px;
+        transition: color 0.35s;
+      }
+      .hypo-card.pass .hnum {
+        color: var(--pass);
+      }
+      .hypo-card.fail .hnum {
+        color: var(--fail);
+      }
+      .hif {
+        font-family: var(--mono);
+        font-size: 0.58rem;
+        color: var(--mu);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 4px;
+      }
+      .hstmt {
+        font-family: var(--serif);
+        font-size: 0.95rem;
+        color: var(--tx);
+        line-height: 1.55;
+        margin-bottom: 5px;
+        font-weight: 300;
+      }
+      .hstmt strong {
+        color: var(--ac);
+        font-weight: 600;
+      }
+      /* 가설 설명 버튼 */
+      .hypo-info-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.68rem;
+        color: var(--wait);
+        background: rgba(94, 158, 245, 0.1);
+        border: 1px solid rgba(94, 158, 245, 0.2);
+        border-radius: 20px;
+        padding: 3px 9px;
+        cursor: pointer;
+        font-family: var(--mono);
+        transition: all 0.15s;
+        margin-top: 4px;
+      }
+      .hypo-info-btn:hover {
+        background: rgba(94, 158, 245, 0.2);
+      }
+      .hdesc {
+        font-size: 0.72rem;
+        color: var(--mu);
+        line-height: 1.7;
+        margin-top: 3px;
+      }
+      .hverd {
+        text-align: right;
+        padding-top: 2px;
+      }
+      .vbadge {
+        font-family: var(--mono);
+        font-size: 0.64rem;
+        padding: 3px 11px;
+        border-radius: 20px;
+        display: inline-block;
+        letter-spacing: 0.06em;
+        font-weight: 500;
+      }
+      .vb-wait {
+        background: rgba(94, 158, 245, 0.1);
+        color: var(--wait);
+        border: 1px solid rgba(94, 158, 245, 0.2);
+      }
+      .vb-pass {
+        background: rgba(61, 219, 160, 0.1);
+        color: var(--pass);
+        border: 1px solid rgba(61, 219, 160, 0.2);
+      }
+      .vb-fail {
+        background: rgba(232, 90, 90, 0.1);
+        color: var(--fail);
+        border: 1px solid rgba(232, 90, 90, 0.2);
+      }
+      .hev {
+        grid-column: 2/4;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--bd);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      @media (max-width: 580px) {
+        .hev {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .evl {
+        font-family: var(--mono);
+        font-size: 0.58rem;
+        color: var(--mu);
+        margin-bottom: 3px;
+        letter-spacing: 0.04em;
+      }
+      .evv {
+        font-family: var(--mono);
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--tx);
+      }
+      .evv.g {
+        color: var(--pass);
+      }
+      .evv.r {
+        color: var(--fail);
+      }
+      .evv.b {
+        color: var(--wait);
+      }
+
+      /* Charts */
+      .cg {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 680px) {
+        .cg {
+          grid-template-columns: 1fr;
+        }
+      }
+      .cb {
+        background: var(--s1);
+        border: 1px solid var(--bd);
+        border-radius: 12px;
+        padding: 1.1rem 1.2rem;
+      }
+      .cbf {
+        background: var(--s1);
+        border: 1px solid var(--bd);
+        border-radius: 12px;
+        padding: 1.1rem 1.2rem;
+        margin-bottom: 12px;
+      }
+      .ct {
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        font-weight: 500;
+        color: var(--tx);
+        margin-bottom: 2px;
+      }
+      .cs {
+        font-size: 0.68rem;
+        color: var(--mu);
+        margin-bottom: 12px;
+        line-height: 1.5;
+      }
+      .viz-note {
+        font-size: 0.67rem;
+        color: var(--tx2);
+        line-height: 1.65;
+        margin-top: 8px;
+        border-top: 1px dashed var(--bd);
+        padding-top: 8px;
+      }
+      .rleg {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-bottom: 10px;
+      }
+      .rdot {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.68rem;
+        color: var(--mu);
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      /* Hypothesis evidence board */
+      .evi-board {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      @media (max-width: 980px) {
+        .evi-board {
+          grid-template-columns: 1fr;
+        }
+      }
+      .evi-card {
+        background: var(--s1);
+        border: 1px solid var(--bd);
+        border-radius: 12px;
+        padding: 1rem;
+      }
+      .evi-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .evi-k {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        color: var(--mu);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .evi-v {
+        font-size: 0.7rem;
+        font-family: var(--mono);
+        padding: 3px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--bd2);
+        color: var(--mu);
+      }
+      .evi-v.pass {
+        color: var(--pass);
+        border-color: rgba(61, 219, 160, 0.32);
+        background: rgba(61, 219, 160, 0.08);
+      }
+      .evi-v.fail {
+        color: var(--fail);
+        border-color: rgba(232, 90, 90, 0.32);
+        background: rgba(232, 90, 90, 0.08);
+      }
+      .evi-r {
+        font-size: 0.86rem;
+        color: var(--tx);
+        line-height: 1.5;
+        margin-bottom: 8px;
+      }
+      .evi-m {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .evi-mb {
+        background: var(--s2);
+        border: 1px solid var(--bd);
+        border-radius: 8px;
+        padding: 7px 8px;
+      }
+      .evi-ml {
+        font-family: var(--mono);
+        font-size: 0.55rem;
+        color: var(--mu);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .evi-mv {
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        color: var(--tx);
+        margin-top: 2px;
+      }
+      .evi-c {
+        height: 148px;
+      }
+      .evi-c2 {
+        height: 128px;
+        margin-top: 10px;
+      }
+
+      /* Table */
+      .tc-row {
+        display: flex;
+        gap: 7px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .srch {
+        background: var(--s3);
+        border: 1px solid var(--bd2);
+        border-radius: 6px;
+        color: var(--tx);
+        font-family: var(--sans);
+        font-size: 0.76rem;
+        padding: 6px 10px;
+        outline: none;
+        min-width: 170px;
+      }
+      .srch::placeholder {
+        color: var(--mu);
+      }
+      .tw {
+        overflow-x: auto;
+        border-radius: var(--r);
+        border: 1px solid var(--bd);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.74rem;
+      }
+      th {
+        text-align: left;
+        padding: 7px 11px;
+        font-family: var(--mono);
+        font-size: 0.58rem;
+        font-weight: 500;
+        color: var(--mu);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        border-bottom: 1px solid var(--bd);
+        white-space: nowrap;
+        background: var(--s1);
+        cursor: pointer;
+      }
+      th:hover {
+        color: var(--tx);
+      }
+      td {
+        padding: 7px 11px;
+        border-bottom: 1px solid var(--bd);
+        color: var(--tx);
+        white-space: nowrap;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .tag {
+        font-family: var(--mono);
+        font-size: 0.58rem;
+        padding: 2px 5px;
+        border-radius: 4px;
+      }
+      .tg {
+        background: rgba(61, 219, 160, 0.12);
+        color: var(--pass);
+      }
+      .ta {
+        background: rgba(212, 160, 48, 0.12);
+        color: var(--gold);
+      }
+      .tr {
+        background: rgba(232, 90, 90, 0.12);
+        color: var(--fail);
+      }
+      .tinfo {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        color: var(--mu);
+        margin-top: 7px;
+      }
+
+      /* ── 필터 설명 모달 ── */
+      .info-modal-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.78);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 800;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s;
+      }
+      .info-modal-bg.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .info-modal {
+        background: var(--s1);
+        border: 1px solid var(--bd2);
+        border-radius: 16px;
+        padding: 1.8rem;
+        max-width: 520px;
+        width: 90vw;
+        max-height: 85vh;
+        overflow-y: auto;
+        transform: translateY(10px);
+        transition: transform 0.22s;
+      }
+      .info-modal-bg.show .info-modal {
+        transform: translateY(0);
+      }
+      .im-tag {
+        display: inline-block;
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        padding: 3px 8px;
+        border-radius: 20px;
+        margin-bottom: 0.8rem;
+        letter-spacing: 0.06em;
+      }
+      .im-tag.blue {
+        background: rgba(94, 158, 245, 0.15);
+        color: var(--wait);
+        border: 1px solid rgba(94, 158, 245, 0.2);
+      }
+      .im-tag.green {
+        background: rgba(61, 219, 160, 0.1);
+        color: var(--pass);
+        border: 1px solid rgba(61, 219, 160, 0.2);
+      }
+      .im-tag.purple {
+        background: rgba(167, 139, 250, 0.1);
+        color: var(--pu);
+        border: 1px solid rgba(167, 139, 250, 0.2);
+      }
+      .im-title {
+        font-family: var(--serif);
+        font-size: 1.2rem;
+        color: var(--tx);
+        margin-bottom: 0.6rem;
+        font-weight: 400;
+      }
+      .im-body {
+        font-size: 0.8rem;
+        color: var(--mu);
+        line-height: 1.8;
+      }
+      .im-body strong {
+        color: var(--tx);
+      }
+      .im-body code {
+        background: var(--s3);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: var(--mono);
+        font-size: 0.78em;
+        color: var(--tx);
+      }
+      .im-divider {
+        height: 1px;
+        background: var(--bd);
+        margin: 1rem 0;
+      }
+      .im-example {
+        background: var(--s2);
+        border: 1px solid var(--bd);
+        border-radius: 8px;
+        padding: 0.9rem 1.1rem;
+      }
+      .im-ex-title {
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        color: var(--mu);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.5rem;
+      }
+      .im-ex-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        border-bottom: 1px solid var(--bd);
+        font-size: 0.75rem;
+      }
+      .im-ex-row:last-child {
+        border-bottom: none;
+      }
+      .im-ex-row span:first-child {
+        color: var(--mu);
+      }
+      .im-ex-row span:last-child {
+        color: var(--tx);
+        font-family: var(--mono);
+      }
+      .im-close {
+        width: 100%;
+        height: 36px;
+        background: var(--ac);
+        border: none;
+        border-radius: 8px;
+        color: #0a0b0e;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 1.2rem;
+        transition: opacity 0.15s;
+      }
+      .im-close:hover {
+        opacity: 0.85;
+      }
+
+      /* 가설 상세 모달 */
+      .hypo-modal-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 800;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s;
+      }
+      .hypo-modal-bg.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .hypo-modal {
+        background: var(--s1);
+        border: 1px solid var(--bd2);
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 560px;
+        width: 90vw;
+        max-height: 88vh;
+        overflow-y: auto;
+        transform: translateY(10px);
+        transition: transform 0.22s;
+      }
+      .hypo-modal-bg.show .hypo-modal {
+        transform: translateY(0);
+      }
+      .hm-num {
+        font-family: var(--mono);
+        font-size: 3rem;
+        font-weight: 500;
+        color: var(--fa);
+        line-height: 1;
+        margin-bottom: 0.3rem;
+      }
+      .hm-title {
+        font-family: var(--serif);
+        font-size: 1.25rem;
+        color: var(--tx);
+        line-height: 1.4;
+        margin-bottom: 0.5rem;
+      }
+      .hm-title strong {
+        color: var(--ac);
+      }
+      .hm-section {
+        margin-top: 1.2rem;
+      }
+      .hm-section-title {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--mu);
+        margin-bottom: 0.6rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid var(--bd);
+      }
+      .hm-body {
+        font-size: 0.79rem;
+        color: var(--mu);
+        line-height: 1.8;
+      }
+      .hm-body strong {
+        color: var(--tx);
+      }
+      .hm-body em {
+        color: var(--ac);
+        font-style: normal;
+      }
+      .hm-formula {
+        background: var(--s2);
+        border: 1px solid var(--bd);
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        color: var(--tx);
+        margin: 8px 0;
+        line-height: 1.6;
+      }
+      .hm-criterion {
+        display: flex;
+        gap: 8px;
+        padding: 0.5rem 0.7rem;
+        background: var(--s2);
+        border: 1px solid var(--bd);
+        border-radius: 8px;
+        font-size: 0.75rem;
+        margin-bottom: 6px;
+      }
+      .hm-crit-icon {
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+      .hm-crit-body {
+        color: var(--mu);
+        line-height: 1.6;
+      }
+      .hm-crit-body strong {
+        color: var(--tx);
+      }
+      .hm-tag-row {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+      }
+      .hm-tag {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+        border-radius: 20px;
+        font-family: var(--mono);
+      }
+      .hm-tag.pass {
+        background: rgba(61, 219, 160, 0.1);
+        color: var(--pass);
+        border: 1px solid rgba(61, 219, 160, 0.2);
+      }
+      .hm-tag.fail {
+        background: rgba(232, 90, 90, 0.1);
+        color: var(--fail);
+        border: 1px solid rgba(232, 90, 90, 0.2);
+      }
+      .hm-tag.neutral {
+        background: rgba(94, 158, 245, 0.1);
+        color: var(--wait);
+        border: 1px solid rgba(94, 158, 245, 0.2);
+      }
+
+      /* ── Pagination ── */
+      .pg-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin: 16px 0 4px;
+        flex-wrap: wrap;
+      }
+      .pg-btn {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        padding: 5px 11px;
+        border-radius: 6px;
+        cursor: pointer;
+        background: var(--s2);
+        border: 1px solid var(--bd2);
+        color: var(--mu);
+        transition: all 0.15s;
+      }
+      .pg-btn:hover {
+        color: var(--tx);
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+      .pg-btn.active {
+        background: var(--ac);
+        border-color: var(--ac);
+        color: #0a0b0e;
+        font-weight: 600;
+      }
+      .pg-info {
+        font-family: var(--mono);
+        font-size: 0.65rem;
+        color: var(--mu);
+        text-align: right;
+        margin-top: 6px;
+      }
+
+      /* ── 지역 클릭 즉시 분석 ── */
+      .region-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: var(--s2);
+        border: 1px solid var(--bd2);
+        font-size: 0.7rem;
+        color: var(--mu);
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: var(--mono);
+      }
+      .region-chip:hover {
+        color: var(--tx);
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+      .region-chip.sel {
+        background: rgba(34, 211, 160, 0.12);
+        border-color: rgba(34, 211, 160, 0.3);
+        color: var(--ac);
+      }
+      .region-chips-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 1rem;
+      }
+      .key-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .key-bg.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .key-modal {
+        background: var(--s1);
+        border: 1px solid var(--bd2);
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 480px;
+        width: 90vw;
+        transform: translateY(15px);
+        transition: transform 0.2s;
+      }
+      .key-bg.show .key-modal {
+        transform: translateY(0);
+      }
+      .km-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--tx);
+        margin-bottom: 0.8rem;
+      }
+      .km-desc {
+        font-size: 0.8rem;
+        color: var(--mu);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+      }
+      .km-desc strong {
+        color: var(--tx);
+      }
+      .km-desc a {
+        color: var(--ac);
+        text-decoration: none;
+      }
+      .km-input {
+        width: 100%;
+        background: var(--s3);
+        border: 1px solid var(--bd2);
+        border-radius: 8px;
+        padding: 12px 14px;
+        color: var(--tx);
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+      }
+      .km-input:focus {
+        outline: none;
+        border-color: var(--brand);
+        box-shadow: 0 0 0 2px rgba(94, 158, 245, 0.2);
+      }
+      .km-status {
+        font-size: 0.76rem;
+        color: var(--wait);
+        min-height: 1.2rem;
+        margin-bottom: 1rem;
+      }
+      .km-status.err {
+        color: var(--fail);
+      }
+      .km-btns {
+        display: flex;
+        gap: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══ TOP NAV ═══ -->
+    <nav class="nav">
+      <div
+        class="nav-brand"
+        style="cursor: pointer"
+        onclick="location.href = 'index.html'"
+      >
+        <div class="nav-logo">🏠</div>
+        <div class="nav-title-wrap">
+          <div class="nav-title">집값추적기</div>
+          <div class="nav-sub">분석</div>
+        </div>
+      </div>
+
+      <div class="nav-search">
+        <a class="nav-link" href="index.html">매물 검색</a>
+        <a class="nav-link active" href="analysis.html">가설 분석</a>
+      </div>
+
+      <div class="nav-actions">
+        <div class="nav-status ns-demo" id="navStatus">
+          <span class="ns-dot"></span>
+          <span id="navBadge">샘플</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ═══ BOTTOM NAV ═══ -->
+    <nav class="bottom-nav">
+      <div class="bot-tab" onclick="location.href = 'index.html'">
+        <span class="bot-icon">🔍</span>
+        <span class="bot-label">검색</span>
+      </div>
+      <div class="bot-tab" onclick="location.href = 'index.html'">
+        <span class="bot-icon">♡</span>
+        <span class="bot-label">저장</span>
+      </div>
+      <div class="bot-tab on" onclick="location.href = 'analysis.html'">
+        <span
+          class="bot-icon"
+          style="filter: drop-shadow(0 0 5px var(--brand-lt))"
+          >📊</span
+        >
+        <span class="bot-label">분석</span>
+      </div>
+      <div
+        class="bot-tab"
+        onclick="
+          document
+            .querySelector('.api-bar')
+            ?.scrollIntoView({ behavior: 'smooth' })
+        "
+      >
+        <span class="bot-icon">⚙️</span>
+        <span class="bot-label">설정</span>
+      </div>
+    </nav>
+
+    <div class="shell" style="padding-bottom: 100px">
+      <div class="pg-hd">
+        <div class="pg-eye">데이터 기반 가설 검증</div>
+        <h1 class="pg-title">핵심 <em>3대 가설</em> 실시간 검증</h1>
+        <p class="pg-desc">
+          가설별 결과, 증빙 지표, 근거 그래프를 분리해 한 화면에서 바로
+          의사결정할 수 있도록 구성했습니다.
+        </p>
+      </div>
+
+      <!-- API bar (Simplified) -->
+      <div
+        class="api-bar"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: none;
+          border: none;
+          padding: 0;
+          margin-bottom: 1rem;
+          flex-wrap: wrap;
+          gap: 10px;
+        "
+      >
+        <div style="display: flex; gap: 10px; align-items: center">
+          <select id="metroSel">
+            <option value="">전국전체</option>
+            <option value="서울,경기,인천">수도권</option>
+            <option value="서울,경기,인천,부산,대구,광주,대전">전국주요</option>
+          </select>
+          <button
+            class="btn btn-ghost"
+            id="refreshBtn"
+            onclick="refreshData()"
+            style="padding: 6px 12px; font-size: 0.76rem"
+          >
+            데이터 새로고침
+          </button>
+          <button
+            class="btn btn-ac"
+            id="fetchBtn"
+            onclick="fetchLive()"
+            style="display: none"
+          >
+            <span class="spinner hidden" id="sp"></span>실거래 수집
+          </button>
+        </div>
+        <button
+          class="btn btn-ghost"
+          onclick="openKeyModal()"
+          style="
+            padding: 6px 12px;
+            font-size: 0.76rem;
+            border: 1px solid var(--bd2);
+          "
+        >
+          ⚙️ API 키 설정
+        </button>
+      </div>
+
+      <!-- Controls -->
+      <div class="ctrl-bar">
+        <div class="ctrl">
+          <div class="ctrl-lbl-row">
+            <span class="ctrl-lbl">분석 예산</span>
+            <button
+              class="info-btn"
+              onclick="openInfoModal('budget')"
+              title="이 필터 설명"
+            >
+              ?
+            </button>
+          </div>
+          <div class="brow">
+            <input
+              class="bi"
+              type="number"
+              id="budE"
+              value="8"
+              min="0"
+              step="0.5"
+              oninput="
+                updateBudDisp();
+                debounceUpdate();
+              "
+            />
+            <span class="bu">억</span>
+            <input
+              class="bi"
+              type="number"
+              id="budC"
+              value="0"
+              min="0"
+              max="9"
+              step="1"
+              style="width: 34px"
+              oninput="
+                updateBudDisp();
+                debounceUpdate();
+              "
+            />
+            <span class="bu">천만</span>
+          </div>
+          <div class="bdisp" id="budDisp">= 8억</div>
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-lbl-row">
+            <span class="ctrl-lbl">최소 면적</span>
+            <button
+              class="info-btn"
+              onclick="openInfoModal('area')"
+              title="이 필터 설명"
+            >
+              ?
+            </button>
+          </div>
+          <select id="areaMin" onchange="debounceUpdate()">
+            <option value="0">전체 면적</option>
+            <option value="33">33㎡↑ (10평)</option>
+            <option value="49">49㎡↑ (15평)</option>
+            <option value="66">66㎡↑ (20평)</option>
+            <option value="84">84㎡↑ (25평)</option>
+            <option value="101">101㎡↑ (30평)</option>
+          </select>
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-lbl-row">
+            <span class="ctrl-lbl">지역 범위</span>
+            <button
+              class="info-btn"
+              onclick="openInfoModal('region')"
+              title="이 필터 설명"
+            >
+              ?
+            </button>
+          </div>
+          <select id="regionFilter" onchange="debounceUpdate()">
+            <option value="all">전체 지역</option>
+            <option value="seoul">서울만</option>
+            <option value="metro">수도권</option>
+            <option value="local">지방</option>
+          </select>
+        </div>
+        <button class="btn btn-ac" onclick="update()">분석 갱신</button>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics">
+        <div class="metric">
+          <div class="ml">예산 내 매물</div>
+          <div class="mv" id="mA">—</div>
+          <div class="ms" id="mAS">—</div>
+        </div>
+        <div class="metric">
+          <div class="ml">전체 평균가</div>
+          <div class="mv" id="mP">—</div>
+          <div class="ms">전체 기준</div>
+        </div>
+        <div class="metric">
+          <div class="ml">예산 갭</div>
+          <div class="mv" id="mG">—</div>
+          <div class="ms">평균가−예산</div>
+        </div>
+        <div class="metric">
+          <div class="ml">평균 평당가</div>
+          <div class="mv" id="mPy">—</div>
+          <div class="ms">예산 내 매물</div>
+        </div>
+        <div class="metric">
+          <div class="ml">업데이트</div>
+          <div class="mv" id="mU">—</div>
+          <div class="ms">총 <span id="mT">—</span>건</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab(0)">가설 검증</div>
+        <div class="tab" onclick="switchTab(1)">지역 트렌드</div>
+        <div class="tab" onclick="switchTab(2)">전체 데이터</div>
+        <div class="tab" onclick="switchTab(3)">📊 심화 그래프</div>
+      </div>
+
+      <!-- Panel 0: Hypotheses -->
+      <div class="panel active" id="p0">
+        <div class="hypo-stack">
+          <!-- H1 -->
+          <div class="hypo-card" id="hc1">
+            <div class="hnum">H1</div>
+            <div class="hcontent">
+              <div class="hif">가설 / HYPOTHESIS</div>
+              <div class="hstmt">
+                예산을 올릴수록 매물 수는
+                <strong>예산 증가율보다 빠르게</strong> 늘어난다
+              </div>
+              <button class="hypo-info-btn" onclick="openHypoModal(1)">
+                ? 이 가설이 무엇인가요
+              </button>
+              <div class="hev">
+                <div>
+                  <div class="evl">예산 ×0.8 이하</div>
+                  <div class="evv b" id="h1b">—</div>
+                </div>
+                <div>
+                  <div class="evl">예산 이하</div>
+                  <div class="evv b" id="h1c">—</div>
+                </div>
+                <div>
+                  <div class="evl">예산 ×1.2 이하</div>
+                  <div class="evv b" id="h1a">—</div>
+                </div>
+                <div>
+                  <div class="evl">80%→100% 증가율</div>
+                  <div class="evv" id="h1r1">—</div>
+                </div>
+                <div>
+                  <div class="evl">100%→120% 증가율</div>
+                  <div class="evv" id="h1r2">—</div>
+                </div>
+              </div>
+            </div>
+            <div class="hverd">
+              <span class="vbadge vb-wait" id="hb1">대기중</span>
+            </div>
+          </div>
+          <!-- H2 -->
+          <div class="hypo-card" id="hc2">
+            <div class="hnum">H2</div>
+            <div class="hcontent">
+              <div class="hif">가설 / HYPOTHESIS</div>
+              <div class="hstmt">
+                신축 아파트는 구축 대비 <strong>10% 이상 높은 거래가</strong>를
+                형성한다
+              </div>
+              <button class="hypo-info-btn" onclick="openHypoModal(2)">
+                ? 이 가설이 무엇인가요
+              </button>
+              <div class="hev">
+                <div>
+                  <div class="evl">신축 평균가</div>
+                  <div class="evv b" id="h2n">—</div>
+                </div>
+                <div>
+                  <div class="evl">구축 평균가</div>
+                  <div class="evv b" id="h2o">—</div>
+                </div>
+                <div>
+                  <div class="evl">프리미엄</div>
+                  <div class="evv" id="h2d">—</div>
+                </div>
+                <div>
+                  <div class="evl">신축 기준연도</div>
+                  <div class="evv b" id="h2ny">—</div>
+                </div>
+                <div>
+                  <div class="evl">구축 기준연도</div>
+                  <div class="evv b" id="h2oy">—</div>
+                </div>
+              </div>
+            </div>
+            <div class="hverd">
+              <span class="vbadge vb-wait" id="hb2">대기중</span>
+            </div>
+          </div>
+          <!-- H3 -->
+          <div class="hypo-card" id="hc3">
+            <div class="hnum">H3</div>
+            <div class="hcontent">
+              <div class="hif">가설 / HYPOTHESIS</div>
+              <div class="hstmt">
+                같은 예산이면 지방 5대광역시가 서울보다
+                <strong>1.5배 이상 넓은 면적</strong>을 구매할 수 있다
+              </div>
+              <button class="hypo-info-btn" onclick="openHypoModal(3)">
+                ? 이 가설이 무엇인가요
+              </button>
+              <div class="hev">
+                <div>
+                  <div class="evl">서울 평균 면적</div>
+                  <div class="evv b" id="h3sa">—</div>
+                </div>
+                <div>
+                  <div class="evl">지방 평균 면적</div>
+                  <div class="evv b" id="h3ra">—</div>
+                </div>
+                <div>
+                  <div class="evl">면적 배율</div>
+                  <div class="evv" id="h3rt">—</div>
+                </div>
+                <div>
+                  <div class="evl">서울 평당가</div>
+                  <div class="evv b" id="h3sp">—</div>
+                </div>
+                <div>
+                  <div class="evl">지방 평당가</div>
+                  <div class="evv b" id="h3rp">—</div>
+                </div>
+              </div>
+            </div>
+            <div class="hverd">
+              <span class="vbadge vb-wait" id="hb3">대기중</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cg">
+          <div class="cb">
+            <div class="ct">가격 분포</div>
+            <div class="cs">
+              예산선 기준 녹색(예산 이하) · 황색(예산선 구간) · 적색(예산 초과)
+              — 예산 슬라이더에 반응
+            </div>
+            <div style="height: 210px"><canvas id="distC"></canvas></div>
+            <div class="viz-note">
+              해석: 막대 높이 = 해당 가격대 매물 수. 녹색 구간이 넓을수록 현재
+              예산 안에서 고를 수 있는 매물이 풍부합니다. 적색 비중이 크면 예산
+              상향 또는 면적·지역 조정을 검토하세요.
+            </div>
+          </div>
+          <div class="cb">
+            <div class="ct">건축연도별 평균 거래가</div>
+            <div class="cs">
+              5년 구간 평균 · 선 기울기 = 신축 프리미엄 강도 (H2 검증 기반)
+            </div>
+            <div style="height: 210px"><canvas id="ageC"></canvas></div>
+            <div class="viz-note">
+              해석: 선이 우상향일수록 신축(최근 연식)에 가격 프리미엄이 붙는
+              시장입니다. 기울기가 완만하면 연식보다 입지·면적이 가격을 결정하는
+              구조입니다.
+            </div>
+          </div>
+          <div class="cb" style="grid-column: 1/-1">
+            <div class="ct">면적대별 예산 내 매물 — 서울 vs 지방 5대광역시</div>
+            <div class="cs">
+              적색=서울 · 녹색=지방5대 (부산·대구·광주·대전·울산) — 현재
+              예산·면적 필터 적용
+            </div>
+            <div style="height: 190px"><canvas id="areaCmpC"></canvas></div>
+            <div class="viz-note">
+              해석: 같은 면적대에서 녹색 막대가 높을수록 지방 5대광역시에서 더
+              많은 매물을 선택할 수 있습니다. 서울에서 원하는 면적이 없다면,
+              같은 예산으로 지방에서 대안을 찾을 수 있는지 이 차트로 확인하세요.
+              (H3 가설 근거 차트)
+            </div>
+          </div>
+        </div>
+
+        <div class="evi-board">
+          <div class="evi-card">
+            <div class="evi-head">
+              <div class="evi-k">H1 결과/증빙</div>
+              <div class="evi-v" id="h1ResultBadge">판정 대기</div>
+            </div>
+            <div class="evi-r" id="h1ResultText">
+              예산 증가 구간별 매물 증가율을 계산합니다.
+            </div>
+            <div class="evi-m">
+              <div class="evi-mb">
+                <div class="evi-ml">80%→100%</div>
+                <div class="evi-mv" id="h1EvR1">—</div>
+              </div>
+              <div class="evi-mb">
+                <div class="evi-ml">100%→120%</div>
+                <div class="evi-mv" id="h1EvR2">—</div>
+              </div>
+            </div>
+            <div class="evi-c"><canvas id="h1EvC"></canvas></div>
+            <div class="evi-c2"><canvas id="h1ProofC"></canvas></div>
+          </div>
+
+          <div class="evi-card">
+            <div class="evi-head">
+              <div class="evi-k">H2 결과/증빙</div>
+              <div class="evi-v" id="h2ResultBadge">판정 대기</div>
+            </div>
+            <div class="evi-r" id="h2ResultText">
+              신축 프리미엄 비율을 계산합니다.
+            </div>
+            <div class="evi-m">
+              <div class="evi-mb">
+                <div class="evi-ml">신축 평균가</div>
+                <div class="evi-mv" id="h2EvN">—</div>
+              </div>
+              <div class="evi-mb">
+                <div class="evi-ml">구축 평균가</div>
+                <div class="evi-mv" id="h2EvO">—</div>
+              </div>
+            </div>
+            <div class="evi-c"><canvas id="h2EvC"></canvas></div>
+            <div class="evi-c2"><canvas id="h2ProofC"></canvas></div>
+          </div>
+
+          <div class="evi-card">
+            <div class="evi-head">
+              <div class="evi-k">H3 결과/증빙</div>
+              <div class="evi-v" id="h3ResultBadge">판정 대기</div>
+            </div>
+            <div class="evi-r" id="h3ResultText">
+              서울과 지방 5대광역시 면적 배율을 계산합니다.
+            </div>
+            <div class="evi-m">
+              <div class="evi-mb">
+                <div class="evi-ml">서울 평균 면적</div>
+                <div class="evi-mv" id="h3EvS">—</div>
+              </div>
+              <div class="evi-mb">
+                <div class="evi-ml">지방5대 평균</div>
+                <div class="evi-mv" id="h3EvL">—</div>
+              </div>
+            </div>
+            <div class="evi-c"><canvas id="h3EvC"></canvas></div>
+            <div class="evi-c2"><canvas id="h3ProofC"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 1 -->
+      <div class="panel" id="p1">
+        <div class="cbf">
+          <div class="ct">지역별 월별 평균 거래가 (최근 24개월)</div>
+          <div class="cs">
+            거래량 상위 8개 지역 자동 선택 · 각 선 = 해당 월 평균 거래가 · 빈
+            구간 = 거래 없음
+          </div>
+          <div class="rleg" id="trendLeg"></div>
+          <div style="height: 320px"><canvas id="trendC"></canvas></div>
+          <div class="viz-note">
+            해석: 선이 우상향이면 해당 지역 가격이 상승 중, 수평이면 보합,
+            하향이면 하락 추세입니다. 선 간 간격은 지역 간 가격 격차를 보여주며,
+            격차가 줄어들면 가격이 수렴하는 신호입니다. 툴팁을 hover하면 해당 월
+            각 지역 평균가를 한 번에 비교할 수 있습니다.
+          </div>
+        </div>
+        <div class="cg">
+          <div class="cb">
+            <div class="ct">면적 vs 평당가 산점도</div>
+            <div class="cs">
+              지역 그룹별 색상 — 서울(적) · 경기/인천(보라) · 부산/대구(주황) ·
+              광주/대전/울산(청록) · 기타(황)
+            </div>
+            <div style="height: 230px"><canvas id="scatC"></canvas></div>
+            <div class="viz-note">
+              해석: X축(오른쪽)=넓은 면적, Y축(위)=높은 평당가. 같은 면적대에서
+              점이 아래에 있을수록 평당가가 낮아 가성비가 좋습니다. 지역 그룹 간
+              점군이 겹치지 않을수록 지역 간 가격 구조가 뚜렷하게 다름을
+              의미합니다.
+            </div>
+          </div>
+          <div class="cb">
+            <div class="ct">지역별 가격 분위 (누적 바)</div>
+            <div class="cs">
+              파랑=하위25% · 황록=중위 · 적색=상위25% — 상위12개 지역 (거래량
+              순)
+            </div>
+            <div style="height: 230px"><canvas id="boxC"></canvas></div>
+            <div class="viz-note">
+              해석: 전체 막대 높이 = 지역 전반적 가격 수준. 상단 적색(상위25%)
+              두께가 클수록 고가 매물 편차가 큽니다. 중위가 낮고 파란 영역이
+              넓은 지역이 실수요 접근성이 좋습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 2 (전체 데이터) -->
+      <div class="panel" id="p3">
+        <div class="tc-row">
+          <input
+            class="srch"
+            id="srch"
+            oninput="debouncedRenderTable()"
+            placeholder="단지명, 지역 검색..."
+          />
+          <!-- 계층형 지역 선택: 광역시도 → 시군구 -->
+          <select
+            id="tRegMet"
+            onchange="
+              onMetroChange();
+              tblPage = 1;
+              renderTable();
+            "
+            style="min-width: 85px"
+          >
+            <option value="all">전국</option>
+          </select>
+          <select
+            id="tReg"
+            onchange="
+              tblPage = 1;
+              renderTable();
+            "
+            style="min-width: 90px"
+          >
+            <option value="all">전체 구/군</option>
+          </select>
+          <select
+            id="tSrt"
+            onchange="
+              tblPage = 1;
+              renderTable();
+            "
+          >
+            <option value="price_asc">가격 낮은순</option>
+            <option value="price_desc">가격 높은순</option>
+            <option value="area_desc">면적 넓은순</option>
+            <option value="pyeong_asc">평당가 낮은순</option>
+            <option value="year_desc">신축순</option>
+          </select>
+          <select
+            id="tBudFilter"
+            onchange="
+              tblPage = 1;
+              renderTable();
+            "
+          >
+            <option value="all">예산 전체</option>
+            <option value="within">예산 이하만</option>
+            <option value="over">예산 초과만</option>
+          </select>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th
+                  style="cursor: pointer"
+                  onclick="setTblSort('apt_name_asc')"
+                >
+                  단지명
+                </th>
+                <th style="cursor: pointer" onclick="setTblSort('region_asc')">
+                  지역
+                </th>
+                <th style="cursor: pointer" onclick="setTblSort('area_desc')">
+                  면적
+                </th>
+                <th>평형</th>
+                <th>층</th>
+                <th style="cursor: pointer" onclick="setTblSort('price_asc')">
+                  가격
+                </th>
+                <th style="cursor: pointer" onclick="setTblSort('pyeong_asc')">
+                  평당가
+                </th>
+                <th style="cursor: pointer" onclick="setTblSort('year_desc')">
+                  건축
+                </th>
+                <th>거래일</th>
+                <th>예산비</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="pg-wrap" id="tblPg"></div>
+        <div class="pg-info" id="tInfo"></div>
+      </div>
+      <!-- Panel 4: 심화 그래프 (Client-side Plotly) -->
+      <div class="panel" id="p4">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+          "
+        >
+          <div>
+            <div
+              style="
+                font-size: 0.72rem;
+                color: var(--mu);
+                margin-bottom: 0.2rem;
+              "
+            >
+              클라이언트 렌더링 · Plotly.js · 백엔드 불필요
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: var(--tx)">
+              심화 데이터 시각화
+            </div>
+          </div>
+          <button
+            class="btn btn-ac"
+            onclick="loadClientCharts()"
+            style="padding: 6px 14px; font-size: 0.78rem"
+          >
+            🔄 그래프 갱신
+          </button>
+        </div>
+
+        <!-- Plotly 인터랙티브 -->
+        <div style="margin-bottom: 1.4rem">
+          <div
+            style="
+              font-size: 0.7rem;
+              letter-spacing: 0.08em;
+              color: var(--mu);
+              text-transform: uppercase;
+              margin-bottom: 0.7rem;
+              display: flex;
+              align-items: center;
+              gap: 0.4rem;
+            "
+          >
+            <span
+              style="
+                background: rgba(167, 139, 250, 0.12);
+                color: var(--pu);
+                padding: 2px 8px;
+                border-radius: 99px;
+                font-size: 0.65rem;
+                font-weight: 600;
+              "
+              >Plotly.js</span
+            >
+            인터랙티브 차트
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 0.5rem;
+              margin-bottom: 0.8rem;
+              flex-wrap: wrap;
+            "
+          >
+            <button
+              class="btn btn-ghost"
+              onclick="showPlotly('treemap')"
+              style="font-size: 0.75rem; padding: 4px 12px"
+              id="plt-btn-treemap"
+            >
+              🗺 트리맵
+            </button>
+            <button
+              class="btn btn-ghost"
+              onclick="showPlotly('violin')"
+              style="font-size: 0.75rem; padding: 4px 12px"
+              id="plt-btn-violin"
+            >
+              🎻 바이올린
+            </button>
+            <button
+              class="btn btn-ghost"
+              onclick="showPlotly('sunburst')"
+              style="font-size: 0.75rem; padding: 4px 12px"
+              id="plt-btn-sunburst"
+            >
+              ☀ 선버스트
+            </button>
+          </div>
+          <div class="cb">
+            <div id="plotly-chart" style="width: 100%; min-height: 460px"></div>
+          </div>
+        </div>
+
+        <!-- Chart.js 심화 차트 2종 -->
+        <div
+          style="
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            color: var(--mu);
+            text-transform: uppercase;
+            margin-bottom: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+          "
+        >
+          <span
+            style="
+              background: var(--accent-blue-bg);
+              color: var(--accent-blue);
+              padding: 2px 8px;
+              border-radius: 99px;
+              font-size: 0.65rem;
+              font-weight: 600;
+            "
+            >Chart.js</span
+          >
+          추가 분석
+        </div>
+        <div class="cg" style="grid-template-columns: 1fr 1fr">
+          <div class="cb">
+            <div class="ct">지역별 거래가 레인지 (박스플롯형)</div>
+            <div class="cs">중위가 높은순 TOP 14 · 최소~최대 범위 표시</div>
+            <div style="height: 380px">
+              <canvas id="adv-box-local"></canvas>
+            </div>
+          </div>
+          <!-- <div class="cb">
+            <!-- <div class="ct">건축연도별 평당가 분포</div>
+            <div class="cs">연식 구간별 중위 평당가 · 신축 프리미엄 확인</div>
+            <div style="height: 380px">
+              <canvas id="adv-yr-pyeong"></canvas>
+            </div>
+            <div class="viz-note">
+              해석: 최근 연식일수록 평당가가 높으면 신축 프리미엄이 명확한
+              시장입니다. -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 필터 설명 모달 ══════════════════════════════════════ -->
+    <div
+      class="info-modal-bg"
+      id="infoModalBg"
+      onclick="if (event.target === this) closeInfoModal();"
+    >
+      <div class="info-modal" id="infoModalContent">
+        <div id="infoModalBody"></div>
+        <button class="im-close" onclick="closeInfoModal()">확인</button>
+      </div>
+    </div>
+
+    <!-- ══ 가설 상세 모달 ══════════════════════════════════════ -->
+    <div
+      class="hypo-modal-bg"
+      id="hypoModalBg"
+      onclick="if (event.target === this) closeHypoModal();"
+    >
+      <div class="hypo-modal" id="hypoModalContent">
+        <div id="hypoModalBody"></div>
+        <button class="im-close" onclick="closeHypoModal()">확인</button>
+      </div>
+    </div>
+
+    <!-- API Key Modal -->
+    <div
+      class="key-bg"
+      id="keyModalBg"
+      onclick="if (event.target === this) closeKeyModal();"
+    >
+      <div class="key-modal">
+        <div class="km-title">🔑 실거래 API 키 설정</div>
+        <div
+          style="
+            font-size: 0.8rem;
+            color: var(--mu);
+            line-height: 1.6;
+            margin-bottom: 1.2rem;
+          "
+        >
+          <a
+            href="https://www.data.go.kr"
+            target="_blank"
+            style="color: var(--ac)"
+            >data.go.kr</a
+          >의
+          <strong style="color: var(--tx)"
+            >국토교통부 아파트매매 실거래 상세자료</strong
+          >
+          인증키를 연동합니다.
+        </div>
+        <input
+          class="km-input"
+          type="text"
+          id="kmKeyInput"
+          placeholder="일반 인증키 붙여넣기…"
+          autocomplete="off"
+        />
+        <div class="km-status" id="kmKeyStatus"></div>
+        <div class="km-btns">
+          <button
+            class="btn btn-ac"
+            onclick="applyKeyFromAnalysis()"
+            style="flex: 1; height: 38px"
+          >
+            적용 및 수집 시작
+          </button>
+          <button
+            class="btn btn-ghost"
+            onclick="closeKeyModal()"
+            style="height: 38px"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API =
+        location.hostname === "localhost" || location.hostname === "127.0.0.1"
+          ? "http://localhost:8000"
+          : "";
+      const ENV_KEY =
+        window.__ENV__ && window.__ENV__.MOLIT_KEY
+          ? window.__ENV__.MOLIT_KEY.trim()
+          : "";
+      let trades = [],
+        tabIdx = 0,
+        charts = {};
+      const DATA_PAGE_SIZE = 2500;
+      let loadSession = 0;
+      const hypothesisState = { h1: null, h2: null, h3: null };
+      const COLORS = [
+        "#5e9ef5",
+        "#b8e04a",
+        "#3ddba0",
+        "#e85a5a",
+        "#d4a030",
+        "#a78bfa",
+        "#f97316",
+        "#ec4899",
+        "#14b8a6",
+        "#f59e0b",
+      ];
+      const SEOUL_REGS = [
+        "서울 강남구",
+        "서울 서초구",
+        "서울 송파구",
+        "서울 용산구",
+        "서울 성동구",
+        "서울 광진구",
+        "서울 동대문구",
+        "서울 중랑구",
+        "서울 성북구",
+        "서울 강북구",
+        "서울 도봉구",
+        "서울 노원구",
+        "서울 은평구",
+        "서울 서대문구",
+        "서울 마포구",
+        "서울 양천구",
+        "서울 강서구",
+        "서울 구로구",
+        "서울 금천구",
+        "서울 영등포구",
+        "서울 동작구",
+        "서울 관악구",
+        "서울 종로구",
+        "서울 중구",
+        "서울 강동구",
+      ];
+      const L5_REGS = [
+        "부산 해운대구",
+        "부산 수영구",
+        "부산 동래구",
+        "부산 남구",
+        "부산 부산진구",
+        "부산 금정구",
+        "대구 수성구",
+        "대구 달서구",
+        "대구 동구",
+        "광주 광산구",
+        "광주 북구",
+        "광주 서구",
+        "대전 유성구",
+        "대전 서구",
+        "대전 동구",
+        "울산 남구",
+        "울산 중구",
+      ];
+
+      function won(v) {
+        const e = Math.floor(v / 10000),
+          c = Math.round((v % 10000) / 1000);
+        if (e > 0 && c > 0) return `${e}억 ${c}천`;
+        if (e > 0) return `${e}억`;
+        if (v >= 1000) return `${Math.round(v / 1000)}천만`;
+        return `${v.toLocaleString()}만`;
+      }
+      function wonS(v) {
+        const e = Math.floor(v / 10000);
+        return e > 0
+          ? `${e}억`
+          : v >= 1000
+            ? `${Math.round(v / 1000)}천`
+            : `${v}만`;
+      }
+      /* 억 단위 tick/label — 부동소수점 노이즈 제거 (예: 0.90000000001 → 0.9) */
+      function fmtAok(v) {
+        const n = parseFloat(v);
+        if (isNaN(n)) return `${v}억`;
+        const r = parseFloat(n.toPrecision(4));
+        return Number.isInteger(r) ? `${r}억` : `${r}억`;
+      }
+      function avg(a) {
+        return a.length ? a.reduce((s, v) => s + v, 0) / a.length : 0;
+      }
+      function med(a) {
+        if (!a.length) return 0;
+        const s = [...a].sort((x, y) => x - y);
+        return s[Math.floor(s.length / 2)];
+      }
+      function pctl(a, p) {
+        if (!a.length) return 0;
+        const s = [...a].sort((x, y) => x - y);
+        const idx = Math.max(
+          0,
+          Math.min(s.length - 1, Math.round((s.length - 1) * p)),
+        );
+        return s[idx];
+      }
+      function dC(id) {
+        if (charts[id]) {
+          try {
+            charts[id].destroy();
+          } catch (e) {}
+          delete charts[id];
+        }
+        const canvas = document.getElementById(id);
+        if (canvas) {
+          const ex = Chart.getChart(canvas);
+          if (ex) {
+            try {
+              ex.destroy();
+            } catch (e) {}
+          }
+        }
+      }
+
+      function getBudget() {
+        return Math.round(
+          (parseFloat(document.getElementById("budE").value) || 0) * 10000 +
+            (parseFloat(document.getElementById("budC").value) || 0) * 1000,
+        );
+      }
+      function getAMin() {
+        return parseFloat(document.getElementById("areaMin").value) || 0;
+      }
+      function getRF() {
+        return document.getElementById("regionFilter").value;
+      }
+      function filterRF(data, rf) {
+        if (rf === "all") return data;
+        if (rf === "seoul")
+          return data.filter((t) => SEOUL_REGS.includes(t.region));
+        if (rf === "metro")
+          return data.filter(
+            (t) =>
+              t.region.startsWith("서울") ||
+              t.region.startsWith("경기") ||
+              t.region.startsWith("인천"),
+          );
+        if (rf === "local")
+          return data.filter(
+            (t) =>
+              !t.region.startsWith("서울") &&
+              !t.region.startsWith("경기") &&
+              !t.region.startsWith("인천"),
+          );
+        return data;
+      }
+
+      function updateBudDisp() {
+        const e = parseFloat(document.getElementById("budE").value) || 0,
+          c = parseFloat(document.getElementById("budC").value) || 0;
+        const total = e * 10000 + c * 1000;
+        const b = document.getElementById("budDisp");
+        if (e > 0 && c > 0) b.textContent = `= ${e}억 ${c}천만`;
+        else if (e > 0) b.textContent = `= ${e}억`;
+        else b.textContent = `= ${Math.round(total).toLocaleString()}만원`;
+      }
+      function debounceUpdate() {
+        clearTimeout(window._upd);
+        window._upd = setTimeout(update, 350);
+      }
+
+      /* ════ 필터 설명 모달 데이터 ════ */
+      const INFO_DATA = {
+        budget: {
+          tag: "필터 설명",
+          tagClass: "blue",
+          title: "분석 예산이란?",
+          body: `<p>가설 검증과 차트 분석의 기준이 되는 <strong>최대 구매 예산</strong>입니다.</p>
+    <div class="im-divider"></div>
+    <p>이 예산을 기준으로:</p>
+    <ul style="margin:.6rem 0 .6rem 1rem;line-height:2">
+      <li>예산 <strong>이하</strong> 매물을 "구매 가능"으로 분류합니다</li>
+      <li>H1 — 예산의 80% / 100% / 120% 구간별 매물 수를 비교합니다</li>
+      <li>H3 — 같은 예산 기준 서울 vs 지방 면적 차이를 계산합니다</li>
+    </ul>
+    <div class="im-example">
+      <div class="im-ex-title">설정 예시</div>
+      <div class="im-ex-row"><span>5억 설정 시</span><span>5억 이하 매물만 "예산 내"</span></div>
+      <div class="im-ex-row"><span>H1 분석 범위</span><span>4억 / 5억 / 6억 구간 비교</span></div>
+      <div class="im-ex-row"><span>권장 범위</span><span>실제 구매 예산의 ±10억 이내</span></div>
+    </div>`,
+        },
+        area: {
+          tag: "필터 설명",
+          tagClass: "blue",
+          title: "최소 면적이란?",
+          body: `<p>분석 대상에 포함할 <strong>최소 전용면적(㎡)</strong>입니다. 이 이상의 면적을 가진 매물만 분석에 사용됩니다.</p>
+    <div class="im-divider"></div>
+    <div class="im-example">
+      <div class="im-ex-title">평형 환산 기준 (1평 ≈ 3.3㎡)</div>
+      <div class="im-ex-row"><span>33㎡</span><span>≈ 10평 (원룸~1.5룸)</span></div>
+      <div class="im-ex-row"><span>49㎡</span><span>≈ 15평 (방2 소형)</span></div>
+      <div class="im-ex-row"><span>66㎡</span><span>≈ 20평 (방2~3 표준)</span></div>
+      <div class="im-ex-row"><span>84㎡</span><span>≈ 25평 (방3 국민평형)</span></div>
+      <div class="im-ex-row"><span>101㎡</span><span>≈ 30평 (방3~4 중대형)</span></div>
+    </div>
+    <div class="im-divider"></div>
+    <p style="margin-top:.5rem">H2(신축 프리미엄) 검증 시 소형 면적을 포함하면 결과가 왜곡될 수 있습니다. <strong>66㎡ 이상</strong>을 권장합니다.</p>`,
+        },
+        region: {
+          tag: "필터 설명",
+          tagClass: "blue",
+          title: "지역 범위란?",
+          body: `<p>가설 검증 및 통계 계산에 사용할 <strong>지역 범위</strong>를 지정합니다.</p>
+    <div class="im-divider"></div>
+    <div class="im-example">
+      <div class="im-ex-title">범위별 포함 지역</div>
+      <div class="im-ex-row"><span>전체 지역</span><span>전국 모든 지역</span></div>
+      <div class="im-ex-row"><span>서울만</span><span>서울 25개 자치구</span></div>
+      <div class="im-ex-row"><span>수도권</span><span>서울 + 경기 + 인천</span></div>
+      <div class="im-ex-row"><span>지방</span><span>수도권 제외 전국</span></div>
+    </div>
+    <div class="im-divider"></div>
+    <p>H3(지방 면적 배율)은 지역 범위 설정과 <strong>무관하게</strong> 항상 서울 전체와 지방 5대광역시(부산·대구·광주·대전·울산)를 비교합니다.</p>`,
+        },
+      };
+
+      /* ════ 가설 상세 모달 데이터 ════ */
+      const HYPO_DATA = {
+        1: {
+          title: "예산 증가 → 매물 수 <strong>비선형 증가</strong>",
+          body: `
+    <div class="hm-section">
+      <div class="hm-section-title">가설의 배경</div>
+      <div class="hm-body">아파트 가격은 정규분포가 아닌 <em>오른쪽 꼬리가 긴 분포</em>를 따릅니다. 즉, 중저가 구간에 매물이 집중되어 있어 예산을 조금만 높여도 선택지가 크게 늘어납니다. 이 효과가 <strong>예산 증가율을 초과할 만큼</strong> 강한지 검증합니다.</div>
+    </div>
+    <div class="hm-section">
+      <div class="hm-section-title">검증 방법</div>
+      <div class="hm-formula">
+예산 ×0.8 이하 매물 수 → n₀<br>
+예산 ×1.0 이하 매물 수 → n₁<br>
+예산 ×1.2 이하 매물 수 → n₂<br><br>
+증가율₁ = (n₁−n₀) / n₀ × 100%<br>
+증가율₂ = (n₂−n₁) / n₁ × 100%<br><br>
+채택 조건: 증가율₁ > 20% AND 증가율₂ > 20%
+      </div>
+    </div>
+    <div class="hm-section">
+      <div class="hm-section-title">채택/기각 의미</div>
+      <div class="hm-criterion"><div class="hm-crit-icon">✅</div><div class="hm-crit-body"><strong>채택</strong>: 예산을 20% 늘릴 때마다 선택 가능한 매물이 20% 이상씩 늘어납니다. 예산을 조금 더 늘리면 선택폭이 크게 확장됩니다.</div></div>
+      <div class="hm-criterion"><div class="hm-crit-icon">❌</div><div class="hm-crit-body"><strong>기각</strong>: 예산 증가 대비 매물 증가가 크지 않습니다. 해당 지역/조건에서는 예산을 늘려도 선택지가 많이 늘지 않습니다.</div></div>
+    </div>
+    <div class="hm-tag-row">
+      <span class="hm-tag neutral">서울·고가 지역</span>
+      <span class="hm-tag fail">기각 경향</span>
+      <span class="hm-tag neutral">지방·중저가</span>
+      <span class="hm-tag pass">채택 경향</span>
+    </div>`,
+        },
+        2: {
+          title: "신축 아파트 <strong>10% 이상 프리미엄</strong> 형성",
+          body: `
+    <div class="hm-section">
+      <div class="hm-section-title">가설의 배경</div>
+      <div class="hm-body">신축 아파트는 최신 설계·커뮤니티·에너지효율을 갖춰 구축 대비 <em>프리미엄 가격</em>이 붙는 것이 일반적입니다. 이 프리미엄이 <strong>10%를 초과</strong>하는지 데이터로 검증합니다.</div>
+    </div>
+    <div class="hm-section">
+      <div class="hm-section-title">검증 방법</div>
+      <div class="hm-formula">
+건축연도 기준 상위 25% → 신축 그룹<br>
+건축연도 기준 하위 25% → 구축 그룹<br><br>
+프리미엄 = (신축 평균가 − 구축 평균가) / 구축 평균가 × 100%<br><br>
+채택 조건: 프리미엄 > 10%
+      </div>
+    </div>
+    <div class="hm-section">
+      <div class="hm-section-title">주의사항</div>
+      <div class="hm-body"><strong>지역 범위</strong>가 결과에 크게 영향을 줍니다. 서울만 선택하면 신축 프리미엄이 더 두드러질 수 있고, 지방을 포함하면 희석될 수 있습니다. <em>최소 면적을 66㎡ 이상으로 설정</em>하면 소형 오피스텔이 제외되어 더 정확한 분석이 가능합니다.</div>
+    </div>
+    <div class="hm-tag-row">
+      <span class="hm-tag neutral">서울 신축</span>
+      <span class="hm-tag pass">채택 경향</span>
+      <span class="hm-tag neutral">지방 전체</span>
+      <span class="hm-tag fail">기각 경향</span>
+    </div>`,
+        },
+        3: {
+          title:
+            "지방 5대광역시, 같은 예산으로 <strong>1.5배 넓은 면적</strong>",
+          body: `
+    <div class="hm-section">
+      <div class="hm-section-title">가설의 배경</div>
+      <div class="hm-body">서울은 높은 평당가로 인해 같은 예산으로도 구매 가능한 면적이 제한됩니다. <em>부산·대구·광주·대전·울산</em> 등 지방 5대광역시에서는 동일 예산으로 서울보다 얼마나 넓은 면적을 구매할 수 있는지 비교합니다.</div>
+    </div>
+    <div class="hm-section">
+      <div class="hm-section-title">검증 방법</div>
+      <div class="hm-formula">
+서울 내 예산 이하 매물의 평균 면적 → S_area<br>
+지방 5대광역시 예산 이하 매물의 평균 면적 → L_area<br><br>
+면적 배율 = L_area / S_area<br><br>
+채택 조건: 면적 배율 ≥ 1.5
+      </div>
+    </div>
+    <div class="hm-section">
+      <div class="hm-section-title">채택/기각 의미</div>
+      <div class="hm-criterion"><div class="hm-crit-icon">✅</div><div class="hm-crit-body"><strong>채택(≥1.5배)</strong>: 지방 5대광역시에서 같은 예산으로 서울보다 50% 이상 넓은 아파트를 구매할 수 있습니다. 직장 이전이나 재택근무자에게 지방 거주가 면적 면에서 유리합니다.</div></div>
+      <div class="hm-criterion"><div class="hm-crit-icon">❌</div><div class="hm-crit-body"><strong>기각(&lt;1.5배)</strong>: 예산이 높거나 지방 프리미엄 지역이 포함된 경우 배율이 낮아집니다. 예산을 낮추거나 서울 외곽 지역과 비교할 때 달라질 수 있습니다.</div></div>
+    </div>
+    <div class="hm-tag-row">
+      <span class="hm-tag neutral">예산 5억 이하</span>
+      <span class="hm-tag pass">채택 경향</span>
+      <span class="hm-tag neutral">예산 10억 이상</span>
+      <span class="hm-tag fail">기각 경향</span>
+    </div>`,
+        },
+      };
+
+      function openInfoModal(key) {
+        const d = INFO_DATA[key];
+        if (!d) return;
+        document.getElementById("infoModalBody").innerHTML = `
+    <div class="im-tag ${d.tagClass}">${d.tag}</div>
+    <div class="im-title">${d.title}</div>
+    <div class="im-body">${d.body}</div>`;
+        document.getElementById("infoModalBg").classList.add("show");
+      }
+      function closeInfoModal() {
+        document.getElementById("infoModalBg").classList.remove("show");
+      }
+
+      function openHypoModal(n) {
+        const d = HYPO_DATA[n];
+        if (!d) return;
+        const tagCls = n === 1 ? "blue" : n === 2 ? "green" : "purple";
+        document.getElementById("hypoModalBody").innerHTML = `
+    <div class="im-tag ${tagCls}">H${n} — 가설 상세</div>
+    <div class="hm-num">H${n}</div>
+    <div class="hm-title">${d.title}</div>
+    ${d.body}`;
+        document.getElementById("hypoModalBg").classList.add("show");
+      }
+      function closeHypoModal() {
+        document.getElementById("hypoModalBg").classList.remove("show");
+      }
+      /* keydown handled below */
+
+      /* ════ INIT ════ */
+      async function init() {
+        let hasKey = false;
+        try {
+          await Promise.race([
+            checkStatus().then((v) => {
+              hasKey = v;
+            }),
+            new Promise((_, rej) => setTimeout(() => rej(), 5000)),
+          ]);
+        } catch {
+          document.getElementById("navBadge").textContent = "샘플 모드";
+          document.getElementById("navStatus").className = "nav-status ns-demo";
+        }
+        if (!hasKey && ENV_KEY) {
+          try {
+            const r = await fetch(
+              `${API}/api/crawl/auto?api_key=${encodeURIComponent(ENV_KEY)}&months=3`,
+              { method: "POST" },
+            ).then((r) => r.json());
+            if (r.count > 0) {
+              hasKey = true;
+              document.getElementById("navBadge").textContent =
+                `실거래 ${r.count.toLocaleString()}건`;
+              document.getElementById("navStatus").className =
+                "nav-status ns-live";
+            }
+          } catch {}
+        }
+        if (hasKey) document.getElementById("mT").textContent = "로딩 중…";
+        await loadData();
+        update();
+      }
+
+      async function checkStatus() {
+        try {
+          const s = await (await fetch(`${API}/api/status`)).json();
+          if (s.has_real_key) {
+            ab_setActive(s.key_preview || "설정됨");
+            document.getElementById("navBadge").textContent =
+              `실거래 ${s.total_trades.toLocaleString()}건`;
+            document.getElementById("navStatus").className =
+              "nav-status ns-live";
+            return true;
+          }
+        } catch {}
+        return false;
+      }
+      function ab_setActive(preview) {
+        /* deprecated natively handled */
+      }
+
+      async function loadData() {
+        const session = ++loadSession;
+        try {
+          document.getElementById("mT").textContent = "로딩 중…";
+          const first = await Promise.race([
+            fetch(`${API}/api/data?limit=${DATA_PAGE_SIZE}&offset=0`).then(
+              (r) => r.json(),
+            ),
+            new Promise((_, rej) => setTimeout(() => rej(), 30000)),
+          ]);
+          if (session !== loadSession) return;
+          const initial = first.trades || [];
+          const total = (first.stats && first.stats.count) || initial.length;
+          trades = initial;
+          update();
+
+          if (total > initial.length) {
+            const pages = Math.ceil(total / DATA_PAGE_SIZE);
+            const requests = [];
+            for (let p = 1; p < pages; p++) {
+              requests.push(
+                fetch(
+                  `${API}/api/data?limit=${DATA_PAGE_SIZE}&offset=${p * DATA_PAGE_SIZE}`,
+                )
+                  .then((r) => r.json())
+                  .then((j) => j.trades || [])
+                  .catch(() => []),
+              );
+            }
+            const chunks = await Promise.all(requests);
+            if (session !== loadSession) return;
+            const merged = [...initial];
+            chunks.forEach((chunk) => merged.push(...chunk));
+            trades = merged;
+          }
+          // 지역 다양성 체크: 지역 수가 3개 미만이면 샘플 병합 (DB가 부분 데이터만 있는 경우)
+          const distinctRegions = new Set(trades.map((t) => t.region)).size;
+          if (trades.length === 0 || distinctRegions < 3) {
+            const fb = genFallback();
+            trades = [...trades, ...fb];
+          }
+        } catch (e) {
+          console.warn("[loadData]", e.message);
+          trades = genFallback();
+        }
+        document.getElementById("mU").textContent =
+          new Date().toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        document.getElementById("mT").textContent =
+          trades.length.toLocaleString();
+      }
+
+      async function refreshData() {
+        const btn = document.getElementById("refreshBtn");
+        btn.disabled = true;
+        btn.textContent = "⏳ 로딩 중...";
+        try {
+          const s = await fetch(`${API}/api/status`)
+            .then((r) => r.json())
+            .catch(() => null);
+          if (s && s.has_real_key) {
+            const crawlUrl = ENV_KEY
+              ? `${API}/api/crawl/auto?api_key=${encodeURIComponent(ENV_KEY)}&months=3`
+              : `${API}/api/crawl/auto?months=3`;
+            const j = await fetch(crawlUrl, { method: "POST" }).then((r) =>
+              r.json(),
+            );
+            await loadData();
+            document.getElementById("navBadge").textContent =
+              `실거래 ${j.count ? j.count.toLocaleString() : trades.length.toLocaleString()}건`;
+            document.getElementById("navStatus").className =
+              "nav-status ns-live";
+          } else {
+            try {
+              await fetch(`${API}/api/crawl/sample`, { method: "POST" });
+            } catch {}
+            await loadData();
+            document.getElementById("navBadge").textContent = "샘플";
+            document.getElementById("navStatus").className =
+              "nav-status ns-demo";
+          }
+        } catch (e) {
+          console.warn(e);
+          trades = genFallback();
+          document.getElementById("mT").textContent =
+            trades.length.toLocaleString();
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "데이터 새로고침";
+        }
+        update();
+      }
+
+      async function fetchLive() {
+        // Only called by internal processes now.
+        const metros = document.getElementById("metroSel").value;
+        try {
+          const url = metros
+            ? `${API}/api/crawl/auto?metros=${encodeURIComponent(metros)}&months=3`
+            : `${API}/api/crawl/auto?months=3`;
+          const j = await (await fetch(url, { method: "POST" })).json();
+          if (!j.count || j.count === 0) {
+            return;
+          }
+          await loadData();
+          document.getElementById("navBadge").textContent =
+            `실거래 ${j.count.toLocaleString()}건`;
+          document.getElementById("navStatus").className = "nav-status ns-live";
+          update();
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      // Debounce function to prevent excessive updates
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      // Debounced update function
+      const debouncedUpdate = debounce(update, 300);
+
+      /* ════ UPDATE ════ */
+      function update() {
+        // Add loading state to charts
+        Object.values(charts).forEach((chart) => {
+          if (chart && chart.canvas) {
+            chart.canvas.classList.add("updating");
+          }
+        });
+
+        const b = getBudget(),
+          am = getAMin(),
+          rf = getRF();
+        const base = filterRF(trades, rf).filter((t) => t.area >= am);
+        const aff = base.filter((t) => t.price <= b);
+        const avgP = avg(base.map((t) => t.price));
+        document.getElementById("mA").textContent = aff.length.toLocaleString();
+        document.getElementById("mAS").textContent = base.length
+          ? `전체 ${base.length}건 중 ${Math.round((aff.length / base.length) * 100)}%`
+          : "—";
+        document.getElementById("mP").textContent = avgP
+          ? won(Math.round(avgP))
+          : "—";
+        const gap = avgP - b;
+        document.getElementById("mG").textContent = avgP
+          ? (gap >= 0 ? "+" : "") + won(Math.round(gap))
+          : "—";
+        document.getElementById("mG").style.color =
+          gap > 0 ? "var(--fail)" : "var(--pass)";
+        const py = aff.length ? avg(aff.map((t) => t.per_pyeong)) : 0;
+        document.getElementById("mPy").textContent = py
+          ? won(Math.round(py))
+          : "—";
+        verifyAll(b, am, rf);
+
+        // Remove loading state after a short delay
+        setTimeout(() => {
+          Object.values(charts).forEach((chart) => {
+            if (chart && chart.canvas) {
+              chart.canvas.classList.remove("updating");
+            }
+          });
+        }, 150);
+
+        renderActive(b, am, rf);
+      }
+
+      /* ════ HYPOTHESES ════ */
+      function verifyAll(b, am, rf) {
+        h1(
+          filterRF(trades, rf).filter((t) => t.area >= am),
+          b,
+        );
+        h2(filterRF(trades, rf).filter((t) => t.area >= am));
+        h3(b, am);
+      }
+      function setV(i, pass) {
+        const b = document.getElementById("hb" + i),
+          c = document.getElementById("hc" + i);
+        b.textContent = pass ? "✓ 채택" : "✗ 기각";
+        b.className = "vbadge " + (pass ? "vb-pass" : "vb-fail");
+        c.className = "hypo-card " + (pass ? "pass" : "fail");
+      }
+      function h1(base, b) {
+        if (base.length < 20) {
+          ["h1b", "h1c", "h1a", "h1r1", "h1r2"].forEach((id) => {
+            document.getElementById(id).textContent = "—";
+            document.getElementById(id).className = "evv";
+          });
+          hypothesisState.h1 = {
+            ready: false,
+            pass: false,
+            n0: 0,
+            n1: 0,
+            n2: 0,
+            r1: 0,
+            r2: 0,
+            curve: { m: [], c: [] },
+          };
+          setV(1, false);
+          return;
+        }
+        const n0 = base.filter((t) => t.price <= b * 0.8).length,
+          n1 = base.filter((t) => t.price <= b).length,
+          n2 = base.filter((t) => t.price <= b * 1.2).length;
+        const r1 = n0 > 0 ? ((n1 - n0) / n0) * 100 : 0,
+          r2 = n1 > 0 ? ((n2 - n1) / n1) * 100 : 0,
+          pass = n0 > 0 && n1 > 0 && r1 > 20 && r2 > 20;
+        const mult = [0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4];
+        const cnt = mult.map(
+          (mm) => base.filter((t) => t.price <= b * mm).length,
+        );
+        hypothesisState.h1 = {
+          ready: true,
+          pass,
+          n0,
+          n1,
+          n2,
+          r1,
+          r2,
+          curve: { m: mult, c: cnt },
+        };
+        document.getElementById("h1b").textContent = n0 + "건";
+        document.getElementById("h1c").textContent = n1 + "건";
+        document.getElementById("h1a").textContent = n2 + "건";
+        document.getElementById("h1r1").className =
+          "evv " + (r1 > 20 ? "g" : "r");
+        document.getElementById("h1r1").textContent =
+          "+" + Math.round(r1) + "%";
+        document.getElementById("h1r2").className =
+          "evv " + (r2 > 20 ? "g" : "r");
+        document.getElementById("h1r2").textContent =
+          "+" + Math.round(r2) + "%";
+        setV(1, pass);
+      }
+      function h2(base) {
+        const yrs = base
+          .map((t) => parseInt(t.year_built))
+          .filter((y) => y > 1980 && y <= 2024)
+          .sort((a, b) => a - b);
+        if (yrs.length < 4) {
+          hypothesisState.h2 = {
+            ready: false,
+            pass: false,
+            aN: 0,
+            aO: 0,
+            diff: 0,
+            hist: { lbl: [], nw: [], ol: [] },
+          };
+          setV(2, false);
+          return;
+        }
+        const q1 = yrs[Math.floor(yrs.length * 0.25)],
+          q3 = yrs[Math.floor(yrs.length * 0.75)];
+        const nw = base.filter((t) => parseInt(t.year_built) >= q3),
+          ol = base.filter((t) => parseInt(t.year_built) <= q1);
+        const aN = avg(nw.map((t) => t.price)),
+          aO = avg(ol.map((t) => t.price));
+        if (!nw.length || !ol.length) {
+          hypothesisState.h2 = {
+            ready: false,
+            pass: false,
+            aN: 0,
+            aO: 0,
+            diff: 0,
+            hist: { lbl: [], nw: [], ol: [] },
+          };
+          setV(2, false);
+          return;
+        }
+        const diff = aO > 0 ? ((aN - aO) / aO) * 100 : 0,
+          pass = diff > 10;
+        // proof: quartiles (box-plot style numbers) + threshold anchor
+        const nwp = nw.map((t) => t.price).slice(0, 1200);
+        const olp = ol.map((t) => t.price).slice(0, 1200);
+        const olQ = {
+          q1: pctl(olp, 0.25),
+          q2: pctl(olp, 0.5),
+          q3: pctl(olp, 0.75),
+        };
+        const nwQ = {
+          q1: pctl(nwp, 0.25),
+          q2: pctl(nwp, 0.5),
+          q3: pctl(nwp, 0.75),
+        };
+        const thr = Math.round((olQ.q2 || aO || 0) * 1.1); // 10% premium 기준(중위값 기반)
+        hypothesisState.h2 = {
+          ready: true,
+          pass,
+          aN,
+          aO,
+          diff,
+          box: { ol: olQ, nw: nwQ, thr },
+        };
+        document.getElementById("h2n").textContent = aN
+          ? won(Math.round(aN))
+          : "—";
+        document.getElementById("h2o").textContent = aO
+          ? won(Math.round(aO))
+          : "—";
+        document.getElementById("h2d").className = "evv " + (pass ? "g" : "r");
+        document.getElementById("h2d").textContent = diff
+          ? "+" + Math.round(diff) + "%"
+          : "—";
+        document.getElementById("h2ny").textContent = nw.length
+          ? Math.round(avg(nw.map((t) => parseInt(t.year_built)))) + "년"
+          : "—";
+        document.getElementById("h2oy").textContent = ol.length
+          ? Math.round(avg(ol.map((t) => parseInt(t.year_built)))) + "년"
+          : "—";
+        setV(2, pass);
+      }
+      function h3(b, am) {
+        // H3는 지방 5대광역시로 고정 비교
+        const sA = trades.filter(
+          (t) => SEOUL_REGS.includes(t.region) && t.price <= b && t.area >= am,
+        );
+        const lA = trades.filter(
+          (t) => L5_REGS.includes(t.region) && t.price <= b && t.area >= am,
+        );
+        if (!sA.length || !lA.length) {
+          ["h3sa", "h3ra", "h3rt", "h3sp", "h3rp"].forEach((id) => {
+            document.getElementById(id).textContent = "—";
+            document.getElementById(id).className = "evv";
+          });
+          hypothesisState.h3 = {
+            ready: false,
+            pass: false,
+            sArea: 0,
+            rArea: 0,
+            ratio: 0,
+            hist: { lbl: [], s: [], l: [] },
+          };
+          const badge = document.getElementById("hb3");
+          badge.textContent = "데이터 부족";
+          badge.className = "vbadge vb-wait";
+          document.getElementById("hc3").className = "hypo-card";
+          return;
+        }
+        const sArea = avg(sA.map((t) => t.area)),
+          rArea = avg(lA.map((t) => t.area));
+        const ratio = sArea > 0 ? rArea / sArea : 0,
+          pass = ratio >= 1.5;
+        // proof: median area ratio + threshold anchor
+        const sa = sA.map((t) => t.area).slice(0, 1400);
+        const la = lA.map((t) => t.area).slice(0, 1400);
+        const sMed = pctl(sa, 0.5),
+          lMed = pctl(la, 0.5);
+        const thr = Math.round((sMed || sArea || 0) * 1.5);
+        const medRatio = sMed > 0 ? lMed / sMed : 0;
+        hypothesisState.h3 = {
+          ready: true,
+          pass,
+          sArea,
+          rArea,
+          ratio,
+          proof: { sMed, lMed, medRatio, thr },
+        };
+        document.getElementById("h3sa").textContent = sArea
+          ? Math.round(sArea) + "㎡"
+          : "—";
+        document.getElementById("h3ra").textContent = rArea
+          ? Math.round(rArea) + "㎡"
+          : "—";
+        document.getElementById("h3rt").className = "evv " + (pass ? "g" : "r");
+        document.getElementById("h3rt").textContent = ratio
+          ? ratio.toFixed(2) + "x"
+          : "—";
+        document.getElementById("h3sp").textContent = sA.length
+          ? won(Math.round(avg(sA.map((t) => t.per_pyeong))))
+          : "—";
+        document.getElementById("h3rp").textContent = lA.length
+          ? won(Math.round(avg(lA.map((t) => t.per_pyeong))))
+          : "—";
+        setV(3, pass);
+      }
+
+      /* ════ TABS ════ */
+      function switchTab(i) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((t, j) => t.classList.toggle("active", j === i));
+        document
+          .querySelectorAll(".panel")
+          .forEach((p, j) => p.classList.toggle("active", j === i));
+        tabIdx = i;
+        // 심화 그래프 탭 선택 시 자동 로드 (최초 1회, 이후는 갱신 버튼)
+        if (i === 3) {
+          if (!window._advLoaded) {
+            window._advLoaded = true;
+            loadClientCharts();
+          }
+          return;
+        }
+        // Defer chart rendering until DOM is visible (charts need visible canvas to size)
+        requestAnimationFrame(() =>
+          renderActive(getBudget(), getAMin(), getRF()),
+        );
+      }
+      function renderActive(b, am, rf) {
+        if (tabIdx === 0) p0Charts(b, am, rf);
+        else if (tabIdx === 1) p1Charts(am, rf);
+        else if (tabIdx === 2) {
+          buildRegionSelect();
+          renderTable();
+        }
+      }
+
+      const CO = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            ticks: {
+              color: "var(--ink3)",
+              font: { family: "'DM Mono'", size: 8 },
+              maxRotation: 40,
+              autoSkip: true,
+              maxTicksLimit: 16,
+            },
+            grid: { color: "rgba(107, 91, 69, 0.08)" },
+          },
+          y: {
+            ticks: {
+              color: "var(--ink3)",
+              font: { family: "'DM Mono'", size: 9 },
+            },
+            grid: { color: "rgba(107, 91, 69, 0.08)" },
+          },
+        },
+      };
+
+      // 심화 그래프 전용 고가독성 옵션 (폰트 크게, 대비 강화)
+      const ADV_CO = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            ticks: {
+              color: "var(--ink2)",
+              font: { family: "'DM Mono'", size: 11 },
+              maxRotation: 40,
+              autoSkip: true,
+              maxTicksLimit: 14,
+            },
+            grid: { color: "rgba(107,91,69,.13)" },
+          },
+          y: {
+            ticks: {
+              color: "var(--ink2)",
+              font: { family: "'DM Mono'", size: 11 },
+            },
+            grid: { color: "rgba(107,91,69,.13)" },
+          },
+        },
+      };
+      function p0Charts(b, am, rf) {
+        const base = filterRF(trades, rf).filter((t) => t.area >= am);
+        if (!base.length) return;
+
+        // 가격 분포 차트 — 데이터 범위 동적 계산
+        const maxP = Math.min(
+          Math.max(...base.map((t) => t.price)) * 1.05,
+          500000,
+        );
+        const step = Math.ceil(maxP / 30 / 5000) * 5000; // 30칸 내외로 자동 조정
+        const lbls = [],
+          cnts = [],
+          clrs = [];
+        for (let p = 0; p < maxP; p += step) {
+          const cnt = base.filter(
+            (t) => t.price >= p && t.price < p + step,
+          ).length;
+          // below: 구간 전체가 예산 이하 / inB: 예산선이 이 구간 안에 포함 / 나머지: 예산 초과
+          const below = p + step <= b;
+          const inB = !below && p <= b;
+          lbls.push(wonS(p));
+          cnts.push(cnt);
+          clrs.push(
+            inB
+              ? "#b8e04a"
+              : below
+                ? "rgba(61,219,160,.55)"
+                : "rgba(232,90,90,.55)",
+          );
+        }
+        dC("distC");
+        charts.distC = new Chart(document.getElementById("distC"), {
+          type: "bar",
+          data: {
+            labels: lbls,
+            datasets: [
+              {
+                data: cnts,
+                backgroundColor: clrs,
+                borderRadius: 3,
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            ...CO,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  title: (ls) => `${ls[0].label} 대`,
+                  label: (c) => `${c.parsed.y}건`,
+                },
+              },
+            },
+          },
+        });
+
+        // 건축연도별 평균가
+        const bkts = {};
+        base.forEach((t) => {
+          const yr = parseInt(t.year_built);
+          if (yr < 1985 || yr > 2025) return;
+          const g = Math.floor(yr / 5) * 5;
+          if (!bkts[g]) bkts[g] = [];
+          bkts[g].push(t.price);
+        });
+        const aL = Object.keys(bkts).sort(),
+          aV = aL.map((g) => Math.round(avg(bkts[g])));
+        dC("ageC");
+        charts.ageC = new Chart(document.getElementById("ageC"), {
+          type: "line",
+          data: {
+            labels: aL.map((g) => g + "년"),
+            datasets: [
+              {
+                data: aV,
+                borderColor: "#3ddba0",
+                backgroundColor: "rgba(61,219,160,.08)",
+                pointBackgroundColor: "#3ddba0",
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                tension: 0.35,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            ...CO,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: { label: (c) => `평균 ${wonS(c.parsed.y)}` },
+              },
+            },
+            scales: {
+              x: { ...CO.scales.x },
+              y: {
+                ...CO.scales.y,
+                ticks: { ...CO.scales.y.ticks, callback: (v) => wonS(v) },
+              },
+            },
+          },
+        });
+
+        // 서울 vs 지방 면적대별 비교
+        const aff = trades.filter((t) => t.price <= b && t.area >= am);
+        const ALBL = [33, 49, 59, 74, 84, 101, 115, 135, 165];
+        const sc = ALBL.map(
+          (a) =>
+            aff.filter(
+              (t) =>
+                SEOUL_REGS.includes(t.region) &&
+                t.area >= a - 8 &&
+                t.area < a + 8,
+            ).length,
+        );
+        const lc = ALBL.map(
+          (a) =>
+            aff.filter(
+              (t) =>
+                L5_REGS.includes(t.region) && t.area >= a - 8 && t.area < a + 8,
+            ).length,
+        );
+        dC("areaCmpC");
+        charts.areaCmpC = new Chart(document.getElementById("areaCmpC"), {
+          type: "bar",
+          data: {
+            labels: ALBL.map((a) => a + "㎡"),
+            datasets: [
+              {
+                label: "서울",
+                data: sc,
+                backgroundColor: "rgba(232,90,90,.65)",
+                borderRadius: 4,
+                borderWidth: 0,
+              },
+              {
+                label: "지방5대",
+                data: lc,
+                backgroundColor: "rgba(61,219,160,.65)",
+                borderRadius: 4,
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            ...CO,
+            plugins: {
+              legend: {
+                display: true,
+                labels: {
+                  color: "var(--ink2)",
+                  font: { family: "'DM Mono'", size: 9 },
+                  boxWidth: 10,
+                },
+              },
+            },
+          },
+        });
+        renderHypothesisEvidence();
+      }
+
+      function setEvidenceBadge(id, pass, ready) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (!ready) {
+          el.textContent = "데이터 대기";
+          el.className = "evi-v";
+          return;
+        }
+        el.textContent = pass ? "채택" : "기각";
+        el.className = "evi-v " + (pass ? "pass" : "fail");
+      }
+
+      function renderHypothesisEvidence() {
+        const h1 = hypothesisState.h1 || {
+          ready: false,
+          pass: false,
+          n0: 0,
+          n1: 0,
+          n2: 0,
+          r1: 0,
+          r2: 0,
+        };
+        const h2 = hypothesisState.h2 || {
+          ready: false,
+          pass: false,
+          aN: 0,
+          aO: 0,
+          diff: 0,
+          box: {
+            ol: { q1: 0, q2: 0, q3: 0 },
+            nw: { q1: 0, q2: 0, q3: 0 },
+            thr: 0,
+          },
+        };
+        const h3 = hypothesisState.h3 || {
+          ready: false,
+          pass: false,
+          sArea: 0,
+          rArea: 0,
+          ratio: 0,
+          proof: { sMed: 0, lMed: 0, medRatio: 0, thr: 0 },
+        };
+
+        setEvidenceBadge("h1ResultBadge", h1.pass, h1.ready);
+        setEvidenceBadge("h2ResultBadge", h2.pass, h2.ready);
+        setEvidenceBadge("h3ResultBadge", h3.pass, h3.ready);
+
+        document.getElementById("h1EvR1").textContent = h1.ready
+          ? `+${Math.round(h1.r1)}%`
+          : "—";
+        document.getElementById("h1EvR2").textContent = h1.ready
+          ? `+${Math.round(h1.r2)}%`
+          : "—";
+        document.getElementById("h1ResultText").textContent = h1.ready
+          ? h1.pass
+            ? "예산을 20% 늘릴 때 매물 증가가 두 구간 모두 임계치(20%)를 상회합니다."
+            : "예산 상승 대비 매물 증가가 임계치(20%)를 안정적으로 넘지 못합니다."
+          : "유의미한 분석을 위한 표본이 부족합니다.";
+
+        document.getElementById("h2EvN").textContent = h2.ready
+          ? won(Math.round(h2.aN))
+          : "—";
+        document.getElementById("h2EvO").textContent = h2.ready
+          ? won(Math.round(h2.aO))
+          : "—";
+        document.getElementById("h2ResultText").textContent = h2.ready
+          ? `신축 프리미엄 ${h2.diff.toFixed(1)}% (${h2.pass ? "임계치 10% 초과" : "임계치 10% 미달"})`
+          : "신축/구축 그룹 분리가 가능한 데이터가 부족합니다.";
+
+        document.getElementById("h3EvS").textContent = h3.ready
+          ? `${Math.round(h3.sArea)}㎡`
+          : "—";
+        document.getElementById("h3EvL").textContent = h3.ready
+          ? `${Math.round(h3.rArea)}㎡`
+          : "—";
+        document.getElementById("h3ResultText").textContent = h3.ready
+          ? `지방 5대광역시 면적 배율 ${h3.ratio.toFixed(2)}x (${h3.pass ? "목표 1.5x 달성" : "목표 1.5x 미달"})`
+          : "서울/지방5대 비교 데이터가 부족합니다.";
+
+        dC("h1EvC");
+        charts.h1EvC = new Chart(document.getElementById("h1EvC"), {
+          data: {
+            labels: ["0.8x", "1.0x", "1.2x"],
+            datasets: [
+              {
+                type: "bar",
+                yAxisID: "y",
+                data: [h1.n0 || 0, h1.n1 || 0, h1.n2 || 0],
+                backgroundColor: [
+                  "rgba(94,158,245,.5)",
+                  "rgba(184,224,74,.7)",
+                  "rgba(61,219,160,.65)",
+                ],
+                borderRadius: 4,
+                borderWidth: 0,
+              },
+              {
+                type: "line",
+                yAxisID: "y1",
+                data: [
+                  null,
+                  h1.ready ? Math.max(0, h1.r1) : null,
+                  h1.ready ? Math.max(0, h1.r2) : null,
+                ],
+                borderColor: "rgba(255,255,255,.6)",
+                pointBackgroundColor: "#EDF1FF",
+                pointRadius: 3,
+                tension: 0.25,
+              },
+              {
+                type: "line",
+                yAxisID: "y1",
+                data: [20, 20, 20],
+                borderColor: "rgba(184,224,74,.55)",
+                borderDash: [5, 5],
+                pointRadius: 0,
+              },
+            ],
+          },
+          options: {
+            ...CO,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ...CO.scales.x },
+              y: { ...CO.scales.y, beginAtZero: true },
+              y1: {
+                position: "right",
+                beginAtZero: true,
+                grid: { drawOnChartArea: false },
+                ticks: {
+                  color: "#62666f",
+                  font: { family: "'DM Mono'", size: 9 },
+                  callback: (v) => v + "%",
+                },
+              },
+            },
+          },
+        });
+
+        dC("h2EvC");
+        charts.h2EvC = new Chart(document.getElementById("h2EvC"), {
+          data: {
+            labels: ["구축", "신축"],
+            datasets: [
+              {
+                type: "bar",
+                yAxisID: "y",
+                data: [h2.aO || 0, h2.aN || 0],
+                backgroundColor: [
+                  "rgba(94,158,245,.5)",
+                  h2.pass ? "rgba(61,219,160,.7)" : "rgba(232,90,90,.7)",
+                ],
+                borderRadius: 4,
+                borderWidth: 0,
+              },
+              {
+                type: "line",
+                yAxisID: "y1",
+                data: [
+                  h2.ready ? Math.max(0, h2.diff) : null,
+                  h2.ready ? Math.max(0, h2.diff) : null,
+                ],
+                borderColor: "rgba(255,255,255,.6)",
+                pointRadius: 0,
+                borderWidth: 1.5,
+              },
+              {
+                type: "line",
+                yAxisID: "y1",
+                data: [10, 10],
+                borderColor: "rgba(184,224,74,.55)",
+                borderDash: [5, 5],
+                pointRadius: 0,
+              },
+            ],
+          },
+          options: {
+            ...CO,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ...CO.scales.x },
+              y: {
+                ...CO.scales.y,
+                ticks: { ...CO.scales.y.ticks, callback: (v) => wonS(v) },
+              },
+              y1: {
+                position: "right",
+                beginAtZero: true,
+                grid: { drawOnChartArea: false },
+                ticks: {
+                  color: "#62666f",
+                  font: { family: "'DM Mono'", size: 9 },
+                  callback: (v) => v + "%",
+                },
+              },
+            },
+          },
+        });
+
+        dC("h3EvC");
+        charts.h3EvC = new Chart(document.getElementById("h3EvC"), {
+          data: {
+            labels: ["서울", "지방5대"],
+            datasets: [
+              {
+                type: "bar",
+                yAxisID: "y",
+                data: [h3.sArea || 0, h3.rArea || 0],
+                backgroundColor: [
+                  "rgba(232,90,90,.65)",
+                  "rgba(61,219,160,.68)",
+                ],
+                borderRadius: 4,
+                borderWidth: 0,
+              },
+              {
+                type: "line",
+                yAxisID: "y1",
+                data: [
+                  h3.ready ? Math.max(0, h3.ratio) : null,
+                  h3.ready ? Math.max(0, h3.ratio) : null,
+                ],
+                borderColor: "rgba(255,255,255,.6)",
+                pointRadius: 0,
+                borderWidth: 1.5,
+              },
+              {
+                type: "line",
+                yAxisID: "y1",
+                data: [1.5, 1.5],
+                borderColor: "rgba(184,224,74,.55)",
+                borderDash: [5, 5],
+                pointRadius: 0,
+              },
+            ],
+          },
+          options: {
+            ...CO,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ...CO.scales.x },
+              y: {
+                ...CO.scales.y,
+                ticks: { ...CO.scales.y.ticks, callback: (v) => `${v}㎡` },
+              },
+              y1: {
+                position: "right",
+                beginAtZero: true,
+                grid: { drawOnChartArea: false },
+                ticks: {
+                  color: "#62666f",
+                  font: { family: "'DM Mono'", size: 9 },
+                  callback: (v) => v + "x",
+                },
+              },
+            },
+          },
+        });
+
+        // ── Proof charts (distribution/shape) ─────────────────────────
+        dC("h1ProofC");
+        charts.h1ProofC = new Chart(document.getElementById("h1ProofC"), {
+          type: "line",
+          data: {
+            labels: ((h1.curve && h1.curve.m) || []).map(
+              (m) => `${m.toFixed(1)}x`,
+            ),
+            datasets: [
+              {
+                data: (h1.curve && h1.curve.c) || [],
+                borderColor: "rgba(94,158,245,.85)",
+                backgroundColor: "rgba(94,158,245,.10)",
+                pointRadius: 2,
+                pointHoverRadius: 4,
+                tension: 0.35,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            ...CO,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                ...CO.scales.x,
+                ticks: { ...CO.scales.x.ticks, maxTicksLimit: 9 },
+              },
+              y: { ...CO.scales.y, beginAtZero: true },
+            },
+          },
+        });
+
+        // H2 proof (direct): median/quarters vs 10% threshold line
+        dC("h2ProofC");
+        const h2Ol = [h2.box.ol.q1 || 0, h2.box.ol.q2 || 0, h2.box.ol.q3 || 0];
+        const h2Nw = [h2.box.nw.q1 || 0, h2.box.nw.q2 || 0, h2.box.nw.q3 || 0];
+        charts.h2ProofC = new Chart(document.getElementById("h2ProofC"), {
+          data: {
+            labels: ["Q1", "중위", "Q3"],
+            datasets: [
+              {
+                type: "bar",
+                label: "구축",
+                data: h2Ol,
+                backgroundColor: "rgba(94,158,245,.45)",
+                borderRadius: 4,
+                borderWidth: 0,
+              },
+              {
+                type: "bar",
+                label: "신축",
+                data: h2Nw,
+                backgroundColor: "rgba(61,219,160,.45)",
+                borderRadius: 4,
+                borderWidth: 0,
+              },
+              {
+                type: "line",
+                label: "10% 기준(구축 중위×1.1)",
+                data: [h2.box.thr || 0, h2.box.thr || 0, h2.box.thr || 0],
+                borderColor: "rgba(184,224,74,.7)",
+                borderDash: [5, 5],
+                pointRadius: 0,
+              },
+            ],
+          },
+          options: {
+            ...CO,
+            plugins: {
+              legend: {
+                display: true,
+                labels: {
+                  color: "var(--ink2)",
+                  font: { family: "'DM Mono'", size: 9 },
+                  boxWidth: 10,
+                },
+              },
+            },
+            scales: {
+              x: {
+                ...CO.scales.x,
+                ticks: { ...CO.scales.x.ticks, maxTicksLimit: 6 },
+              },
+              y: {
+                ...CO.scales.y,
+                ticks: { ...CO.scales.y.ticks, callback: (v) => wonS(v) },
+              },
+            },
+          },
+        });
+
+        // H3 proof (direct): median areas + 1.5x threshold (서울 중위×1.5)
+        dC("h3ProofC");
+        const sM = h3.proof.sMed || 0,
+          lM = h3.proof.lMed || 0,
+          thr = h3.proof.thr || 0;
+        charts.h3ProofC = new Chart(document.getElementById("h3ProofC"), {
+          data: {
+            labels: ["서울(중위)", "지방5대(중위)"],
+            datasets: [
+              {
+                type: "bar",
+                label: "중위 면적",
+                data: [sM, lM],
+                backgroundColor: [
+                  "rgba(232,90,90,.55)",
+                  "rgba(61,219,160,.55)",
+                ],
+                borderRadius: 4,
+                borderWidth: 0,
+              },
+              {
+                type: "line",
+                label: "1.5x 기준(서울 중위×1.5)",
+                data: [thr, thr],
+                borderColor: "rgba(184,224,74,.7)",
+                borderDash: [5, 5],
+                pointRadius: 0,
+              },
+            ],
+          },
+          options: {
+            ...CO,
+            plugins: {
+              legend: {
+                display: true,
+                labels: {
+                  color: "var(--ink2)",
+                  font: { family: "'DM Mono'", size: 9 },
+                  boxWidth: 10,
+                },
+              },
+            },
+            scales: {
+              x: {
+                ...CO.scales.x,
+                ticks: { ...CO.scales.x.ticks, maxTicksLimit: 4 },
+              },
+              y: {
+                ...CO.scales.y,
+                beginAtZero: true,
+                ticks: { ...CO.scales.y.ticks, callback: (v) => `${v}㎡` },
+              },
+            },
+          },
+        });
+      }
+
+      function p1Charts(am, rf) {
+        const base = filterRF(trades, rf).filter((t) => t.area >= am);
+        if (!base.length) return;
+
+        // 상위 지역별 월별 트렌드 (전북 데이터 우선 포함)
+        const regCount = [...new Set(base.map((t) => t.region))]
+          .map((r) => ({ r, n: base.filter((t) => t.region === r).length }))
+          .sort((a, b) => b.n - a.n);
+        let regs = regCount.slice(0, 8).map((x) => x.r);
+
+        // 전북 데이터가 상위 8개에 없으면 포함 (우선순위 높임)
+        const jeonbukRegs = regCount.filter((x) => x.r.includes("전북"));
+        if (jeonbukRegs.length > 0) {
+          const jeonbukRegion = jeonbukRegs[0].r;
+          if (!regs.some((r) => r.includes("전북"))) {
+            // 전북 데이터가 있지만 상위 8개에 없으면 마지막 지역을 전북으로 교체
+            regs[7] = jeonbukRegion;
+          } else {
+            // 전북이 이미 상위에 있으면 더 높은 순위로 이동
+            const currentIndex = regs.findIndex((r) => r.includes("전북"));
+            if (currentIndex > 2) {
+              // 3위 이하이면 3위로 이동
+              regs.splice(currentIndex, 1);
+              regs.splice(2, 0, jeonbukRegion);
+            }
+          }
+        }
+
+        // 월 패딩('01'~'12')으로 올바른 사전순 정렬 보장 (단순 문자열 정렬 시 '10'<'2' 오류 방지)
+        const months = [
+          ...new Set(
+            base.map(
+              (t) => t.deal_year + "-" + String(t.deal_month).padStart(2, "0"),
+            ),
+          ),
+        ]
+          .sort()
+          .slice(-24);
+        const datasets = regs.map((r, i) => ({
+          label: r.split(" ").slice(-1)[0],
+          spanGaps: true,
+          borderColor: COLORS[i],
+          backgroundColor: "transparent",
+          borderWidth: 2.5,
+          pointRadius: 3,
+          pointHoverRadius: 6,
+          tension: 0.35,
+          data: months.map((m) => {
+            const [y, mo] = m.split("-");
+            const tt = base.filter(
+              (t) =>
+                t.region === r &&
+                String(t.deal_year) === y &&
+                String(t.deal_month).padStart(2, "0") === mo,
+            );
+            return tt.length ? Math.round(avg(tt.map((t) => t.price))) : null;
+          }),
+        }));
+        document.getElementById("trendLeg").innerHTML = regs
+          .map(
+            (r, i) =>
+              `<div class="rdot"><span class="dot" style="background:${COLORS[i]}"></span>${r.split(" ").slice(-1)[0]}${r.includes("전북") ? " 🌟" : ""}</div>`,
+          )
+          .join("");
+        dC("trendC");
+        charts.trendC = new Chart(document.getElementById("trendC"), {
+          type: "line",
+          data: { labels: months, datasets },
+          options: {
+            ...CO,
+            plugins: {
+              legend: { display: false },
+              tooltip: { mode: "index", intersect: false },
+            },
+            scales: {
+              x: {
+                ...CO.scales.x,
+                ticks: { ...CO.scales.x.ticks, maxTicksLimit: 12 },
+              },
+              y: {
+                ...CO.scales.y,
+                ticks: { ...CO.scales.y.ticks, callback: (v) => wonS(v) },
+              },
+            },
+          },
+        });
+
+        // 면적 vs 평당가 산점도 — 지역 그룹별 층화 샘플링으로 모든 지역이 표시되도록 보장
+        // 렌더링 순서: 다수 그룹(서울·경기)을 먼저 그려 하위 레이어로, 소수 그룹(광주·대전·울산)을
+        // 마지막에 그려 상위 레이어에 올라오도록 → Canvas는 나중에 그린 레이어가 위에 표시됨
+        const SCAT_GROUPS = [
+          {
+            label: "서울",
+            filter: (t) => t.region.startsWith("서울"),
+            color: "rgba(232,90,90,.55)",
+          },
+          {
+            label: "경기/인천",
+            filter: (t) =>
+              t.region.startsWith("경기") || t.region.startsWith("인천"),
+            color: "rgba(167,139,250,.52)",
+          },
+          {
+            label: "기타 지방",
+            filter: (t) =>
+              !t.region.startsWith("서울") &&
+              !t.region.startsWith("경기") &&
+              !t.region.startsWith("인천") &&
+              !t.region.startsWith("부산") &&
+              !t.region.startsWith("대구") &&
+              !t.region.startsWith("광주") &&
+              !t.region.startsWith("대전") &&
+              !t.region.startsWith("울산"),
+            color: "rgba(184,224,74,.60)",
+          },
+          {
+            label: "부산/대구",
+            filter: (t) =>
+              t.region.startsWith("부산") || t.region.startsWith("대구"),
+            color: "rgba(249,115,22,.90)",
+          },
+          {
+            label: "광주/대전/울산",
+            filter: (t) =>
+              t.region.startsWith("광주") ||
+              t.region.startsWith("대전") ||
+              t.region.startsWith("울산"),
+            color: "rgba(20,220,180,1.00)",
+          },
+        ];
+        // 그룹마다 최대 300개씩 등간격 샘플링 → 소수 지역도 반드시 시각화됨
+        const MAX_PER_GRP = 300;
+        const scatDatasets = SCAT_GROUPS.map((g) => {
+          const gPts = base.filter(g.filter);
+          const step =
+            gPts.length > MAX_PER_GRP
+              ? Math.ceil(gPts.length / MAX_PER_GRP)
+              : 1;
+          const sampled = gPts
+            .filter((_, i) => i % step === 0)
+            .slice(0, MAX_PER_GRP);
+          // 소수 그룹(100건 미만)은 포인트 크기를 더 키워 가시성 확보
+          const r = sampled.length < 80 ? 7 : sampled.length < 150 ? 5 : 4;
+          return {
+            label: g.label,
+            data: sampled.map((t) => ({
+              x: Math.round(t.area / 3.3),
+              y: Math.round((t.per_pyeong / 10000) * 10) / 10,
+              r: t.region,
+              n: t.apt_name,
+            })),
+            backgroundColor: g.color,
+            pointRadius: r,
+            pointHoverRadius: r + 4,
+          };
+        }).filter((d) => d.data.length > 0);
+        dC("scatC");
+        charts.scatC = new Chart(document.getElementById("scatC"), {
+          type: "scatter",
+          data: { datasets: scatDatasets },
+          options: {
+            ...CO,
+            plugins: {
+              legend: {
+                display: true,
+                position: "bottom",
+                labels: {
+                  color: "var(--ink2)",
+                  font: { family: "'DM Mono'", size: 9 },
+                  boxWidth: 10,
+                  padding: 10,
+                },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (c) =>
+                    `${c.dataset.label} | ${c.raw.n || ""} ${c.parsed.x}평 · ${c.parsed.y}억/평`,
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "평수",
+                  color: "var(--ink3)",
+                  font: { size: 10 },
+                },
+                ticks: { color: "var(--ink3)", font: { size: 9 } },
+                grid: { color: "rgba(107,91,69,.07)" },
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "평당가(억)",
+                  color: "var(--ink3)",
+                  font: { size: 10 },
+                },
+                ticks: {
+                  color: "var(--ink3)",
+                  font: { size: 9 },
+                  callback: (v) => fmtAok(v),
+                },
+                grid: { color: "rgba(107,91,69,.07)" },
+              },
+            },
+          },
+        });
+
+        // 지역별 가격 분위 누적 바
+        const allR = regCount.slice(0, 12).map((x) => x.r);
+        const q25 = [],
+          meds = [],
+          q75 = [];
+        allR.forEach((r) => {
+          const pp = trades
+            .filter((t) => t.region === r)
+            .map((t) => t.price)
+            .sort((a, b) => a - b);
+          if (!pp.length) {
+            q25.push(0);
+            meds.push(0);
+            q75.push(0);
+            return;
+          }
+          q25.push(pp[Math.floor(pp.length * 0.25)]);
+          meds.push(pp[Math.floor(pp.length * 0.5)]);
+          q75.push(pp[Math.floor(pp.length * 0.75)]);
+        });
+        dC("boxC");
+        charts.boxC = new Chart(document.getElementById("boxC"), {
+          type: "bar",
+          data: {
+            labels: allR.map((r) => r.split(" ").slice(-1)[0]),
+            datasets: [
+              {
+                label: "하위25%",
+                data: q25,
+                backgroundColor: "rgba(94,158,245,.45)",
+                borderRadius: 2,
+                borderWidth: 0,
+              },
+              {
+                label: "중위",
+                data: meds.map((m, i) => m - q25[i]),
+                backgroundColor: "rgba(184,224,74,.55)",
+                borderRadius: 2,
+                borderWidth: 0,
+              },
+              {
+                label: "상위25%",
+                data: q75.map((q, i) => q - meds[i]),
+                backgroundColor: "rgba(232,90,90,.45)",
+                borderRadius: 2,
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            ...CO,
+            plugins: {
+              legend: {
+                display: true,
+                labels: {
+                  color: "var(--ink2)",
+                  font: { size: 9 },
+                  boxWidth: 10,
+                },
+              },
+            },
+            scales: {
+              x: {
+                stacked: true,
+                ...CO.scales.x,
+                ticks: { ...CO.scales.x.ticks, maxRotation: 30 },
+              },
+              y: {
+                stacked: true,
+                ...CO.scales.y,
+                ticks: { ...CO.scales.y.ticks, callback: (v) => wonS(v) },
+              },
+            },
+          },
+        });
+      }
+
+      let tblPage = 1;
+      const TBL_PER = 50;
+      let tblSortKey = "price_asc";
+      function setTblSort(sk) {
+        tblSortKey = sk;
+        tblPage = 1;
+        renderTable();
+      }
+
+      // 계층형 지역 선택: 광역시도 → 시군구
+      function buildRegionSelect() {
+        const metSel = document.getElementById("tRegMet");
+        const regSel = document.getElementById("tReg");
+        if (!metSel || !regSel) return;
+
+        // 전체 지역에서 광역시도 추출
+        const allRegions = [...new Set(trades.map((t) => t.region))].sort();
+        const metros = [
+          ...new Set(allRegions.map((r) => r.split(" ")[0])),
+        ].sort();
+
+        const curMet = metSel.value;
+        metSel.innerHTML = '<option value="all">전국</option>';
+        metros.forEach((m) => {
+          const o = document.createElement("option");
+          o.value = m;
+          o.textContent = m;
+          if (m === curMet) o.selected = true;
+          metSel.appendChild(o);
+        });
+        // 구/군 드롭다운 업데이트
+        updateDistrictSelect();
+      }
+
+      function updateDistrictSelect() {
+        const metSel = document.getElementById("tRegMet");
+        const regSel = document.getElementById("tReg");
+        if (!regSel) return;
+        const metro = metSel ? metSel.value : "all";
+        const cur = regSel.value;
+        regSel.innerHTML = '<option value="all">전체 구/군</option>';
+        if (metro === "all") {
+          regSel.disabled = true;
+          regSel.value = "all";
+          return;
+        }
+        regSel.disabled = false;
+        const subs = [
+          ...new Set(
+            trades
+              .filter((t) => t.region.startsWith(metro))
+              .map((t) => t.region),
+          ),
+        ].sort();
+        subs.forEach((r) => {
+          const o = document.createElement("option");
+          o.value = r;
+          // 광역시도 prefix 제거하고 구/군/시 이름만 표시
+          o.textContent = r.replace(metro + " ", "");
+          if (r === cur) o.selected = true;
+          regSel.appendChild(o);
+        });
+      }
+
+      function onMetroChange() {
+        updateDistrictSelect();
+      }
+      // Debounced render table function
+      function debouncedRenderTable() {
+        tblPage = 1;
+        clearTimeout(window._tt);
+        window._tt = setTimeout(renderTable, 280);
+      }
+      function renderTable() {
+        const q = document.getElementById("srch").value.toLowerCase();
+        const sortVal = document.getElementById("tSrt").value || tblSortKey;
+        const [sk, sd] = sortVal.split("_");
+        const metro = (document.getElementById("tRegMet") || {}).value || "all";
+        const reg = document.getElementById("tReg").value,
+          b = getBudget();
+        const budF =
+          (document.getElementById("tBudFilter") || {}).value || "all";
+        const km = {
+          price: "price",
+          area: "area",
+          pyeong: "per_pyeong",
+          year: "year_built",
+          apt: "apt_name",
+          region: "region",
+          floor: "floor",
+        };
+        let data = [...trades].filter((t) => {
+          if (
+            q &&
+            !t.apt_name.toLowerCase().includes(q) &&
+            !t.region.includes(q)
+          )
+            return false;
+          if (metro !== "all" && !t.region.startsWith(metro)) return false;
+          if (reg !== "all" && t.region !== reg) return false;
+          if (budF === "within" && t.price > b) return false;
+          if (budF === "over" && t.price <= b) return false;
+          return true;
+        });
+        data.sort((a, bv) => {
+          let av2 = parseFloat(a[km[sk] || "price"]) || 0,
+            bv2 = parseFloat(bv[km[sk] || "price"]) || 0;
+          if (sk === "apt" || sk === "region") {
+            av2 = a[km[sk]] || "";
+            bv2 = bv[km[sk]] || "";
+          }
+          if (typeof av2 === "string")
+            return sd === "asc"
+              ? av2.localeCompare(bv2)
+              : bv2.localeCompare(av2);
+          return sd === "asc" ? av2 - bv2 : bv2 - av2;
+        });
+        const total = data.length,
+          totalPages = Math.ceil(total / TBL_PER);
+        if (tblPage > totalPages && totalPages > 0) tblPage = totalPages;
+        const start = (tblPage - 1) * TBL_PER,
+          slice = data.slice(start, start + TBL_PER);
+        const tbody = document.getElementById("tbody");
+        tbody.innerHTML = slice
+          .map((t) => {
+            const pct = b > 0 ? Math.round((t.price / b) * 100) : 0,
+              barC =
+                pct <= 85
+                  ? "var(--pass)"
+                  : pct <= 100
+                    ? "var(--gold)"
+                    : "var(--fail)";
+            const tag =
+              pct <= 85
+                ? '<span class="tag tg">여유</span>'
+                : pct <= 100
+                  ? '<span class="tag ta">적정</span>'
+                  : '<span class="tag tr">초과</span>';
+            const py = Math.round(t.area / 3.3);
+            const isNew = parseInt(t.year_built || 0) >= 2020;
+            return `<tr>
+      <td style="font-weight:600">${t.apt_name}</td>
+      <td style="color:var(--mu);font-size:.68rem">${t.region}</td>
+      <td style="font-family:var(--mono)">${t.area}㎡</td>
+      <td style="font-family:var(--mono);color:var(--mu)">${py}평</td>
+      <td style="color:var(--mu)">${t.floor}층</td>
+      <td style="font-family:var(--mono);color:${pct <= 100 ? "var(--tx)" : "var(--fail)"}">${won(t.price)}</td>
+      <td style="font-family:var(--mono);color:var(--mu)">${won(t.per_pyeong)}/평</td>
+      <td style="font-family:var(--mono);color:${isNew ? "var(--ac)" : "var(--mu)"}">${t.year_built}년${isNew ? " ✨" : ""}</td>
+      <td style="font-family:var(--mono);color:var(--mu);font-size:.66rem">${t.deal_year}.${t.deal_month}.${t.deal_day}</td>
+      <td style="display:flex;align-items:center;gap:5px">
+        <div style="width:40px;height:3px;background:var(--s3);border-radius:2px;overflow:hidden">
+          <div style="width:${Math.min(100, pct)}%;height:100%;background:${barC};border-radius:2px"></div></div>
+        <span style="font-family:var(--mono);font-size:.63rem;color:var(--mu)">${pct}%</span>${tag}</td></tr>`;
+          })
+          .join("");
+
+        // Pagination
+        const pgWrap = document.getElementById("tblPg");
+        pgWrap.innerHTML = "";
+        if (totalPages > 1) {
+          const addBtn = (label, pg, active) => {
+            const b = document.createElement("button");
+            b.className = "pg-btn" + (active ? " active" : "");
+            b.textContent = label;
+            b.onclick = () => {
+              tblPage = pg;
+              renderTable();
+              document
+                .querySelector(".tw")
+                .scrollIntoView({ behavior: "smooth", block: "nearest" });
+            };
+            pgWrap.appendChild(b);
+          };
+          if (tblPage > 1) addBtn("‹ 이전", tblPage - 1, false);
+          let s = Math.max(1, tblPage - 2),
+            e = Math.min(totalPages, s + 4);
+          if (e - s < 4) s = Math.max(1, e - 4);
+          for (let i = s; i <= e; i++) addBtn(i, i, i === tblPage);
+          if (tblPage < totalPages) addBtn("다음 ›", tblPage + 1, false);
+        }
+        document.getElementById("tInfo").textContent =
+          `${start + 1}~${Math.min(start + TBL_PER, total)}건 표시 / 전체 ${total.toLocaleString()}건`;
+      }
+
+      /* ════ FALLBACK ════ */
+      const BP_FB = {
+        "서울 강남구": 8500,
+        "서울 서초구": 8200,
+        "서울 송파구": 7000,
+        "서울 용산구": 7500,
+        "서울 성동구": 6500,
+        "서울 마포구": 5800,
+        "서울 영등포구": 4800,
+        "서울 강서구": 4200,
+        "서울 양천구": 4500,
+        "서울 동작구": 5000,
+        "서울 노원구": 3000,
+        "서울 관악구": 3800,
+        "서울 종로구": 5500,
+        "서울 중구": 5200,
+        "서울 은평구": 3600,
+        "서울 서대문구": 4000,
+        "서울 강동구": 5500,
+        "서울 금천구": 3200,
+        "서울 광진구": 5200,
+        "서울 동대문구": 3400,
+        "서울 중랑구": 2900,
+        "서울 성북구": 3200,
+        "서울 강북구": 2700,
+        "서울 도봉구": 2800,
+        "경기 성남시 분당구": 4800,
+        "경기 과천시": 5500,
+        "경기 하남시": 3500,
+        "경기 수원시 영통구": 2500,
+        "경기 고양시 일산동구": 2300,
+        "경기 화성시": 2000,
+        "경기 용인시 수지구": 2800,
+        "경기 광명시": 2800,
+        "경기 부천시": 1800,
+        "경기 남양주시": 1700,
+        "경기 파주시": 1400,
+        "경기 평택시": 1400,
+        "인천 연수구": 2200,
+        "인천 남동구": 1700,
+        "인천 부평구": 1500,
+        "인천 서구": 1600,
+        "부산 해운대구": 3000,
+        "부산 수영구": 2500,
+        "부산 동래구": 2000,
+        "부산 남구": 1800,
+        "부산 부산진구": 1600,
+        "부산 금정구": 1400,
+        "부산 사하구": 1300,
+        "대구 수성구": 2500,
+        "대구 동구": 1400,
+        "대구 달서구": 1500,
+        "대구 북구": 1300,
+        "광주 광산구": 1200,
+        "광주 북구": 1100,
+        "광주 서구": 1200,
+        "대전 유성구": 1500,
+        "대전 서구": 1300,
+        "대전 동구": 1000,
+        "울산 남구": 1300,
+        "울산 중구": 1100,
+        "세종 세종시": 1800,
+        "충북 청주시 흥덕구": 1100,
+        "충남 천안시 서북구": 1000,
+        "충남 아산시": 900,
+        "전북 전주시 완산구": 1100,
+        "전북 전주시 덕진구": 1050,
+        "전북 군산시": 800,
+        "전북 익산시": 760,
+        "전남 순천시": 700,
+        "경북 포항시 남구": 800,
+        "경남 창원시 의창구": 900,
+        "경남 김해시": 900,
+        "제주 제주시": 1500,
+        "제주 서귀포시": 1200,
+      };
+      const AL = [20, 33, 40, 49, 59, 66, 74, 84, 101, 115, 135, 165, 200],
+        AW = [
+          0.02, 0.06, 0.08, 0.12, 0.15, 0.15, 0.12, 0.1, 0.08, 0.06, 0.04, 0.02,
+          0.01,
+        ];
+      const APTS = [
+        "래미안",
+        "자이",
+        "힐스테이트",
+        "푸르지오",
+        "롯데캐슬",
+        "아이파크",
+        "e편한세상",
+        "디에이치",
+        "더샵",
+        "호반베르디움",
+      ];
+      function wc(it, ws) {
+        let r = Math.random(),
+          c = 0;
+        for (let i = 0; i < it.length; i++) {
+          c += ws[i];
+          if (r < c) return it[i];
+        }
+        return it[it.length - 1];
+      }
+      function gn(m = 0, s = 1) {
+        let u = 0,
+          v = 0;
+        while (!u) u = Math.random();
+        while (!v) v = Math.random();
+        return m + s * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+      }
+      function genFallback() {
+        const now = new Date(),
+          r = [];
+        for (const [region, bp] of Object.entries(BP_FB)) {
+          for (let i = 0; i < 48; i++) {
+            const areaBkt = wc(AL, AW),
+              areaReal = parseFloat(
+                (areaBkt + Math.random() * 3 - 1.5).toFixed(2),
+              );
+            const yr = 1992 + Math.floor(Math.random() * 33),
+              fl = Math.floor(Math.random() * 40) + 1;
+            const p = Math.max(
+              3000,
+              Math.round(
+                (bp *
+                  (1 - Math.max(0, ((2024 - yr) / 100) * 0.5)) *
+                  (1 + Math.min(0.05, fl / 1000)) *
+                  (1 - Math.max(0, ((areaReal - 59) / 1000) * 0.3)) *
+                  gn(1, 0.09) *
+                  (areaReal / 3.3)) /
+                  100,
+              ) * 100,
+            );
+            const mo = Math.floor(Math.random() * 24),
+              d = new Date(now.getFullYear(), now.getMonth() - mo, 1);
+            r.push({
+              apt_name: `${APTS[Math.floor(Math.random() * APTS.length)]} ${Math.floor(Math.random() * 20) + 1}차`,
+              area: areaReal,
+              floor: String(fl),
+              price: p,
+              year_built: String(yr),
+              deal_year: String(d.getFullYear()),
+              deal_month: String(d.getMonth() + 1).padStart(2, "0"),
+              deal_day: String(Math.floor(Math.random() * 28) + 1).padStart(
+                2,
+                "0",
+              ),
+              region,
+              dong: "",
+              per_pyeong: Math.round(p / (areaReal / 3.3)),
+            });
+          }
+        }
+        return r.sort((a, b) => a.price - b.price);
+      }
+
+      /* ════ API KEY MODAL ════ */
+      function openKeyModal() {
+        document.getElementById("kmKeyInput").value = "";
+        document.getElementById("kmKeyStatus").textContent = "";
+        document.getElementById("keyModalBg").classList.add("show");
+        setTimeout(() => document.getElementById("kmKeyInput").focus(), 200);
+      }
+      function closeKeyModal() {
+        document.getElementById("keyModalBg").classList.remove("show");
+      }
+      async function applyKeyFromAnalysis() {
+        const key = document.getElementById("kmKeyInput").value.trim();
+        const st = document.getElementById("kmKeyStatus");
+        if (!key) {
+          st.textContent = "⚠ 인증키를 입력해주세요.";
+          st.className = "km-status err";
+          return;
+        }
+        st.textContent = "⏳ 수집 시작 중…";
+        st.className = "km-status";
+        try {
+          const r = await fetch(
+            `${API}/api/crawl/auto?api_key=${encodeURIComponent(key)}`,
+            { method: "POST" },
+          ).then((r) => r.json());
+          if (r.ok) {
+            st.textContent = `✅ 수집 시작됨 (${r.count.toLocaleString()}건)`;
+            st.className = "km-status";
+            document.getElementById("navBadge").textContent =
+              `실거래 ${r.count.toLocaleString()}건`;
+            document.getElementById("navStatus").className =
+              "nav-status ns-live";
+            await loadData();
+            update();
+            setTimeout(closeKeyModal, 1400);
+          } else {
+            st.textContent = `❌ ${r.message || "오류"}`;
+            st.className = "km-status err";
+          }
+        } catch (e) {
+          st.textContent = `❌ 백엔드 미연결 — run.sh 실행 필요`;
+          st.className = "km-status err";
+        }
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeInfoModal();
+          closeHypoModal();
+          closeKeyModal();
+        }
+      });
+
+      /* ════ CLIENT-SIDE ADVANCED CHARTS ════ */
+      function loadClientCharts() {
+        showPlotly(window._lastPlotlyType || "treemap");
+        renderAdvBoxLocal();
+        renderAdvYrPyeong();
+      }
+
+      function showPlotly(type) {
+        window._lastPlotlyType = type;
+        ["treemap", "violin", "sunburst"].forEach((t) => {
+          const b = document.getElementById("plt-btn-" + t);
+          if (b) {
+            b.style.borderColor = t === type ? "var(--accent-blue)" : "";
+            b.style.fontWeight = t === type ? "700" : "";
+          }
+        });
+        const wrap = document.getElementById("plotly-chart");
+        if (!wrap) return;
+        if (typeof Plotly === "undefined") {
+          wrap.innerHTML =
+            '<div class="adv-err" style="padding:3rem;text-align:center">⚠ Plotly.js 로드 중… 잠시 후 다시 시도하세요.</div>';
+          return;
+        }
+        if (!trades.length) {
+          wrap.innerHTML =
+            '<div class="adv-loading" style="padding:3rem;text-align:center">데이터를 먼저 불러오세요.</div>';
+          return;
+        }
+
+        const darkLayout = {
+          paper_bgcolor: "transparent",
+          plot_bgcolor: "transparent",
+          font: { color: "#cbd5e1", family: "'DM Mono', monospace", size: 13 },
+          margin: { l: 10, r: 10, t: 55, b: 10 },
+          coloraxis_colorbar: {
+            tickfont: { color: "#cbd5e1" },
+            title: { font: { color: "#cbd5e1" } },
+          },
+        };
+
+        if (type === "treemap") {
+          // 트리맵: 광역시도 > 구군, 색=평균가
+          const map = {};
+          trades.forEach((t) => {
+            const met = t.region.split(" ")[0];
+            const gu = t.region;
+            if (!map[met]) map[met] = { total: 0, cnt: 0, children: {} };
+            map[met].total += t.price;
+            map[met].cnt++;
+            if (!map[met].children[gu])
+              map[met].children[gu] = { total: 0, cnt: 0 };
+            map[met].children[gu].total += t.price;
+            map[met].children[gu].cnt++;
+          });
+          const ids = [],
+            labels = [],
+            parents = [],
+            values = [],
+            colors = [],
+            texts = [];
+          ids.push("전국");
+          labels.push("전국");
+          parents.push("");
+          values.push(0);
+          colors.push(0);
+          texts.push("");
+          Object.entries(map).forEach(([met, d]) => {
+            const avg = Math.round((d.total / d.cnt / 10000) * 10) / 10;
+            ids.push(met);
+            labels.push(met);
+            parents.push("전국");
+            values.push(d.cnt);
+            colors.push(avg);
+            texts.push(`평균 ${avg}억`);
+            Object.entries(d.children).forEach(([gu, c]) => {
+              const ga = Math.round((c.total / c.cnt / 10000) * 10) / 10;
+              const guLabel = gu.replace(met + " ", "");
+              ids.push(gu);
+              labels.push(guLabel);
+              parents.push(met);
+              values.push(c.cnt);
+              colors.push(ga);
+              texts.push(`${ga}억`);
+            });
+          });
+          const fig = {
+            data: [
+              {
+                type: "treemap",
+                ids,
+                labels,
+                parents,
+                values,
+                marker: {
+                  colors,
+                  colorscale: [
+                    [0, "#10b981"],
+                    [0.5, "#f59e0b"],
+                    [1, "#ef4444"],
+                  ],
+                  showscale: true,
+                  colorbar: {
+                    title: {
+                      text: "평균가(억)",
+                      font: { color: "#e2e8f0", size: 12 },
+                    },
+                    tickfont: { color: "#e2e8f0", size: 11 },
+                  },
+                },
+                textinfo: "label+text",
+                texttemplate: "<b>%{label}</b><br>%{customdata}",
+                customdata: texts,
+                insidetextfont: {
+                  color: "#ffffff",
+                  size: 13,
+                  family: "DM Mono, monospace",
+                },
+                outsidetextfont: {
+                  color: "#e2e8f0",
+                  size: 12,
+                  family: "DM Mono, monospace",
+                },
+                hovertemplate:
+                  "<b>%{label}</b><br>거래 %{value}건<br>평균 %{customdata}<extra></extra>",
+              },
+            ],
+            layout: {
+              ...darkLayout,
+              title: {
+                text: "지역별 거래 비중 & 평균가 트리맵",
+                font: { color: "#f1f5f9", size: 15 },
+              },
+            },
+          };
+          Plotly.newPlot(wrap, fig.data, fig.layout, {
+            responsive: true,
+            displayModeBar: false,
+          });
+        } else if (type === "violin") {
+          const metMap = {};
+          trades.forEach((t) => {
+            const m = t.region.split(" ")[0];
+            if (!metMap[m]) metMap[m] = [];
+            metMap[m].push(t.price / 10000);
+          });
+          const top = Object.entries(metMap)
+            .filter(([, v]) => v.length >= 10)
+            .sort((a, b) => b[1].length - a[1].length)
+            .slice(0, 8);
+          const palette = [
+            "#5e9ef5",
+            "#b8e04a",
+            "#3ddba0",
+            "#e85a5a",
+            "#d4a030",
+            "#a78bfa",
+            "#f97316",
+            "#ec4899",
+          ];
+          const data = top.map(([met, vals], i) => ({
+            type: "violin",
+            y: vals,
+            name: met,
+            box: { visible: true },
+            meanline: { visible: true },
+            fillcolor: palette[i],
+            opacity: 0.65,
+            line: { color: palette[i], width: 1.5 },
+            points: false,
+            hoverinfo: "y+name",
+          }));
+          Plotly.newPlot(
+            wrap,
+            data,
+            {
+              ...darkLayout,
+              title: {
+                font: { color: "#cbd5e1" },
+                text: "광역시도별 거래가 분포",
+                font: { color: "#e2e8f0", size: 15 },
+              },
+              yaxis: {
+                title: {
+                  font: { color: "#cbd5e1" },
+                  text: "거래가(억)",
+                  font: { color: "#94a3b8" },
+                },
+                tickfont: { color: "#cbd5e1" },
+                gridcolor: "rgba(107,91,69,.12)",
+              },
+              xaxis: {
+                tickfont: { color: "#cbd5e1" },
+                gridcolor: "rgba(107,91,69,.08)",
+              },
+              showlegend: false,
+            },
+            { responsive: true, displayModeBar: false },
+          );
+        } else {
+          // sunburst — 직관적: 중심=전국 평균가, 1레이어=광역시도, 2레이어=구군 (색=평균가 등급)
+          const map = {};
+          trades.forEach((t) => {
+            const met = t.region.split(" ")[0];
+            const gu = t.region;
+            if (!map[met]) map[met] = { total: 0, cnt: 0, children: {} };
+            map[met].total += t.price;
+            map[met].cnt++;
+            if (!map[met].children[gu])
+              map[met].children[gu] = { total: 0, cnt: 0 };
+            map[met].children[gu].total += t.price;
+            map[met].children[gu].cnt++;
+          });
+          const ids = ["전국"],
+            labels = ["전국 평균"],
+            parents = [""],
+            values = [trades.length];
+          const allAvg =
+            Math.round(
+              (trades.reduce((s, t) => s + t.price, 0) /
+                trades.length /
+                10000) *
+                10,
+            ) / 10;
+          const colors = [allAvg],
+            texts = [`${allAvg}억`];
+
+          Object.entries(map)
+            .sort((a, b) => b[1].cnt - a[1].cnt)
+            .forEach(([met, d]) => {
+              const ma = Math.round((d.total / d.cnt / 10000) * 10) / 10;
+              ids.push(met);
+              labels.push(`${met}\n${ma}억`);
+              parents.push("전국");
+              values.push(d.cnt);
+              colors.push(ma);
+              texts.push(`${ma}억 · ${d.cnt}건`);
+              Object.entries(d.children)
+                .sort((a, b) => b[1].cnt - a[1].cnt)
+                .slice(0, 12)
+                .forEach(([gu, c]) => {
+                  const ga = Math.round((c.total / c.cnt / 10000) * 10) / 10;
+                  const guLabel = gu.replace(met + " ", "");
+                  ids.push(gu);
+                  labels.push(`${guLabel}\n${ga}억`);
+                  parents.push(met);
+                  values.push(c.cnt);
+                  colors.push(ga);
+                  texts.push(`${ga}억 · ${c.cnt}건`);
+                });
+            });
+          const fig = {
+            data: [
+              {
+                type: "sunburst",
+                ids,
+                labels,
+                parents,
+                values,
+                marker: {
+                  colors,
+                  colorscale: [
+                    [0, "#10b981"],
+                    [0.4, "#3b82f6"],
+                    [0.7, "#f59e0b"],
+                    [1, "#ef4444"],
+                  ],
+                  showscale: true,
+                  colorbar: {
+                    title: {
+                      font: { color: "#cbd5e1" },
+                      text: "평균가(억)",
+                      font: { color: "#94a3b8", size: 10 },
+                    },
+                    tickfont: { color: "#94a3b8", size: 9 },
+                    len: 0.6,
+                    x: 1.02,
+                  },
+                },
+                customdata: texts,
+                hovertemplate:
+                  "<b>%{label}</b><br>%{customdata}<extra></extra>",
+                textfont: { size: 10 },
+                insidetextorientation: "radial",
+                branchvalues: "total",
+                maxdepth: 2,
+              },
+            ],
+            layout: {
+              ...darkLayout,
+              title: {
+                font: { color: "#cbd5e1" },
+                text: "지역별 평균 거래가 분포 (클릭으로 드릴다운)",
+                font: { color: "#e2e8f0", size: 15 },
+              },
+              margin: { l: 10, r: 60, t: 55, b: 10 },
+            },
+          };
+          Plotly.newPlot(wrap, fig.data, fig.layout, {
+            responsive: true,
+            displayModeBar: false,
+          });
+        }
+      }
+
+      function renderAdvBoxLocal() {
+        const regs = [...new Set(trades.map((t) => t.region))];
+        const top = regs
+          .map((r) => {
+            const pp = trades
+              .filter((t) => t.region === r)
+              .map((t) => t.price)
+              .sort((a, b) => a - b);
+            return {
+              r,
+              med: pp[Math.floor(pp.length * 0.5)] || 0,
+              min: pp[0] || 0,
+              max: pp[pp.length - 1] || 0,
+              cnt: pp.length,
+              q1: pp[Math.floor(pp.length * 0.25)] || 0,
+              q3: pp[Math.floor(pp.length * 0.75)] || 0,
+            };
+          })
+          .filter((x) => x.cnt >= 5)
+          .sort((a, b) => b.med - a.med)
+          .slice(0, 14);
+        const short = top.map((x) =>
+          x.r.replace(
+            /^(\uC11C\uC6B8|\uACBD\uAE30|\uBD80\uC0B0|\uB300\uAD6C|\uAD11\uC8FC|\uB300\uC804|\uC6B8\uC0B0|\uC778\uCC9C|\uC804\uBD81|\uC804\uB0A8|\uACBD\uBD81|\uACBD\uB0A8|\uCDA9\uBD81|\uCDA9\uB0A8|\uC138\uC885|\uAC15\uC6D0|\uC81C\uC8FC)\s/,
+            "",
+          ),
+        );
+        dC("adv-box-local");
+        charts["adv-box-local"] = new Chart(
+          document.getElementById("adv-box-local"),
+          {
+            type: "bar",
+            data: {
+              labels: short,
+              datasets: [
+                {
+                  label: "\uD558\uC704 25%",
+                  data: top.map((x) => x.q1),
+                  backgroundColor: "rgba(94,158,245,.80)",
+                  borderRadius: 3,
+                  borderWidth: 0,
+                },
+                {
+                  label: "\uC911\uC704~\uC0C1\uC704 25%",
+                  data: top.map((x) => x.q3 - x.q1),
+                  backgroundColor: "rgba(61,219,160,.85)",
+                  borderRadius: 3,
+                  borderWidth: 0,
+                },
+                {
+                  label: "\uC0C1\uC704 25% \uCD08\uACFC",
+                  data: top.map((x) => Math.max(0, x.max - x.q3)),
+                  backgroundColor: "rgba(232,90,90,.70)",
+                  borderRadius: 3,
+                  borderWidth: 0,
+                },
+              ],
+            },
+            options: {
+              ...ADV_CO,
+              plugins: {
+                legend: {
+                  display: true,
+                  position: "bottom",
+                  labels: {
+                    color: "var(--ink2)",
+                    font: { family: "'DM Mono'", size: 11 },
+                    boxWidth: 12,
+                    padding: 10,
+                  },
+                },
+              },
+              scales: {
+                x: { stacked: true, ...ADV_CO.scales.x },
+                y: {
+                  stacked: true,
+                  ...ADV_CO.scales.y,
+                  ticks: { ...ADV_CO.scales.y.ticks, callback: (v) => wonS(v) },
+                },
+              },
+            },
+          },
+        );
+      }
+
+      function renderAdvYrPyeong() {
+        // 건축연도 구간별 중위 평당가 — 신축 프리미엄 시각화
+        const buckets = [
+          { label: "~1989", min: 0, max: 1989 },
+          { label: "1990~99", min: 1990, max: 1999 },
+          { label: "2000~04", min: 2000, max: 2004 },
+          { label: "2005~09", min: 2005, max: 2009 },
+          { label: "2010~14", min: 2010, max: 2014 },
+          { label: "2015~19", min: 2015, max: 2019 },
+          { label: "2020~", min: 2020, max: 9999 },
+        ];
+        const vals = buckets.map((b) => {
+          const pp = trades
+            .filter((t) => {
+              const yr = parseInt(t.year_built);
+              return yr >= b.min && yr <= b.max && t.per_pyeong > 0;
+            })
+            .map((t) => t.per_pyeong);
+          return pp.length >= 3 ? Math.round(med(pp)) : null;
+        });
+        // 연식 순으로 진해지는 그라데이션 팔레트 (고대비)
+        const YR_COLORS = [
+          "rgba(99,120,200,.80)",
+          "rgba(99,140,220,.82)",
+          "rgba(155,120,240,.80)",
+          "rgba(184,224,74,.82)",
+          "rgba(61,210,155,.82)",
+          "rgba(61,219,160,.88)",
+          "rgba(232,90,90,.88)",
+        ];
+        dC("adv-yr-pyeong");
+        charts["adv-yr-pyeong"] = new Chart(
+          document.getElementById("adv-yr-pyeong"),
+          {
+            type: "bar",
+            data: {
+              labels: buckets.map((b) => b.label),
+              datasets: [
+                {
+                  data: vals,
+                  backgroundColor: YR_COLORS,
+                  borderRadius: 5,
+                  borderWidth: 0,
+                },
+              ],
+            },
+            options: {
+              ...ADV_CO,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: (c) =>
+                      c.parsed.y != null ? `중위 ${wonS(c.parsed.y)}/평` : "-",
+                  },
+                },
+              },
+              scales: {
+                x: {
+                  ...ADV_CO.scales.x,
+                  ticks: { ...ADV_CO.scales.x.ticks, maxRotation: 0 },
+                },
+                y: {
+                  ...ADV_CO.scales.y,
+                  ticks: { ...ADV_CO.scales.y.ticks, callback: (v) => wonS(v) },
+                  beginAtZero: false,
+                },
+              },
+            },
+          },
+        );
+      }
+
+      init();
+    </script>
+    <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none">
+      <div>
+        <div class="loading-spinner"></div>
+        <div class="loading-text">로딩 중...</div>
+      </div>
+    </div>
+  </body>
+</html>

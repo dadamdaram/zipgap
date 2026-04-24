@@ -1,0 +1,5377 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#F5F0E8" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="icon" href="data:," />
+    
+    <!-- SEO Meta Tags -->
+    <title>집값추적기 — 아파트 실거래가 분석 및 시세 추이</title>
+    <meta name="description" content="전국 아파트 실거래가를 실시간으로 추적하고 분석합니다. 지역별 가격 추이, 평형별 시세, 수익률 계산 등 부동산 투자에 필요한 모든 정보를 제공합니다." />
+    <meta name="keywords" content="아파트 실거래가, 부동산, 집값, 시세 추이, 아파트 분석, 부동산 투자, 전국 아파트 가격, 실거래가 조회" />
+    <meta name="author" content="집값추적기" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://your-domain.com/" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="집값추적기 — 아파트 실거래가 분석" />
+    <meta property="og:description" content="전국 아파트 실거래가를 실시간으로 추적하고 분석하는 플랫폼" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://your-domain.com/" />
+    <meta property="og:image" content="https://your-domain.com/og-image.jpg" />
+    <meta property="og:site_name" content="집값추적기" />
+    <meta property="og:locale" content="ko_KR" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="집값추적기 — 아파트 실거래가 분석" />
+    <meta name="twitter:description" content="전국 아파트 실거래가를 실시간으로 추적하고 분석" />
+    <meta name="twitter:image" content="https://your-domain.com/twitter-image.jpg" />
+    
+    <!-- Additional SEO -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-TileColor" content="#F5F0E8" />
+    <meta name="application-name" content="집값추적기" />
+    <script src="env.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        /* BRAND COLORS - Professional Real Estate Palette */
+        --primary-50: #f8f9fa;
+        --primary-100: #e9ecef;
+        --primary-200: #dee2e6;
+        --primary-300: #ced4da;
+        --primary-400: #adb5bd;
+        --primary-500: #6c757d;
+        --primary-600: #495057;
+        --primary-700: #343a40;
+        --primary-800: #212529;
+        --primary-900: #1a1d20;
+        
+        /* BRAND ACCENTS */
+        --accent-blue: #2563eb;
+        --accent-blue-light: #3b82f6;
+        --accent-blue-dark: #1d4ed8;
+        --accent-blue-bg: rgba(37, 99, 235, 0.1);
+        
+        --accent-emerald: #10b981;
+        --accent-emerald-light: #34d399;
+        --accent-emerald-dark: #059669;
+        --accent-emerald-bg: rgba(16, 185, 129, 0.1);
+        
+        --accent-amber: #f59e0b;
+        --accent-amber-light: #fbbf24;
+        --accent-amber-dark: #d97706;
+        --accent-amber-bg: rgba(245, 158, 11, 0.1);
+        
+        --accent-red: #ef4444;
+        --accent-red-light: #f87171;
+        --accent-red-dark: #dc2626;
+        --accent-red-bg: rgba(239, 68, 68, 0.1);
+        
+        /* NEUTRAL PALETTE */
+        --cream: #f8fafc;
+        --cream2: #f1f5f9;
+        --cream3: #e2e8f0;
+        --warm-white: #ffffff;
+        --sand: #cbd5e1;
+        --sand2: #94a3b8;
+        --sand3: #64748b;
+        --bark: #475569;
+        --bark2: #334155;
+        --bark3: #1e293b;
+        --ink: #0f172a;
+        --ink2: #1e293b;
+        --ink3: #334155;
+        --ink4: #475569;
+        
+        /* LEGACY COMPATIBILITY */
+        --accent: var(--accent-blue);
+        --accent-lt: var(--accent-blue-light);
+        --accent-bg: var(--accent-blue-bg);
+        --green: var(--accent-emerald);
+        --green-lt: var(--accent-emerald-light);
+        --green-bg: var(--accent-emerald-bg);
+        --red: var(--accent-red);
+        --red-bg: var(--accent-red-bg);
+        --amber: var(--accent-amber);
+        
+        /* DESIGN TOKENS */
+        --radius-xs: 2px;
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-xl: 16px;
+        --radius-2xl: 24px;
+        --radius-full: 9999px;
+        
+        --spacing-xs: 4px;
+        --spacing-sm: 8px;
+        --spacing-md: 16px;
+        --spacing-lg: 24px;
+        --spacing-xl: 32px;
+        --spacing-2xl: 48px;
+        --spacing-3xl: 64px;
+        
+        --font-size-xs: 0.75rem;
+        --font-size-sm: 0.875rem;
+        --font-size-base: 1rem;
+        --font-size-lg: 1.125rem;
+        --font-size-xl: 1.25rem;
+        --font-size-2xl: 1.5rem;
+        --font-size-3xl: 1.875rem;
+        
+        --line-height-tight: 1.25;
+        --line-height-normal: 1.5;
+        --line-height-relaxed: 1.75;
+        
+        --font-weight-light: 300;
+        --font-weight-normal: 400;
+        --font-weight-medium: 500;
+        --font-weight-semibold: 600;
+        --font-weight-bold: 700;
+        
+        --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        
+        --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+        --bd: rgba(107, 91, 69, 0.12);
+        --bd2: rgba(107, 91, 69, 0.2);
+        --bd3: rgba(107, 91, 69, 0.32);
+
+        --shadow-sm: 0 1px 3px rgba(42, 37, 32, 0.08);
+        --shadow: 0 2px 12px rgba(42, 37, 32, 0.1);
+        --shadow-lg: 0 8px 32px rgba(42, 37, 32, 0.14);
+
+        --serif: "Noto Serif KR", Georgia, serif;
+        --sans: "Noto Sans KR", -apple-system, system-ui, sans-serif;
+
+        /* GLASS / BRAND TOKENS */
+        --glass: rgba(248, 250, 252, 0.94);
+        --brand: var(--bark);
+        --brand-lt: var(--accent-blue-light);
+        --bg: var(--cream);
+        --s1: var(--warm-white);
+        --s2: var(--cream2);
+        --s3: var(--cream3);
+        --tx: var(--ink);
+        --tx2: var(--ink2);
+        --tx3: var(--ink3);
+
+        --nav-h: 56px;
+        --bot-h: 60px;
+        --safe-b: env(safe-area-inset-bottom, 0px);
+        --r1: 6px;
+        --r2: 10px;
+        --r3: 16px;
+        --r4: 24px;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--cream);
+        color: var(--ink);
+        font-family: var(--sans);
+        min-height: 100vh;
+        font-weight: 300;
+      }
+      ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--sand);
+        border-radius: 4px;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-family: inherit;
+      }
+
+      /* LOADING STATES */
+      .skeleton {
+        background: linear-gradient(90deg, var(--cream2) 25%, var(--cream3) 50%, var(--cream2) 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: var(--r2);
+      }
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      .skeleton-text {
+        height: 1rem;
+        margin: 0.25rem 0;
+      }
+      .skeleton-card {
+        height: 200px;
+        margin: 1rem 0;
+      }
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(245, 240, 232, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+      }
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--cream2);
+        border-top: 3px solid var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .loading-text {
+        margin-top: 1rem;
+        color: var(--ink2);
+        font-size: 0.9rem;
+        text-align: center;
+      }
+
+      /* TOAST NOTIFICATIONS */
+      .toast-container {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        z-index: 1100;
+        pointer-events: none;
+      }
+      .toast {
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--bd);
+        border-radius: var(--r2);
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        min-width: 280px;
+        max-width: 400px;
+        box-shadow: var(--shadow);
+        pointer-events: auto;
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+      .toast.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      .toast.success {
+        border-left: 4px solid var(--green);
+      }
+      .toast.error {
+        border-left: 4px solid var(--red);
+      }
+      .toast.warning {
+        border-left: 4px solid var(--amber);
+      }
+      .toast.info {
+        border-left: 4px solid var(--accent);
+      }
+      .toast-title {
+        font-weight: 500;
+        color: var(--ink);
+        margin-bottom: 4px;
+        font-size: 0.9rem;
+      }
+      .toast-message {
+        color: var(--ink2);
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+      .toast-close {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--cream2);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: var(--ink3);
+        transition: all 0.2s;
+      }
+      .toast-close:hover {
+        background: var(--cream3);
+        color: var(--ink2);
+      }
+
+      /* RESPONSIVE DESIGN */
+      @media (max-width: 768px) {
+        .toast-container {
+          top: 70px;
+          right: 10px;
+          left: 10px;
+        }
+        .toast {
+          min-width: auto;
+          max-width: none;
+        }
+        .loading-overlay {
+          padding: 20px;
+        }
+        .loading-text {
+          font-size: 0.8rem;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .toast-container {
+          top: 60px;
+        }
+        .toast {
+          padding: 10px 12px;
+        }
+        .toast-title {
+          font-size: 0.85rem;
+        }
+        .toast-message {
+          font-size: 0.8rem;
+        }
+      }
+      
+      /* Skip link for accessibility */
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 6px;
+        background: var(--accent);
+        color: white;
+        padding: 8px;
+        text-decoration: none;
+        border-radius: 4px;
+        z-index: 10000;
+        font-weight: 500;
+      }
+      .skip-link:focus {
+        top: 6px;
+      }
+
+      /* PROGRESS */
+      .pg-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        z-index: 600;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .pg-bar.show {
+        opacity: 1;
+      }
+      .pg-fill {
+        height: 100%;
+        background: var(--accent-lt);
+        width: 0%;
+        transition: width 0.4s ease;
+      }
+
+      /* ═══ NAV ═══ */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 500;
+        height: var(--nav-h);
+        padding: 0 18px;
+        padding-top: env(safe-area-inset-top, 0);
+        background: rgba(245, 240, 232, 0.94);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-bottom: 1px solid var(--bd);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+      .nav-logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--ink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .nav-logo svg {
+        width: 14px;
+        height: 14px;
+        fill: #f5f0e8;
+      }
+      .nav-title {
+        font-family: var(--serif);
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--ink);
+        letter-spacing: -0.01em;
+      }
+      .nav-search {
+        flex: 1;
+        max-width: 380px;
+      }
+      .search-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 36px;
+        padding: 0 12px;
+        background: var(--warm-white);
+        border: 1px solid var(--bd2);
+        border-radius: 999px;
+      }
+      .search-wrap svg {
+        width: 14px;
+        height: 14px;
+        stroke: var(--ink3);
+        flex-shrink: 0;
+      }
+      .search-input {
+        flex: 1;
+        border: none;
+        background: none;
+        outline: none;
+        font-size: 0.83rem;
+        font-family: var(--sans);
+        color: var(--ink);
+        font-weight: 300;
+      }
+      .search-input::placeholder {
+        color: var(--ink3);
+      }
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        margin-left: auto;
+      }
+      .nav-status {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.65rem;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-weight: 500;
+        white-space: nowrap;
+        font-family: var(--sans);
+      }
+      .ns-demo {
+        background: var(--accent-bg);
+        color: var(--accent);
+        border: 1px solid rgba(139, 105, 20, 0.2);
+      }
+      .ns-live {
+        background: var(--green-bg);
+        color: var(--green);
+        border: 1px solid rgba(61, 122, 90, 0.2);
+      }
+      .ns-load {
+        background: rgba(42, 37, 32, 0.06);
+        color: var(--ink2);
+        border: 1px solid var(--bd);
+      }
+      .ns-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .nav-btn {
+        height: 32px;
+        padding: 0 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--ink2);
+        border: 1px solid var(--bd2);
+        border-radius: var(--r1);
+        font-family: var(--sans);
+        transition: all 0.15s;
+      }
+      .nav-btn:hover {
+        background: var(--cream2);
+        color: var(--ink);
+      }
+      .btn-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--bd2);
+        border-radius: var(--r1);
+        color: var(--ink2);
+        transition: all 0.15s;
+      }
+      .btn-icon:hover {
+        background: var(--cream2);
+      }
+      @media (min-width: 821px) {
+        .nav-search {
+          display: flex;
+        }
+      }
+      @media (max-width: 820px) {
+        .nav-search {
+          display: none;
+        }
+      }
+
+      /* ═══ LAYOUT ═══ */
+      .page-body {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        margin-top: var(--nav-h);
+        height: calc(100dvh - var(--nav-h) - var(--bot-h) - var(--safe-b));
+      }
+      @media (max-width: 820px) {
+        .page-body {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ═══ SIDEBAR ═══ */
+      .sidebar {
+        background: var(--warm-white);
+        border-right: 1px solid var(--bd);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+      }
+      @media (max-width: 820px) {
+        .sidebar {
+          position: fixed;
+          left: 0;
+          top: var(--nav-h);
+          bottom: calc(var(--bot-h) + var(--safe-b));
+          z-index: 495;
+          width: 280px;
+          transform: translateX(-100%);
+          transition: transform 0.22s ease;
+          box-shadow: var(--shadow-lg);
+        }
+        .sidebar.show {
+          transform: translateX(0);
+        }
+      }
+      .sb-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(42, 37, 32, 0.4);
+        z-index: 490;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s;
+      }
+      @media (max-width: 820px) {
+        .sb-overlay {
+          display: block;
+        }
+        .sb-overlay.show {
+          opacity: 1;
+          pointer-events: all;
+        }
+      }
+      .sb-head {
+        padding: 16px 16px 12px;
+        border-bottom: 1px solid var(--bd);
+      }
+      .sb-head-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .sb-label {
+        font-family: var(--serif);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .btn-reset-all {
+        font-size: 0.7rem;
+        color: var(--ink3);
+        font-family: var(--sans);
+        padding: 3px 8px;
+        border: 1px solid var(--bd);
+        border-radius: var(--r1);
+        transition: all 0.15s;
+      }
+      .btn-reset-all:hover {
+        background: var(--cream2);
+        color: var(--ink2);
+      }
+      .budget-box {
+        background: var(--cream);
+        border: 1px solid var(--bd);
+        border-radius: var(--r2);
+        padding: 12px;
+      }
+      .budget-lbl {
+        font-size: 0.65rem;
+        font-weight: 500;
+        color: var(--ink3);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      .budget-inputs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .bud-field {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex: 1;
+      }
+      .bud-num {
+        flex: 1;
+        width: 100%;
+        height: 32px;
+        padding: 0 8px;
+        border: 1px solid var(--bd2);
+        border-radius: var(--r1);
+        background: var(--warm-white);
+        font-size: 0.8rem;
+        font-family: var(--sans);
+        color: var(--ink);
+        outline: none;
+        transition: border 0.15s;
+      }
+      .bud-num:focus {
+        border-color: var(--accent);
+      }
+      .bud-unit {
+        font-size: 0.75rem;
+        color: var(--ink3);
+        flex-shrink: 0;
+      }
+      .bud-sep {
+        font-size: 0.8rem;
+        color: var(--ink3);
+      }
+      .budget-disp {
+        font-size: 0.72rem;
+        color: var(--accent);
+        font-weight: 500;
+        text-align: right;
+      }
+      .sb-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px 0;
+      }
+      .sb-sec {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--bd);
+      }
+      .sb-sec:last-child {
+        border-bottom: none;
+      }
+      .sb-sec-hd {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .sb-sec-title {
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--ink2);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .sb-sec-actions {
+        display: flex;
+        gap: 4px;
+      }
+      .sa-btn {
+        font-size: 0.62rem;
+        color: var(--ink3);
+        padding: 2px 6px;
+        border: 1px solid var(--bd);
+        border-radius: 3px;
+        font-family: var(--sans);
+        transition: all 0.12s;
+      }
+      .sa-btn:hover {
+        background: var(--cream2);
+        color: var(--ink2);
+      }
+      .metro-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px;
+        margin-bottom: 8px;
+      }
+      .metro-pill {
+        font-size: 0.68rem;
+        padding: 4px 9px;
+        border: 1px solid var(--bd2);
+        border-radius: 999px;
+        color: var(--ink3);
+        font-family: var(--sans);
+        transition: all 0.12s;
+        background: transparent;
+      }
+      .metro-pill:hover {
+        border-color: var(--bark);
+        color: var(--ink2);
+      }
+      .metro-pill.sel {
+        background: var(--ink);
+        border-color: var(--ink);
+        color: var(--cream);
+      }
+      .region-list {
+        max-height: 180px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .region-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px 4px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.72rem;
+        color: var(--ink3);
+        transition: background 0.1s;
+      }
+      .region-item:hover {
+        background: var(--cream2);
+      }
+      .region-item.on {
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .ri-left {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .ri-left input[type="checkbox"] {
+        accent-color: var(--ink);
+        width: 12px;
+        height: 12px;
+      }
+      .ri-cnt {
+        font-size: 0.62rem;
+        color: var(--sand2);
+      }
+      .area-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px;
+      }
+      .area-btn {
+        font-size: 0.68rem;
+        padding: 4px 8px;
+        border: 1px solid var(--bd2);
+        border-radius: 4px;
+        color: var(--ink3);
+        font-family: var(--sans);
+        transition: all 0.12s;
+      }
+      .area-btn:hover {
+        border-color: var(--bark);
+        color: var(--ink2);
+      }
+      .area-btn.sel {
+        background: var(--ink);
+        border-color: var(--ink);
+        color: var(--cream);
+      }
+      .slider-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .slider {
+        flex: 1;
+        accent-color: var(--ink);
+      }
+      .slider-val {
+        font-size: 0.7rem;
+        color: var(--ink2);
+        min-width: 40px;
+        text-align: right;
+      }
+      .period-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px;
+      }
+      .period-pill {
+        font-size: 0.68rem;
+        padding: 4px 9px;
+        border: 1px solid var(--bd2);
+        border-radius: 999px;
+        color: var(--ink3);
+        font-family: var(--sans);
+        transition: all 0.12s;
+      }
+      .period-pill:hover {
+        border-color: var(--bark);
+        color: var(--ink2);
+      }
+      .period-pill.sel {
+        background: var(--ink);
+        border-color: var(--ink);
+        color: var(--cream);
+      }
+      .sort-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px;
+      }
+      .sort-pill {
+        font-size: 0.68rem;
+        padding: 4px 8px;
+        border: 1px solid var(--bd2);
+        border-radius: 4px;
+        color: var(--ink3);
+        font-family: var(--sans);
+        transition: all 0.12s;
+      }
+      .sort-pill:hover {
+        border-color: var(--bark);
+        color: var(--ink2);
+      }
+      .sort-pill.sel {
+        background: var(--ink);
+        border-color: var(--ink);
+        color: var(--cream);
+      }
+      .btn-apply {
+        width: 100%;
+        height: 38px;
+        background: var(--ink);
+        color: var(--cream);
+        border-radius: var(--r2);
+        font-size: 0.8rem;
+        font-weight: 500;
+        font-family: var(--sans);
+        letter-spacing: 0.01em;
+        transition: all 0.15s;
+      }
+      .btn-apply:hover {
+        background: var(--bark2);
+      }
+
+      /* ═══ MAIN ═══ */
+      .main {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--cream);
+      }
+      .stats-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 18px;
+        background: var(--warm-white);
+        border-bottom: 1px solid var(--bd);
+        flex-shrink: 0;
+      }
+      .stats-group {
+        display: flex;
+        gap: 20px;
+      }
+      .stat {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .stat-val {
+        font-family: var(--serif);
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .stat-lbl {
+        font-size: 0.6rem;
+        color: var(--ink3);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .stats-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-sm {
+        height: 28px;
+        padding: 0 10px;
+        font-size: 0.7rem;
+        border: 1px solid var(--bd2);
+        border-radius: var(--r1);
+        color: var(--ink2);
+        font-family: var(--sans);
+        transition: all 0.15s;
+      }
+      .btn-sm:hover {
+        background: var(--cream2);
+      }
+      .view-toggle {
+        display: flex;
+        border: 1px solid var(--bd2);
+        border-radius: var(--r1);
+        overflow: hidden;
+      }
+      .vtbtn {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        color: var(--ink3);
+        transition: all 0.12s;
+      }
+      .vtbtn.on {
+        background: var(--ink);
+        color: var(--cream);
+      }
+      .region-stats-wrap {
+        display: none;
+        align-items: flex-start;
+        gap: 8px;
+        margin: 10px 18px 0;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+      }
+      .region-stats-wrap::-webkit-scrollbar {
+        display: none;
+      }
+      .region-stats-wrap.show {
+        display: flex;
+      }
+      .rs-card {
+        background: var(--warm-white);
+        border: 1px solid var(--bd);
+        border-radius: var(--r2);
+        padding: 10px 12px;
+        min-width: 130px;
+        flex-shrink: 0;
+      }
+      .rs-title {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 6px;
+      }
+      .rs-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.66rem;
+        color: var(--ink3);
+        padding: 2px 0;
+      }
+      .rs-row span:last-child {
+        color: var(--ink2);
+        font-weight: 400;
+      }
+      .notice {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 7px 18px;
+        font-size: 0.72rem;
+        color: var(--ink2);
+        background: var(--cream2);
+        border-bottom: 1px solid var(--bd);
+        flex-shrink: 0;
+      }
+      .notice-load {
+        background: rgba(139, 105, 20, 0.07);
+      }
+      .card-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px 18px 80px;
+      }
+      .card-area.loading {
+        opacity: 0.6;
+      }
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+      }
+      .card-grid.list-view {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      /* ═══ CARDS ═══ */
+      .apt-card {
+        background: var(--warm-white);
+        border: 1px solid var(--bd);
+        border-radius: var(--r3);
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.18s;
+        position: relative;
+        overflow: hidden;
+        animation: cardIn 0.25s ease backwards;
+      }
+      .apt-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--cream2);
+      }
+      .apt-card:hover {
+        box-shadow: var(--shadow);
+        border-color: var(--bd2);
+        transform: translateY(-1px);
+      }
+      @keyframes cardIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.62rem;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-weight: 500;
+        font-family: var(--sans);
+      }
+      .badge-ok {
+        background: var(--green-bg);
+        color: var(--green);
+        border: 1px solid rgba(61, 122, 90, 0.2);
+      }
+      .badge-edge {
+        background: rgba(192, 112, 48, 0.08);
+        color: var(--amber);
+        border: 1px solid rgba(192, 112, 48, 0.2);
+      }
+      .badge-over {
+        background: var(--red-bg);
+        color: var(--red);
+        border: 1px solid rgba(184, 72, 72, 0.2);
+      }
+      .fav-btn {
+        font-size: 1rem;
+        color: var(--sand);
+        transition: all 0.15s;
+        line-height: 1;
+        background: none;
+        border: none;
+        padding: 2px;
+      }
+      .fav-btn:hover,
+      .fav-btn.on {
+        color: var(--red);
+      }
+      .card-name {
+        font-family: var(--serif);
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 3px;
+        line-height: 1.3;
+      }
+      .card-region {
+        font-size: 0.68rem;
+        color: var(--ink3);
+        margin-bottom: 10px;
+      }
+      .card-price {
+        font-family: var(--serif);
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 3px;
+      }
+      .card-sub {
+        font-size: 0.7rem;
+        color: var(--ink3);
+        margin-bottom: 10px;
+      }
+      .card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-bottom: 10px;
+      }
+      .tag {
+        font-size: 0.62rem;
+        padding: 2px 7px;
+        background: var(--cream);
+        border: 1px solid var(--bd);
+        border-radius: 3px;
+        color: var(--ink3);
+      }
+      .tag.new {
+        background: rgba(139, 105, 20, 0.08);
+        color: var(--accent);
+        border-color: rgba(139, 105, 20, 0.2);
+      }
+      .bud-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .bar-track {
+        flex: 1;
+        height: 3px;
+        background: var(--cream3);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.3s ease;
+      }
+      .bar-pct {
+        font-size: 0.62rem;
+        color: var(--ink3);
+        min-width: 32px;
+        text-align: right;
+      }
+
+      /* List view */
+      .apt-card.lv {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+      }
+      .lv-right {
+        text-align: right;
+        flex-shrink: 0;
+        margin-left: 12px;
+      }
+      .lv-price {
+        font-family: var(--serif);
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .lv-sub {
+        font-size: 0.68rem;
+        color: var(--ink3);
+      }
+      .skeleton {
+        background: var(--cream2);
+        border-radius: var(--r3);
+        height: 200px;
+        animation: shimmer 1.4s ease infinite;
+      }
+      @keyframes shimmer {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+      .empty-state {
+        grid-column: 1/-1;
+        text-align: center;
+        padding: 60px 20px;
+      }
+      .empty-icon {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+      }
+      .empty-title {
+        font-family: var(--serif);
+        font-size: 1rem;
+        color: var(--ink);
+        margin-bottom: 6px;
+      }
+      .empty-desc {
+        font-size: 0.78rem;
+        color: var(--ink3);
+      }
+      .empty-action {
+        margin-top: 16px;
+        padding: 8px 20px;
+        background: var(--ink);
+        color: var(--cream);
+        border-radius: var(--r2);
+        font-size: 0.8rem;
+        font-family: var(--sans);
+      }
+
+      /* PAGINATION */
+      .pagination-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin: 24px 0 10px;
+        width: 100%;
+        grid-column: 1/-1;
+      }
+      .page-btn {
+        height: 32px;
+        min-width: 32px;
+        padding: 0 10px;
+        border-radius: var(--r1);
+        background: var(--warm-white);
+        border: 1px solid var(--bd2);
+        color: var(--ink2);
+        font-size: 0.78rem;
+        font-family: var(--sans);
+        transition: all 0.15s;
+      }
+      .page-btn:hover {
+        border-color: var(--bark);
+      }
+      .page-btn.active {
+        background: var(--ink);
+        border-color: var(--ink);
+        color: var(--cream);
+      }
+
+      /* ═══ DRAWER ═══ */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(42, 37, 32, 0.4);
+        z-index: 600;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s;
+      }
+      .overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .drawer {
+        position: fixed;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 610;
+        width: min(420px, 100vw);
+        background: var(--warm-white);
+        border-left: 1px solid var(--bd);
+        overflow-y: auto;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        display: flex;
+        flex-direction: column;
+      }
+      .drawer.open {
+        transform: translateX(0);
+      }
+      .dd-hd {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 20px 20px 14px;
+        border-bottom: 1px solid var(--bd);
+        flex-shrink: 0;
+      }
+      .dd-hd-left {
+        flex: 1;
+      }
+      .dd-apt-name {
+        font-family: var(--serif);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .dd-region {
+        font-size: 0.72rem;
+        color: var(--ink3);
+        margin-top: 3px;
+      }
+      .dd-close {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ink3);
+        font-size: 0.8rem;
+        transition: all 0.15s;
+        flex-shrink: 0;
+      }
+      .dd-close:hover {
+        background: var(--cream2);
+      }
+      .price-hero {
+        padding: 18px 20px 14px;
+        border-bottom: 1px solid var(--bd);
+      }
+      .price-big {
+        font-family: var(--serif);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .price-sub {
+        font-size: 0.75rem;
+        color: var(--ink3);
+        margin-top: 3px;
+        margin-bottom: 12px;
+      }
+      .bud-meter {
+      }
+      .bm-hd {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.68rem;
+        margin-bottom: 5px;
+      }
+      .bm-lbl {
+        color: var(--ink3);
+      }
+      .bm-pct {
+        font-weight: 600;
+      }
+      .bm-track {
+        height: 4px;
+        background: var(--cream2);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .bm-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.4s ease;
+      }
+      .dd-body {
+        flex: 1;
+        padding: 0 0 20px;
+      }
+      .dd-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--bd);
+      }
+      .dd-tab {
+        flex: 1;
+        padding: 12px 0;
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--ink3);
+        text-align: center;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
+        font-family: var(--sans);
+      }
+      .dd-tab.on {
+        color: var(--ink);
+        border-bottom-color: var(--ink);
+      }
+      .dd-pane {
+        display: none;
+        padding: 16px 20px;
+      }
+      .dd-pane.on {
+        display: block;
+      }
+      .dd-section-title {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--ink3);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 10px;
+      }
+      .spec-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .spec-item {
+        background: var(--cream);
+        border-radius: var(--r2);
+        padding: 10px;
+      }
+      .spec-lbl {
+        font-size: 0.62rem;
+        color: var(--ink3);
+        margin-bottom: 3px;
+      }
+      .spec-val {
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--ink);
+      }
+      .spec-val.blue {
+        color: var(--accent);
+      }
+      .spec-val.green {
+        color: var(--green);
+      }
+      .act-btns {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .act-btn {
+        flex: 1;
+        height: 38px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        font-family: var(--sans);
+        border-radius: var(--r2);
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .act-btn.primary {
+        background: var(--ink);
+        color: var(--cream);
+      }
+      .act-btn.primary:hover {
+        background: var(--bark2);
+      }
+      .act-btn.outline {
+        border: 1px solid var(--bd2);
+        color: var(--ink2);
+      }
+      .act-btn.outline:hover {
+        background: var(--cream2);
+      }
+      .act-btn.outline.on {
+        border-color: var(--red);
+        color: var(--red);
+      }
+      .chart-wrap {
+        height: 160px;
+        margin-bottom: 16px;
+      }
+      .hist-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--bd);
+      }
+      .hist-item:last-child {
+        border-bottom: none;
+      }
+      .hist-date {
+        font-size: 0.75rem;
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .hist-detail {
+        font-size: 0.65rem;
+        color: var(--ink3);
+      }
+      .hist-change {
+        font-size: 0.65rem;
+        margin-top: 2px;
+      }
+      .hist-change.up {
+        color: var(--red);
+      }
+      .hist-change.dn {
+        color: var(--green);
+      }
+      .hist-price {
+        font-family: var(--serif);
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .sim-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--bd);
+        cursor: pointer;
+      }
+      .sim-card:last-child {
+        border-bottom: none;
+      }
+      .sim-card:hover .sim-name {
+        color: var(--accent);
+      }
+      .sim-name {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--ink);
+      }
+      .sim-info {
+        font-size: 0.65rem;
+        color: var(--ink3);
+      }
+      .sim-price {
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-align: right;
+        color: var(--ink);
+      }
+      .sim-diff {
+        font-size: 0.65rem;
+        text-align: right;
+      }
+      .sim-diff.up {
+        color: var(--red);
+      }
+      .sim-diff.dn {
+        color: var(--green);
+      }
+      .cc-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--bd);
+        font-size: 0.78rem;
+        color: var(--ink2);
+        transition: color 0.12s;
+      }
+      .cc-link:last-child {
+        border-bottom: none;
+      }
+      .cc-link:hover {
+        color: var(--ink);
+      }
+      .cc-link-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .cc-arrow {
+        color: var(--ink3);
+        font-size: 0.7rem;
+      }
+      textarea.dd-memo-inp {
+        width: 100%;
+        min-height: 90px;
+        padding: 10px;
+        background: var(--cream);
+        border: 1px solid var(--bd2);
+        border-radius: var(--r2);
+        font-size: 0.78rem;
+        font-family: var(--sans);
+        color: var(--ink);
+        resize: vertical;
+        outline: none;
+      }
+      textarea.dd-memo-inp:focus {
+        border-color: var(--accent);
+      }
+      .cl-section {
+        margin-bottom: 14px;
+      }
+      .cl-sec-title {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--ink3);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 8px;
+      }
+      .cl-items {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .cl-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 9px;
+        border: 1px solid var(--bd);
+        border-radius: var(--r2);
+        cursor: pointer;
+        transition: all 0.12s;
+      }
+      .cl-item:hover {
+        background: var(--cream2);
+      }
+      .cl-item.done {
+        background: var(--green-bg);
+        border-color: rgba(61, 122, 90, 0.2);
+      }
+      .cl-item.warn {
+        background: rgba(192, 112, 48, 0.06);
+        border-color: rgba(192, 112, 48, 0.2);
+      }
+      .cl-checkbox {
+        width: 18px;
+        height: 18px;
+        border: 1px solid var(--bd3);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        flex-shrink: 0;
+        color: var(--ink2);
+      }
+      .cl-item.done .cl-checkbox {
+        background: var(--green);
+        border-color: var(--green);
+        color: #fff;
+      }
+      .cl-item.warn .cl-checkbox {
+        background: var(--amber);
+        border-color: var(--amber);
+        color: #fff;
+      }
+      .cl-text .cl-title {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--ink);
+      }
+      .cl-text .cl-desc {
+        font-size: 0.65rem;
+        color: var(--ink3);
+        margin-top: 2px;
+      }
+      .cl-prog {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 0;
+        margin-bottom: 12px;
+        border-bottom: 1px solid var(--bd);
+      }
+      .cl-prog-bar {
+        flex: 1;
+        height: 4px;
+        background: var(--cream2);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .cl-prog-fill {
+        height: 100%;
+        background: var(--green);
+        border-radius: 2px;
+        transition: width 0.3s;
+      }
+      .cl-prog-txt {
+        font-size: 0.68rem;
+        color: var(--ink3);
+      }
+      .cl-prog-pct {
+        font-size: 0.68rem;
+        font-weight: 600;
+        min-width: 28px;
+        text-align: right;
+      }
+
+      /* ═══ API 사이드패널 ═══ */
+      .api-panel-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(42, 37, 32, 0.4);
+        z-index: 700;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s;
+      }
+      .api-panel-bg.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .api-panel {
+        position: fixed;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 710;
+        width: min(360px, 100vw);
+        background: var(--warm-white);
+        border-left: 1px solid var(--bd);
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        display: flex;
+        flex-direction: column;
+        padding: 24px;
+        gap: 16px;
+      }
+      .api-panel.show {
+        transform: translateX(0);
+      }
+      .api-panel-hd {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .api-panel-title {
+        font-family: var(--serif);
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .api-close {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ink3);
+        font-size: 0.8rem;
+        transition: all 0.15s;
+      }
+      .api-close:hover {
+        background: var(--cream2);
+      }
+      .api-desc {
+        font-size: 0.78rem;
+        color: var(--ink2);
+        line-height: 1.65;
+      }
+      .api-desc a {
+        color: var(--accent);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .api-input {
+        width: 100%;
+        height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--bd2);
+        border-radius: var(--r2);
+        background: var(--cream);
+        font-size: 0.82rem;
+        font-family: var(--sans);
+        color: var(--ink);
+        outline: none;
+        transition: border 0.15s;
+      }
+      .api-input:focus {
+        border-color: var(--accent);
+      }
+      .api-input::placeholder {
+        color: var(--ink3);
+      }
+      .api-status {
+        font-size: 0.72rem;
+        min-height: 16px;
+        font-weight: 500;
+      }
+      .api-status.ok {
+        color: var(--green);
+      }
+      .api-status.err {
+        color: var(--red);
+      }
+      .api-status.load {
+        color: var(--ink3);
+      }
+      .api-btns {
+        display: flex;
+        gap: 8px;
+      }
+      .api-btn {
+        flex: 1;
+        height: 38px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        font-family: var(--sans);
+        border-radius: var(--r2);
+        transition: all 0.15s;
+      }
+      .api-btn.primary {
+        background: var(--ink);
+        color: var(--cream);
+      }
+      .api-btn.primary:hover {
+        background: var(--bark2);
+      }
+      .api-btn.ghost {
+        border: 1px solid var(--bd2);
+        color: var(--ink2);
+      }
+      .api-btn.ghost:hover {
+        background: var(--cream2);
+      }
+      .api-steps {
+        background: var(--cream);
+        border: 1px solid var(--bd);
+        border-radius: var(--r2);
+        padding: 14px;
+      }
+      .api-steps-label {
+        font-size: 0.62rem;
+        font-weight: 600;
+        color: var(--ink3);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 10px;
+      }
+      .api-step {
+        display: flex;
+        gap: 10px;
+        padding: 7px 0;
+        border-bottom: 1px solid var(--bd);
+        font-size: 0.73rem;
+        color: var(--ink2);
+      }
+      .api-step:last-child {
+        border-bottom: none;
+      }
+      .api-step-n {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--cream);
+        font-size: 0.6rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .api-step a {
+        color: var(--accent);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      /* ═══ COMPARE MODAL ═══ */
+      .cmp-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(42, 37, 32, 0.5);
+        z-index: 720;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .cmp-bg.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .cmp-modal {
+        background: var(--warm-white);
+        border-radius: var(--r3);
+        max-width: 700px;
+        width: 92vw;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-lg);
+        padding: 24px;
+      }
+      .cmp-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .cmp-title {
+        font-family: var(--serif);
+        font-size: 1rem;
+        font-weight: 600;
+      }
+      .cmp-close {
+        color: var(--ink3);
+        font-size: 0.8rem;
+      }
+      .cmp-grid {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+      }
+      .cmp-card {
+        min-width: 160px;
+        background: var(--cream);
+        border: 1px solid var(--bd);
+        border-radius: var(--r2);
+        padding: 12px;
+      }
+      .cmp-name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 3px;
+      }
+      .cmp-region {
+        font-size: 0.65rem;
+        color: var(--ink3);
+        margin-bottom: 8px;
+      }
+      .cmp-price {
+        font-family: var(--serif);
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .cmp-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 3px 0;
+        border-bottom: 1px solid var(--bd);
+        font-size: 0.68rem;
+      }
+      .cmp-row:last-child {
+        border-bottom: none;
+      }
+      .cmp-row span:first-child {
+        color: var(--ink3);
+      }
+      .cmp-best {
+        color: var(--green);
+        font-weight: 600;
+      }
+      .cmp-worst {
+        color: var(--red);
+      }
+
+      /* ═══ WATCHLIST PANEL ═══ */
+      .wl-panel {
+        position: fixed;
+        bottom: calc(var(--bot-h) + var(--safe-b));
+        right: 0;
+        left: 0;
+        z-index: 500;
+        background: var(--warm-white);
+        border-top: 1px solid var(--bd);
+        border-radius: var(--r3) var(--r3) 0 0;
+        max-height: 60vh;
+        overflow-y: auto;
+        transform: translateY(100%);
+        transition: transform 0.25s ease;
+        box-shadow: var(--shadow-lg);
+      }
+      .wl-panel.open {
+        transform: translateY(0);
+      }
+      .wl-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--bd);
+      }
+      .wl-title {
+        font-family: var(--serif);
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+      .wl-cnt {
+        font-size: 0.72rem;
+        color: var(--ink3);
+      }
+      .wl-acts {
+        display: flex;
+        gap: 8px;
+      }
+      .wl-act-btn {
+        font-size: 0.72rem;
+        padding: 4px 10px;
+        border: 1px solid var(--bd2);
+        border-radius: var(--r1);
+        color: var(--ink2);
+        transition: all 0.12s;
+      }
+      .wl-act-btn:hover {
+        background: var(--cream2);
+      }
+      .wl-body {
+        padding: 8px 18px 16px;
+      }
+      .wl-empty {
+        text-align: center;
+        padding: 24px;
+        font-size: 0.78rem;
+        color: var(--ink3);
+      }
+      .wl-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--bd);
+      }
+      .wl-item:last-child {
+        border-bottom: none;
+      }
+      .wi-name {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--ink);
+      }
+      .wi-region {
+        font-size: 0.65rem;
+        color: var(--ink3);
+      }
+      .wi-price {
+        font-family: var(--serif);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .wi-rm {
+        color: var(--ink3);
+        font-size: 0.75rem;
+        transition: color 0.12s;
+      }
+      .wi-rm:hover {
+        color: var(--red);
+      }
+
+      /* ═══ FAB ═══ */
+      .fab {
+        position: fixed;
+        bottom: calc(var(--bot-h) + var(--safe-b) + 14px);
+        right: 18px;
+        z-index: 490;
+      }
+      .fab-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--cream);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow);
+        font-size: 0.9rem;
+        transition: all 0.15s;
+      }
+      .fab-btn:hover {
+        background: var(--bark2);
+        transform: scale(1.05);
+      }
+      .fab-cnt {
+        position: absolute;
+        top: -3px;
+        right: -3px;
+        width: 18px;
+        height: 18px;
+        background: var(--red);
+        color: #fff;
+        border-radius: 50%;
+        font-size: 0.58rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--warm-white);
+      }
+
+      /* ═══ BOTTOM NAV ═══ */
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 400;
+        height: calc(var(--bot-h) + var(--safe-b));
+        padding-bottom: var(--safe-b);
+        background: rgba(245, 240, 232, 0.94);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border-top: 1px solid var(--bd);
+        display: flex;
+        align-items: stretch;
+      }
+      .bot-tab {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        cursor: pointer;
+        color: var(--ink3);
+        transition: all 0.15s;
+        padding-bottom: 2px;
+      }
+      .bot-tab.on {
+        color: var(--ink);
+      }
+      .bot-tab:hover {
+        color: var(--ink2);
+      }
+      .bot-icon {
+        font-size: 1rem;
+        line-height: 1;
+      }
+      .bot-label {
+        font-size: 0.55rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+      }
+
+      /* ═══ TOAST ═══ */
+      .toast-stack {
+        position: fixed;
+        bottom: calc(var(--bot-h) + var(--safe-b) + 14px);
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 900;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+        pointer-events: none;
+      }
+      .toast {
+        background: var(--ink);
+        border-radius: 999px;
+        padding: 8px 18px;
+        font-size: 0.78rem;
+        color: var(--cream);
+        box-shadow: var(--shadow);
+        white-space: nowrap;
+        animation: toastIn 0.2s ease;
+        font-weight: 400;
+      }
+      .toast.ok {
+        background: var(--green);
+      }
+      .toast.err {
+        background: var(--red);
+      }
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      @media (max-width: 820px) {
+        .page-body {
+          height: calc(100dvh - var(--nav-h) - var(--bot-h) - var(--safe-b));
+        }
+        .stats-bar {
+          padding: 8px 14px;
+          gap: 12px;
+        }
+        .stat-val {
+          font-size: 0.88rem;
+        }
+        .card-area {
+          padding: 14px 14px 80px;
+        }
+        .card-grid {
+          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body itemscope itemtype="https://schema.org/WebApplication">
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">메인 콘텐츠로 바로가기</a>
+    
+    <div class="pg-bar" id="pgBar"><div class="pg-fill" id="pgFill"></div></div>
+
+    <!-- NAV -->
+    <nav class="nav" role="navigation" aria-label="메인 네비게이션">
+      <div class="nav-brand">
+        <div class="nav-logo">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+            <polyline
+              points="9 22 9 12 15 12 15 22"
+              fill="none"
+              stroke="#F5F0E8"
+              stroke-width="1.5"
+            />
+          </svg>
+        </div>
+        <span class="nav-title">집값추적기</span>
+      </div>
+
+      <div class="nav-search">
+        <div class="search-wrap">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            class="search-input"
+            type="search"
+            id="searchInput"
+            placeholder="단지명, 지역 검색… (/ 키)"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div class="nav-status ns-demo" id="navStatus">
+          <span class="ns-dot"></span><span id="navStatusText">샘플</span>
+        </div>
+        <button class="nav-btn" onclick="openApiPanel()">API 키</button>
+        <a class="nav-btn" href="analysis.html">분석</a>
+        <button
+          class="btn-icon"
+          id="filterToggleBtn"
+          onclick="toggleSidebar()"
+          title="필터"
+          style="display: none"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            width="16"
+            height="16"
+          >
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <line x1="4" y1="12" x2="16" y2="12" />
+            <line x1="4" y1="18" x2="12" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <div class="sb-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="page-body">
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sb-head">
+          <div class="sb-head-row">
+            <span class="sb-label">필터</span>
+            <button class="btn-reset-all" onclick="resetFilters()">
+              초기화
+            </button>
+          </div>
+          <div class="budget-box">
+            <div class="budget-lbl">예산 범위</div>
+            <div class="budget-inputs">
+              <div class="bud-field">
+                <input
+                  class="bud-num"
+                  type="number"
+                  id="budMin"
+                  value="0"
+                  min="0"
+                  step="0.5"
+                />
+                <span class="bud-unit">억</span>
+              </div>
+              <span class="bud-sep">~</span>
+              <div class="bud-field">
+                <input
+                  class="bud-num"
+                  type="number"
+                  id="budMax"
+                  value="8"
+                  min="0"
+                  step="0.5"
+                />
+                <span class="bud-unit">억</span>
+              </div>
+            </div>
+            <div class="budget-disp" id="budDisplay">0 ~ 8억</div>
+          </div>
+        </div>
+        <div class="sb-body">
+          <div class="sb-sec">
+            <div class="sb-sec-hd">
+              <span class="sb-sec-title" id="regionTitle">광역시도</span>
+              <div class="sb-sec-actions">
+                <button class="sa-btn" onclick="selectAllNation()">전국</button>
+                <button class="sa-btn" onclick="selectAllRegions()">
+                  전체
+                </button>
+                <button class="sa-btn" onclick="clearAllRegions()">해제</button>
+              </div>
+            </div>
+            <div class="metro-wrap" id="metroPills"></div>
+            <div class="region-list" id="regionList"></div>
+          </div>
+          <div class="sb-sec">
+            <div class="sb-sec-hd"><span class="sb-sec-title">면적</span></div>
+            <div class="area-grid" id="areaGrid"></div>
+          </div>
+          <div class="sb-sec">
+            <div class="sb-sec-hd">
+              <span class="sb-sec-title">건축연도 이후</span>
+            </div>
+            <div class="slider-wrap">
+              <input
+                type="range"
+                class="slider"
+                id="yrSlider"
+                min="1970"
+                max="2024"
+                value="1970"
+                oninput="
+                  document.getElementById('yrVal').textContent =
+                    this.value == '1970' ? '전체' : this.value + '년'
+                "
+              />
+              <span class="slider-val" id="yrVal">전체</span>
+            </div>
+          </div>
+          <div class="sb-sec">
+            <div class="sb-sec-hd">
+              <span class="sb-sec-title">거래 시점</span>
+            </div>
+            <div class="period-wrap">
+              <button
+                class="period-pill sel"
+                data-m="0"
+                onclick="setPeriod(this)"
+              >
+                전체
+              </button>
+              <button class="period-pill" data-m="3" onclick="setPeriod(this)">
+                3개월
+              </button>
+              <button class="period-pill" data-m="6" onclick="setPeriod(this)">
+                6개월
+              </button>
+              <button class="period-pill" data-m="12" onclick="setPeriod(this)">
+                1년
+              </button>
+              <button class="period-pill" data-m="24" onclick="setPeriod(this)">
+                2년
+              </button>
+            </div>
+          </div>
+          <div class="sb-sec">
+            <div class="sb-sec-hd"><span class="sb-sec-title">정렬</span></div>
+            <div class="sort-wrap" id="sortWrap">
+              <button
+                class="sort-pill sel"
+                data-sort="price_asc"
+                onclick="setSort(this)"
+              >
+                가격↑
+              </button>
+              <button
+                class="sort-pill"
+                data-sort="price_desc"
+                onclick="setSort(this)"
+              >
+                가격↓
+              </button>
+              <button
+                class="sort-pill"
+                data-sort="pyeong_asc"
+                onclick="setSort(this)"
+              >
+                평당↑
+              </button>
+              <button
+                class="sort-pill"
+                data-sort="area_desc"
+                onclick="setSort(this)"
+              >
+                넓은순
+              </button>
+              <button
+                class="sort-pill"
+                data-sort="year_desc"
+                onclick="setSort(this)"
+              >
+                신축
+              </button>
+              <button
+                class="sort-pill"
+                data-sort="date_desc"
+                onclick="setSort(this)"
+              >
+                최신
+              </button>
+            </div>
+          </div>
+          <div class="sb-sec">
+            <button class="btn-apply" onclick="applyFilters()">
+              필터 적용
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+        <div class="stats-bar">
+          <div class="stats-group">
+            <div class="stat">
+              <span class="stat-val" id="st1">—</span
+              ><span class="stat-lbl">전체</span>
+            </div>
+            <div class="stat">
+              <span class="stat-val" id="st2">—</span
+              ><span class="stat-lbl">평균가</span>
+            </div>
+            <div class="stat">
+              <span class="stat-val" id="st3">—</span
+              ><span class="stat-lbl">최저가</span>
+            </div>
+            <div class="stat">
+              <span class="stat-val" id="st4">—</span
+              ><span class="stat-lbl">평당가</span>
+            </div>
+          </div>
+          <div class="stats-right">
+            <button class="btn-sm" onclick="exportCSV()">CSV</button>
+            <div class="view-toggle">
+              <button class="vtbtn on" id="vGrid" onclick="setView('grid')">
+                ⊞
+              </button>
+              <button class="vtbtn" id="vList" onclick="setView('list')">
+                ☰
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="region-stats-wrap" id="regionStatsWrap"></div>
+        <div class="notice" id="notice">
+          <span id="noticeText"
+            ><strong>샘플 데이터</strong> — API 키 설정 시 실거래가로
+            전환됩니다</span
+          >
+          <a
+            href="analysis.html"
+            style="
+              font-size: 0.68rem;
+              font-weight: 500;
+              color: var(--accent);
+              white-space: nowrap;
+            "
+            >가설 분석 →</a
+          >
+        </div>
+        <div class="card-area" id="cardArea">
+          <div class="card-grid" id="cards">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+          </div>
+          <div class="vs-sentinel" id="sentinel"></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- DRAWER -->
+    <div class="overlay" id="drawerOverlay" onclick="closeDet()"></div>
+    <div class="drawer" id="drawer">
+      <div class="dd-hd">
+        <div class="dd-hd-left">
+          <div class="dd-apt-name" id="ddName">—</div>
+          <div class="dd-region" id="ddRegion"></div>
+        </div>
+        <button class="dd-close" onclick="closeDet()">✕</button>
+      </div>
+      <div class="price-hero">
+        <div class="price-big" id="ddPrice">—</div>
+        <div class="price-sub" id="ddPriceSub"></div>
+        <div class="bud-meter">
+          <div class="bm-hd">
+            <span class="bm-lbl" id="ddBudLbl">예산 대비</span
+            ><span class="bm-pct" id="ddBudPct">—%</span>
+          </div>
+          <div class="bm-track">
+            <div class="bm-fill" id="ddBudFill" style="width: 0"></div>
+          </div>
+        </div>
+      </div>
+      <div class="dd-body">
+        <div class="dd-tabs">
+          <div class="dd-tab on" onclick="switchDdTab(0, this)">상세</div>
+          <div class="dd-tab" onclick="switchDdTab(1, this)">이력</div>
+          <div class="dd-tab" onclick="switchDdTab(2, this)">유사</div>
+          <div class="dd-tab" onclick="switchDdTab(3, this)">체크</div>
+        </div>
+        <!-- 탭0: 상세 -->
+        <div class="dd-pane on" id="ddPane0">
+          <div class="act-btns" style="margin-top: 0; margin-bottom: 16px">
+            <button class="act-btn primary" onclick="shareApt()">공유</button>
+            <button
+              class="act-btn outline"
+              id="ddSaveBtn"
+              onclick="toggleSaveFromDet()"
+            >
+              ♡ 저장
+            </button>
+            <button class="act-btn outline" onclick="addToCompareFromDet()">
+              비교
+            </button>
+          </div>
+          <div class="dd-section-title">기본 정보</div>
+          <div class="spec-grid" id="ddSpec"></div>
+          <div class="dd-section-title">차트</div>
+          <div class="chart-wrap"><canvas id="ddChart"></canvas></div>
+          <div class="chart-wrap"><canvas id="ddChart2"></canvas></div>
+          <div class="dd-section-title">메모</div>
+          <textarea
+            class="dd-memo-inp"
+            id="ddMemo"
+            placeholder="이 매물에 대한 메모를 남겨보세요…"
+          ></textarea>
+          <div style="margin-top: 16px">
+            <div class="dd-section-title">바로가기</div>
+            <div id="ccPlatform"></div>
+            <div style="margin-top: 12px">
+              <div class="dd-section-title">공공자료</div>
+              <div id="ccPublic"></div>
+            </div>
+          </div>
+        </div>
+        <!-- 탭1: 이력 -->
+        <div class="dd-pane" id="ddPane1"><div id="ddHist"></div></div>
+        <!-- 탭2: 유사 -->
+        <div class="dd-pane" id="ddPane2"><div id="ddSim"></div></div>
+        <!-- 탭3: 체크리스트 -->
+        <div class="dd-pane" id="ddPane3">
+          <div class="cl-prog">
+            <div class="cl-prog-bar">
+              <div class="cl-prog-fill" id="clFill" style="width: 0%"></div>
+            </div>
+            <span class="cl-prog-txt" id="clTxt">0/0</span>
+            <span class="cl-prog-pct" id="clPct">0%</span>
+          </div>
+          <div id="clContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API 사이드패널 -->
+    <div
+      class="api-panel-bg"
+      id="apiPanelBg"
+      onclick="if (event.target === this) closeApiPanel();"
+    >
+      <div class="api-panel" id="apiPanel">
+        <div class="api-panel-hd">
+          <span class="api-panel-title">실거래 API 연동</span>
+          <button class="api-close" onclick="closeApiPanel()">✕</button>
+        </div>
+        <p class="api-desc">
+          <a href="https://www.data.go.kr" target="_blank">data.go.kr</a>의
+          <strong>국토교통부 아파트매매 실거래 상세자료</strong> 인증키를
+          연동하면 전국 실거래 데이터를 실시간으로 불러옵니다.
+        </p>
+        <input
+          class="api-input"
+          type="text"
+          id="apiKeyInput"
+          placeholder="일반 인증키 붙여넣기…"
+          autocomplete="off"
+        />
+        <div class="api-status" id="apiStatus"></div>
+        <div class="api-btns">
+          <button class="api-btn primary" onclick="applyApiKey()">적용</button>
+          <button class="api-btn ghost" onclick="loadSampleData()">
+            샘플 데이터
+          </button>
+        </div>
+        <div class="api-steps">
+          <div class="api-steps-label">발급 방법</div>
+          <div class="api-step">
+            <div class="api-step-n">1</div>
+            <div>
+              <a href="https://www.data.go.kr" target="_blank">data.go.kr</a>
+              접속 후 로그인
+            </div>
+          </div>
+          <div class="api-step">
+            <div class="api-step-n">2</div>
+            <div>「국토교통부 아파트매매 실거래 상세자료」 검색</div>
+          </div>
+          <div class="api-step">
+            <div class="api-step-n">3</div>
+            <div>활용신청 → 자동승인 (즉시 발급)</div>
+          </div>
+          <div class="api-step">
+            <div class="api-step-n">4</div>
+            <div>마이페이지에서 <strong>일반 인증키</strong> 복사 후 입력</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 비교 모달 -->
+    <div
+      class="cmp-bg"
+      id="cmpModal"
+      onclick="if (event.target === this) closeCompare();"
+    >
+      <div class="cmp-modal">
+        <div class="cmp-head">
+          <span class="cmp-title">저장 매물 비교</span>
+          <button class="cmp-close" onclick="closeCompare()">✕</button>
+        </div>
+        <div class="cmp-grid" id="cmpGrid"></div>
+      </div>
+    </div>
+
+    <!-- 관심 목록 패널 -->
+    <div class="wl-panel" id="wlPanel">
+      <div class="wl-header">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span class="wl-title">관심 매물</span>
+          <span class="wl-cnt" id="wlCnt">0건</span>
+        </div>
+        <div class="wl-acts">
+          <button class="wl-act-btn" onclick="openCompare()">비교</button>
+          <button class="wl-act-btn" onclick="exportWLCSV()">CSV</button>
+          <button class="wl-act-btn" onclick="toggleWL()">닫기</button>
+        </div>
+      </div>
+      <div class="wl-body" id="wlBody"></div>
+    </div>
+
+    <div class="fab" id="fab">
+      <button class="fab-btn" onclick="toggleWL()">
+        ♡<span class="fab-cnt" id="fabCnt">0</span>
+      </button>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <div
+        class="bot-tab on"
+        id="botHome"
+        onclick="location.href = 'index.html'"
+      >
+        <span class="bot-icon">🏠</span><span class="bot-label">홈</span>
+      </div>
+      <div
+        class="bot-tab"
+        id="botSearch"
+        onclick="document.getElementById('searchInput').focus()"
+      >
+        <span class="bot-icon">🔍</span><span class="bot-label">검색</span>
+      </div>
+      <div class="bot-tab" id="botSaved" onclick="toggleWL()">
+        <span class="bot-icon">♡</span
+        ><span class="bot-label"
+          >관심<span id="fabCnt2" style="margin-left: 2px"></span
+        ></span>
+      </div>
+      <div class="bot-tab" onclick="location.href = 'analysis.html'">
+        <span class="bot-icon">📊</span><span class="bot-label">분석</span>
+      </div>
+    </nav>
+
+    <div class="toast-stack" id="toastStack"></div>
+
+    <script>
+      const ENV_KEY =
+        window.__ENV__ && window.__ENV__.MOLIT_KEY
+          ? window.__ENV__.MOLIT_KEY.trim()
+          : "";
+      const API =
+        location.hostname === "localhost" || location.hostname === "127.0.0.1"
+          ? "http://localhost:8000"
+          : "";
+
+      let allTrades = [],
+        sorted = [],
+        metaData = { metro_groups: {}, area_types: [] };
+      let selMetro = "",
+        selRegions = new Set(),
+        selAreas = new Set();
+      let viewMode = "grid",
+        sortKey = "price_asc",
+        periodMonths = 0;
+      let watchlist = JSON.parse(localStorage.getItem("wl14") || "[]");
+      let memos = JSON.parse(localStorage.getItem("memo14") || "{}");
+      let currentDet = null,
+        backendOk = false;
+      let itemsPerPage = 40,
+        currentPage = 1;
+      let pollTimer = null,
+        ddChartInst = null,
+        ddChart2Inst = null;
+
+      /* ── FALLBACK DATA ── */
+      const METRO_FB = {
+        서울: [
+          "서울 종로구",
+          "서울 중구",
+          "서울 용산구",
+          "서울 성동구",
+          "서울 광진구",
+          "서울 동대문구",
+          "서울 중랑구",
+          "서울 성북구",
+          "서울 강북구",
+          "서울 도봉구",
+          "서울 노원구",
+          "서울 은평구",
+          "서울 서대문구",
+          "서울 마포구",
+          "서울 양천구",
+          "서울 강서구",
+          "서울 구로구",
+          "서울 금천구",
+          "서울 영등포구",
+          "서울 동작구",
+          "서울 관악구",
+          "서울 서초구",
+          "서울 강남구",
+          "서울 송파구",
+          "서울 강동구",
+        ],
+        경기: [
+          "경기 수원시 장안구",
+          "경기 수원시 권선구",
+          "경기 수원시 팔달구",
+          "경기 수원시 영통구",
+          "경기 성남시 수정구",
+          "경기 성남시 중원구",
+          "경기 성남시 분당구",
+          "경기 의정부시",
+          "경기 안양시 만안구",
+          "경기 안양시 동안구",
+          "경기 부천시",
+          "경기 광명시",
+          "경기 평택시",
+          "경기 동두천시",
+          "경기 안산시 상록구",
+          "경기 안산시 단원구",
+          "경기 고양시 덕양구",
+          "경기 고양시 일산동구",
+          "경기 고양시 일산서구",
+          "경기 과천시",
+          "경기 구리시",
+          "경기 남양주시",
+          "경기 오산시",
+          "경기 시흥시",
+          "경기 군포시",
+          "경기 의왕시",
+          "경기 하남시",
+          "경기 용인시 처인구",
+          "경기 용인시 기흥구",
+          "경기 용인시 수지구",
+          "경기 파주시",
+          "경기 이천시",
+          "경기 안성시",
+          "경기 김포시",
+          "경기 화성시",
+          "경기 광주시",
+          "경기 양주시",
+          "경기 포천시",
+        ],
+        인천: [
+          "인천 중구",
+          "인천 동구",
+          "인천 미추홀구",
+          "인천 연수구",
+          "인천 남동구",
+          "인천 부평구",
+          "인천 계양구",
+          "인천 서구",
+          "인천 강화군",
+        ],
+        부산: [
+          "부산 중구",
+          "부산 서구",
+          "부산 동구",
+          "부산 영도구",
+          "부산 부산진구",
+          "부산 동래구",
+          "부산 남구",
+          "부산 북구",
+          "부산 해운대구",
+          "부산 사하구",
+          "부산 금정구",
+          "부산 강서구",
+          "부산 연제구",
+          "부산 수영구",
+          "부산 사상구",
+          "부산 기장군",
+        ],
+        대구: [
+          "대구 중구",
+          "대구 동구",
+          "대구 서구",
+          "대구 남구",
+          "대구 북구",
+          "대구 수성구",
+          "대구 달서구",
+          "대구 달성군",
+        ],
+        광주: [
+          "광주 동구",
+          "광주 서구",
+          "광주 남구",
+          "광주 북구",
+          "광주 광산구",
+        ],
+        대전: [
+          "대전 동구",
+          "대전 중구",
+          "대전 서구",
+          "대전 유성구",
+          "대전 대덕구",
+        ],
+        울산: [
+          "울산 중구",
+          "울산 남구",
+          "울산 동구",
+          "울산 북구",
+          "울산 울주군",
+        ],
+        세종: ["세종 세종시"],
+        충북: [
+          "충북 청주시 상당구",
+          "충북 청주시 서원구",
+          "충북 청주시 흥덕구",
+          "충북 청주시 청원구",
+          "충북 충주시",
+          "충북 제천시",
+        ],
+        충남: [
+          "충남 천안시 동남구",
+          "충남 천안시 서북구",
+          "충남 공주시",
+          "충남 아산시",
+        ],
+        전남: ["전남 순천시", "전남 여수시", "전남 목포시"],
+        경북: [
+          "경북 포항시 남구",
+          "경북 포항시 북구",
+          "경북 경주시",
+          "경북 구미시",
+        ],
+        경남: [
+          "경남 창원시 의창구",
+          "경남 창원시 성산구",
+          "경남 창원시 마산합포구",
+          "경남 창원시 진해구",
+          "경남 진주시",
+          "경남 김해시",
+          "경남 양산시",
+        ],
+        제주: ["제주 제주시", "제주 서귀포시"],
+        강원: [
+          "강원 춘천시",
+          "강원 원주시",
+          "강원 강릉시",
+          "강원 동해시",
+          "강원 태백시",
+          "강원 속초시",
+          "강원 삼척시",
+        ],
+      };
+      const AREAS_FB = [
+        { label: "전체", min: 0, max: 9999 },
+        { label: "10평↓", min: 0, max: 33 },
+        { label: "10평대", min: 33, max: 49 },
+        { label: "15평", min: 49, max: 59 },
+        { label: "18평", min: 59, max: 66 },
+        { label: "20평대", min: 66, max: 85 },
+        { label: "25평대", min: 85, max: 100 },
+        { label: "30평대", min: 100, max: 115 },
+        { label: "35평대", min: 115, max: 132 },
+        { label: "40평대", min: 132, max: 165 },
+        { label: "50평↑", min: 165, max: 9999 },
+      ];
+      const BP_FB = {
+        "서울 종로구": 5500,
+        "서울 중구": 5200,
+        "서울 용산구": 7500,
+        "서울 성동구": 6500,
+        "서울 광진구": 5200,
+        "서울 동대문구": 3400,
+        "서울 중랑구": 2900,
+        "서울 성북구": 3200,
+        "서울 강북구": 2700,
+        "서울 도봉구": 2800,
+        "서울 노원구": 3000,
+        "서울 은평구": 3600,
+        "서울 서대문구": 4000,
+        "서울 마포구": 5800,
+        "서울 양천구": 4500,
+        "서울 강서구": 4200,
+        "서울 구로구": 3400,
+        "서울 금천구": 3200,
+        "서울 영등포구": 4800,
+        "서울 동작구": 5000,
+        "서울 관악구": 3800,
+        "서울 서초구": 8200,
+        "서울 강남구": 8500,
+        "서울 송파구": 7000,
+        "서울 강동구": 5500,
+        "경기 수원시 장안구": 2200,
+        "경기 수원시 권선구": 2000,
+        "경기 수원시 팔달구": 2100,
+        "경기 수원시 영통구": 2500,
+        "경기 성남시 수정구": 2800,
+        "경기 성남시 중원구": 2600,
+        "경기 성남시 분당구": 4800,
+        "경기 의정부시": 1600,
+        "경기 안양시 만안구": 2200,
+        "경기 안양시 동안구": 2600,
+        "경기 부천시": 1800,
+        "경기 광명시": 2800,
+        "경기 평택시": 1400,
+        "경기 동두천시": 900,
+        "경기 안산시 상록구": 1500,
+        "경기 안산시 단원구": 1400,
+        "경기 고양시 덕양구": 2000,
+        "경기 고양시 일산동구": 2300,
+        "경기 고양시 일산서구": 2100,
+        "경기 과천시": 5500,
+        "경기 구리시": 2200,
+        "경기 남양주시": 1700,
+        "경기 오산시": 1300,
+        "경기 시흥시": 1500,
+        "경기 군포시": 2000,
+        "경기 의왕시": 2400,
+        "경기 하남시": 3500,
+        "경기 용인시 처인구": 1600,
+        "경기 용인시 기흥구": 2400,
+        "경기 용인시 수지구": 2800,
+        "경기 파주시": 1400,
+        "경기 이천시": 1100,
+        "경기 안성시": 900,
+        "경기 김포시": 1600,
+        "경기 화성시": 2000,
+        "경기 광주시": 1800,
+        "경기 양주시": 1100,
+        "경기 포천시": 800,
+        "인천 중구": 1500,
+        "인천 동구": 1200,
+        "인천 미추홀구": 1400,
+        "인천 연수구": 2200,
+        "인천 남동구": 1700,
+        "인천 부평구": 1500,
+        "인천 계양구": 1400,
+        "인천 서구": 1600,
+        "인천 강화군": 700,
+        "부산 중구": 1500,
+        "부산 서구": 1300,
+        "부산 동구": 1200,
+        "부산 영도구": 1100,
+        "부산 부산진구": 1600,
+        "부산 동래구": 2000,
+        "부산 남구": 1800,
+        "부산 북구": 1200,
+        "부산 해운대구": 3000,
+        "부산 사하구": 1300,
+        "부산 금정구": 1400,
+        "부산 강서구": 1000,
+        "부산 연제구": 1700,
+        "부산 수영구": 2500,
+        "부산 사상구": 1200,
+        "부산 기장군": 1100,
+        "대구 중구": 1600,
+        "대구 동구": 1400,
+        "대구 서구": 1100,
+        "대구 남구": 1200,
+        "대구 북구": 1300,
+        "대구 수성구": 2500,
+        "대구 달서구": 1500,
+        "대구 달성군": 1000,
+        "광주 동구": 1000,
+        "광주 서구": 1200,
+        "광주 남구": 1100,
+        "광주 북구": 1100,
+        "광주 광산구": 1200,
+        "대전 동구": 1000,
+        "대전 중구": 1100,
+        "대전 서구": 1300,
+        "대전 유성구": 1500,
+        "대전 대덕구": 1000,
+        "울산 중구": 1100,
+        "울산 남구": 1300,
+        "울산 동구": 1000,
+        "울산 북구": 900,
+        "울산 울주군": 900,
+        "세종 세종시": 1800,
+        "충북 청주시 상당구": 1000,
+        "충북 청주시 서원구": 1000,
+        "충북 청주시 흥덕구": 1100,
+        "충북 청주시 청원구": 900,
+        "충북 충주시": 800,
+        "충북 제천시": 700,
+        "충남 천안시 동남구": 950,
+        "충남 천안시 서북구": 1000,
+        "충남 공주시": 700,
+        "충남 아산시": 900,
+        "전남 순천시": 700,
+        "전남 여수시": 750,
+        "전남 목포시": 650,
+        "경북 포항시 남구": 800,
+        "경북 포항시 북구": 750,
+        "경북 경주시": 700,
+        "경북 구미시": 750,
+        "경남 창원시 의창구": 900,
+        "경남 창원시 성산구": 950,
+        "경남 창원시 마산합포구": 750,
+        "경남 창원시 진해구": 800,
+        "경남 진주시": 800,
+        "경남 김해시": 900,
+        "경남 양산시": 950,
+        "제주 제주시": 1500,
+        "제주 서귀포시": 1200,
+        "강원 춘천시": 900,
+        "강원 원주시": 850,
+        "강원 강릉시": 800,
+        "강원 동해시": 650,
+        "강원 태백시": 550,
+        "강원 속초시": 900,
+        "강원 삼척시": 600,
+      };
+      const AL = [20, 33, 40, 49, 59, 66, 74, 84, 101, 115, 135, 165, 200],
+        AW = [
+          0.04, 0.08, 0.06, 0.1, 0.18, 0.1, 0.12, 0.16, 0.08, 0.04, 0.02, 0.015,
+          0.005,
+        ];
+      const APTS = [
+        "래미안",
+        "자이",
+        "힐스테이트",
+        "푸르지오",
+        "롯데캐슬",
+        "아이파크",
+        "e편한세상",
+        "디에이치",
+        "더샵",
+        "호반베르디움",
+        "SK뷰",
+        "현대",
+        "포스코더샵",
+        "두산위브",
+      ];
+      const DONGS = [
+        "중앙동",
+        "신도시",
+        "중심지",
+        "신흥동",
+        "번동",
+        "주공",
+        "한빛마을",
+        "미사동",
+        "판교동",
+        "정자동",
+        "역삼동",
+        "대치동",
+      ];
+
+      function wc(it, ws) {
+        let r = Math.random(),
+          c = 0;
+        for (let i = 0; i < it.length; i++) {
+          c += ws[i];
+          if (r < c) return it[i];
+        }
+        return it[it.length - 1];
+      }
+      function gn(m = 0, s = 1) {
+        let u = 0,
+          v = 0;
+        while (!u) u = Math.random();
+        while (!v) v = Math.random();
+        return m + s * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+      }
+      function genFallback() {
+        const now = new Date(),
+          r = [];
+        for (const [region, bp] of Object.entries(BP_FB)) {
+          for (let i = 0; i < 32; i++) {
+            const area = wc(AL, AW),
+              yr = 1992 + Math.floor(Math.random() * 33),
+              fl = Math.floor(Math.random() * 40) + 1;
+            const p = Math.max(
+              3000,
+              Math.round(
+                (bp *
+                  (1 - Math.max(0, ((2024 - yr) / 100) * 0.5)) *
+                  (1 + Math.min(0.05, fl / 1000)) *
+                  (1 - Math.max(0, ((area - 59) / 1000) * 0.3)) *
+                  gn(1, 0.09) *
+                  (area / 3.3)) /
+                  100,
+              ) * 100,
+            );
+            const mo = Math.floor(Math.random() * 24),
+              d = new Date(now.getFullYear(), now.getMonth() - mo, 1);
+            const aR = parseFloat((area + Math.random() * 3 - 1.5).toFixed(2));
+            r.push({
+              apt_name: `${APTS[Math.floor(Math.random() * APTS.length)]} ${Math.floor(Math.random() * 20) + 1}차`,
+              area: aR,
+              floor: String(fl),
+              price: p,
+              year_built: String(yr),
+              deal_year: String(d.getFullYear()),
+              deal_month: String(d.getMonth() + 1).padStart(2, "0"),
+              deal_day: String(Math.floor(Math.random() * 28) + 1).padStart(
+                2,
+                "0",
+              ),
+              region,
+              dong: DONGS[Math.floor(Math.random() * DONGS.length)],
+              per_pyeong: Math.round(p / (aR / 3.3)),
+            });
+          }
+        }
+        return r.sort((a, b) => a.price - b.price);
+      }
+
+      /* ── UTILS ── */
+      function won(v) {
+        const e = Math.floor(v / 10000),
+          c = Math.round((v % 10000) / 1000);
+        if (e > 0 && c > 0) return `${e}억 ${c}천`;
+        if (e > 0) return `${e}억`;
+        if (v >= 1000) return `${Math.round(v / 1000)}천만`;
+        return `${v.toLocaleString()}만`;
+      }
+      function fmtB(억) {
+        const e = Math.floor(억),
+          c = Math.round((억 - e) * 10);
+        if (e > 0 && c > 0) return `${e}억 ${c}천만`;
+        if (e > 0) return `${e}억`;
+        return `${Math.round(억 * 10000).toLocaleString()}만`;
+      }
+      function avg(a) {
+        return a.length ? a.reduce((s, v) => s + v, 0) / a.length : 0;
+      }
+      /* 억 단위 tick — 부동소수점 노이즈 제거 (0.90000000001 → 0.9) */
+      function fmtAok(v){const n=parseFloat(v);if(isNaN(n))return`${v}억`;return`${parseFloat(n.toPrecision(4))}억`;}
+      function getBudMin() {
+        return Math.round(
+          parseFloat(document.getElementById("budMin").value || 0) * 10000,
+        );
+      }
+      function getBudMax() {
+        return Math.round(
+          parseFloat(document.getElementById("budMax").value || 8) * 10000,
+        );
+      }
+      function tradeDate(t) {
+        return new Date(
+          parseInt(t.deal_year),
+          parseInt(t.deal_month) - 1,
+          parseInt(t.deal_day) || 1,
+        );
+      }
+      function monthsAgo(t) {
+        return (Date.now() - tradeDate(t)) / (1000 * 60 * 60 * 24 * 30);
+      }
+      function memoKey(t) {
+        return `${t.apt_name}|${t.region}|${t.price}`;
+      }
+      function enc(t) {
+        return btoa(unescape(encodeURIComponent(JSON.stringify(t))));
+      }
+      function dec(s) {
+        try {
+          return JSON.parse(decodeURIComponent(escape(atob(s))));
+        } catch {
+          return null;
+        }
+      }
+      function toast(msg, type = "", dur = 2600) {
+        const el = document.createElement("div");
+        el.className = "toast" + (type ? " " + type : "");
+        el.textContent = msg;
+        document.getElementById("toastStack").appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = "0";
+          el.style.transition = "opacity .25s";
+          setTimeout(() => el.remove(), 260);
+        }, dur);
+      }
+      function debounce(key, fn, ms) {
+        clearTimeout(window["_db_" + key]);
+        window["_db_" + key] = setTimeout(fn, ms);
+      }
+      function setProgress(pct, show) {
+        const bar = document.getElementById("pgBar"),
+          fill = document.getElementById("pgFill");
+        bar.classList.toggle("show", show);
+        fill.style.width = pct + "%";
+      }
+
+      /* ── NOTICE / STATUS ── */
+      function setNavStatus(type, txt) {
+        const el = document.getElementById("navStatus");
+        el.className =
+          "nav-status " +
+          (type === "live"
+            ? "ns-live"
+            : type === "loading"
+              ? "ns-load"
+              : "ns-demo");
+        document.getElementById("navStatusText").textContent = txt;
+      }
+      function setLive(cnt) {
+        setNavStatus("live", `실거래 ${cnt.toLocaleString()}건`);
+        setNotice("", "실거래 데이터 연동됨");
+      }
+      function setNotice(type, html) {
+        const n = document.getElementById("notice");
+        n.className = "notice" + (type === "loading" ? " notice-load" : "");
+        document.getElementById("noticeText").innerHTML = html;
+      }
+
+      /* ── MOBILE ── */
+      function checkMobile() {
+        const isMob = window.innerWidth <= 820;
+        document.getElementById("filterToggleBtn").style.display = isMob
+          ? "flex"
+          : "none";
+      }
+      function toggleSidebar() {
+        const sb = document.getElementById("sidebar"),
+          ov = document.getElementById("sbOverlay");
+        sb.classList.toggle("show");
+        ov.classList.toggle("show");
+      }
+      window.addEventListener("resize", checkMobile);
+      checkMobile();
+
+      /* ── BUDGET ── */
+      function updateBudDisp() {
+        const mn = parseFloat(document.getElementById("budMin").value || 0),
+          mx = parseFloat(document.getElementById("budMax").value || 0);
+        document.getElementById("budDisplay").textContent =
+          `${fmtB(mn)} ~ ${fmtB(mx)}`;
+      }
+      document.getElementById("budMin").addEventListener("input", () => {
+        updateBudDisp();
+        debounce("bd", applyFilters, 400);
+      });
+      document.getElementById("budMax").addEventListener("input", () => {
+        updateBudDisp();
+        debounce("bd", applyFilters, 400);
+      });
+      document
+        .getElementById("yrSlider")
+        .addEventListener("input", () => debounce("yr", applyFilters, 300));
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", () => debounce("sr", applyFilters, 280));
+      updateBudDisp();
+
+      /* ── PERIOD/SORT ── */
+      function setPeriod(btn) {
+        periodMonths = parseInt(btn.dataset.m);
+        document
+          .querySelectorAll(".period-pill")
+          .forEach((b) => b.classList.remove("sel"));
+        btn.classList.add("sel");
+        currentPage = 1;
+        applyFilters();
+      }
+      function setSort(btn) {
+        sortKey = btn.dataset.sort;
+        document
+          .querySelectorAll(".sort-pill")
+          .forEach((b) => b.classList.remove("sel"));
+        btn.classList.add("sel");
+        currentPage = 1;
+        applyFilters();
+      }
+      function setView(v) {
+        viewMode = v;
+        document.getElementById("vGrid").classList.toggle("on", v === "grid");
+        document.getElementById("vList").classList.toggle("on", v === "list");
+        renderCards();
+      }
+      function resetFilters() {
+        selRegions.clear();
+        selAreas.clear();
+        selMetro = "";
+        periodMonths = 0;
+        sortKey = "price_asc";
+        document.getElementById("yrSlider").value = 1970;
+        document.getElementById("yrVal").textContent = "전체";
+        document.getElementById("budMin").value = 0;
+        document.getElementById("budMax").value = 8;
+        updateBudDisp();
+        document
+          .querySelectorAll(".metro-pill,.area-btn,.period-pill,.sort-pill")
+          .forEach((b) => b.classList.remove("sel"));
+        document.querySelector('.period-pill[data-m="0"]').classList.add("sel");
+        document
+          .querySelector('.sort-pill[data-sort="price_asc"]')
+          .classList.add("sel");
+        currentPage = 1;
+        applyFilters();
+      }
+
+      /* ── POLLING ── */
+      async function pollStatus() {
+        try {
+          const s = await fetch(`${API}/api/status`).then((r) => r.json());
+          if (s.loading) {
+            setProgress(s.progress, true);
+            setNotice("loading", `수집 중 — ${s.progress_msg || ""}`);
+            setNavStatus("loading", `${s.progress}%`);
+            if (s.total_trades > allTrades.length) await fetchTrades();
+            pollTimer = setTimeout(pollStatus, 3000);
+          } else {
+            clearTimeout(pollTimer);
+            setProgress(100, false);
+            if (s.has_real_key) {
+              await fetchTrades();
+              setLive(s.total_trades);
+            } else if (s.error) {
+              setNotice("", "⚠ " + s.error);
+            }
+          }
+        } catch {}
+      }
+
+      /* ── FETCH ── */
+      async function fetchTrades() {
+        let aMin = 0,
+          aMax = 9999;
+        const aRanges = [...selAreas].map((k) => {
+          const [a, b] = k.split("-").map(Number);
+          return { a, b };
+        });
+        if (aRanges.length > 0) {
+          aMin = Math.min(...aRanges.map((r) => r.a));
+          aMax = Math.max(...aRanges.map((r) => r.b));
+        }
+        const params = new URLSearchParams({
+          limit: 10000,
+          offset: 0,
+          price_min: 0,
+          price_max: 999999999,
+          sort: sortKey,
+        });
+        if (selRegions.size) params.set("regions", [...selRegions].join(","));
+        const ca = document.getElementById("cardArea");
+        if (ca) ca.classList.add("loading");
+        try {
+          const data = await fetch(`${API}/api/data?${params}`).then((r) =>
+            r.json(),
+          );
+          let trades = data.trades || [];
+          const yrMin =
+            parseInt(document.getElementById("yrSlider").value) || 0;
+          const q = (document.getElementById("searchInput").value || "")
+            .trim()
+            .toLowerCase();
+          if (yrMin > 1970 || aRanges.length || periodMonths || q) {
+            trades = trades.filter((t) => {
+              if (parseInt(t.year_built || 0) < yrMin) return false;
+              if (
+                aRanges.length &&
+                !aRanges.some((r) => t.area >= r.a && t.area < r.b)
+              )
+                return false;
+              if (periodMonths > 0 && monthsAgo(t) > periodMonths) return false;
+              if (
+                q &&
+                !t.apt_name.toLowerCase().includes(q) &&
+                !t.region.includes(q)
+              )
+                return false;
+              return true;
+            });
+          }
+          allTrades = trades;
+          sorted = [...allTrades];
+          if (data.stats) updateStatsFromServer(data.stats, data.region_stats);
+          else updateStats();
+          renderCards();
+          if (ca) ca.scrollTop = 0;
+        } catch {
+          if (!allTrades.length) allTrades = genFallback();
+          sorted = [...allTrades];
+          updateStats();
+          renderCards();
+          if (ca) ca.scrollTop = 0;
+        } finally {
+          if (ca) ca.classList.remove("loading");
+        }
+      }
+      function updateStatsFromServer(st, rStats) {
+        document.getElementById("st1").textContent =
+          st.count.toLocaleString() + "건";
+        document.getElementById("st2").textContent = st.count
+          ? won(Math.round(st.avg_price))
+          : "—";
+        document.getElementById("st3").textContent = st.count
+          ? won(st.min_price)
+          : "—";
+        document.getElementById("st4").textContent = st.count
+          ? won(Math.round(st.avg_pyeong))
+          : "—";
+        const rsw = document.getElementById("regionStatsWrap");
+        if (rStats && rStats.length > 0) {
+          rsw.innerHTML = rStats
+            .map(
+              (rs) =>
+                `<div class="rs-card"><div class="rs-title">${rs.region}</div><div class="rs-row"><span>매물</span><span>${rs.count.toLocaleString()}건</span></div><div class="rs-row"><span>평균</span><span>${rs.count ? won(Math.round(rs.avg_price)) : "—"}</span></div><div class="rs-row"><span>최저</span><span>${rs.count ? won(rs.min_price) : "—"}</span></div><div class="rs-row"><span>평당가</span><span>${rs.count ? won(Math.round(rs.avg_pyeong)) : "—"}</span></div></div>`,
+            )
+            .join("");
+          rsw.classList.add("show");
+        } else rsw.classList.remove("show");
+      }
+      async function applyFilters() {
+        if (backendOk) {
+          await fetchTrades();
+          return;
+        }
+        const pMin = getBudMin(),
+          pMax = getBudMax(),
+          yrMin = parseInt(document.getElementById("yrSlider").value) || 0;
+        const aRanges = [...selAreas].map((k) => {
+          const [a, b] = k.split("-").map(Number);
+          return { a, b };
+        });
+        const q = (
+          document.getElementById("searchInput").value || ""
+        ).toLowerCase();
+        const km = {
+          price: "price",
+          area: "area",
+          pyeong: "per_pyeong",
+          year: "year_built",
+          value: "__v",
+          date: "__d",
+        };
+        const [sk, sd] = sortKey.split("_");
+        sorted = [...allTrades]
+          .filter((t) => {
+            if (t.price < pMin || t.price > pMax) return false;
+            if (selRegions.size > 0 && !selRegions.has(t.region)) return false;
+            if (
+              aRanges.length &&
+              !aRanges.some((r) => t.area >= r.a && t.area < r.b)
+            )
+              return false;
+            if (parseInt(t.year_built || 0) < yrMin) return false;
+            if (periodMonths > 0 && monthsAgo(t) > periodMonths) return false;
+            if (
+              q &&
+              !t.apt_name.toLowerCase().includes(q) &&
+              !t.region.includes(q)
+            )
+              return false;
+            return true;
+          })
+          .map((t) => ({
+            ...t,
+            __v: t.price > 0 ? t.area / (t.price / 10000) : 0,
+            __d: tradeDate(t).getTime(),
+          }))
+          .sort((a, b) => {
+            const av = parseFloat(a[km[sk]]) || 0,
+              bv = parseFloat(b[km[sk]]) || 0;
+            return sd === "asc" ? av - bv : bv - av;
+          });
+        currentPage = 1;
+        updateStats();
+        renderCards();
+      }
+      function updateStats() {
+        const n = sorted.length;
+        document.getElementById("st1").textContent = n.toLocaleString() + "건";
+        const ap = n ? avg(sorted.map((t) => t.price)) : 0;
+        document.getElementById("st2").textContent = ap
+          ? won(Math.round(ap))
+          : "—";
+        const mp = n ? Math.min(...sorted.map((t) => t.price)) : 0;
+        document.getElementById("st3").textContent = mp ? won(mp) : "—";
+        const mpp = n ? avg(sorted.map((t) => t.per_pyeong)) : 0;
+        document.getElementById("st4").textContent = mpp
+          ? won(Math.round(mpp))
+          : "—";
+        const rsw = document.getElementById("regionStatsWrap");
+        if (selRegions.size >= 2 && selRegions.size <= 8 && sorted.length > 0) {
+          const regStats = [...selRegions]
+            .map((r) => {
+              const rt = sorted.filter((t) => t.region === r);
+              if (!rt.length) return null;
+              return {
+                region: r.split(" ").slice(-1)[0],
+                count: rt.length,
+                avg_price: avg(rt.map((t) => t.price)),
+                min_price: Math.min(...rt.map((t) => t.price)),
+                avg_pyeong: avg(rt.map((t) => t.per_pyeong)),
+              };
+            })
+            .filter(Boolean)
+            .sort((a, b) => b.avg_price - a.avg_price);
+          rsw.innerHTML = regStats
+            .map(
+              (rs) =>
+                `<div class="rs-card"><div class="rs-title">${rs.region}</div><div class="rs-row"><span>매물</span><span>${rs.count.toLocaleString()}건</span></div><div class="rs-row"><span>평균</span><span>${won(Math.round(rs.avg_price))}</span></div><div class="rs-row"><span>최저</span><span>${won(rs.min_price)}</span></div><div class="rs-row"><span>평당가</span><span>${won(Math.round(rs.avg_pyeong))}</span></div></div>`,
+            )
+            .join("");
+          rsw.classList.add("show");
+        } else rsw.classList.remove("show");
+      }
+
+      /* ── CARDS ── */
+      function renderCards() {
+        const c = document.getElementById("cards");
+        c.className = "card-grid" + (viewMode === "list" ? " list-view" : "");
+        c.innerHTML = "";
+        if (!sorted.length) {
+          c.innerHTML =
+            '<div class="empty-state"><div class="empty-icon">🏠</div><div class="empty-title">조건에 맞는 매물이 없습니다</div><div class="empty-desc">필터를 조정하거나 예산 범위를 넓혀보세요.</div><button class="empty-action" onclick="resetFilters()">필터 초기화</button></div>';
+          document.getElementById("sentinel").innerHTML = "";
+          return;
+        }
+        const start = (currentPage - 1) * itemsPerPage,
+          end = Math.min(start + itemsPerPage, sorted.length),
+          pMax = getBudMax(),
+          frag = document.createDocumentFragment();
+        for (let i = start; i < end; i++)
+          frag.appendChild(makeCard(sorted[i], pMax, i - start));
+        c.appendChild(frag);
+        renderPagination();
+      }
+      function renderPagination() {
+        const totalPages = Math.ceil(sorted.length / itemsPerPage),
+          sentinel = document.getElementById("sentinel");
+        if (!sentinel) return;
+        sentinel.innerHTML = "";
+        if (totalPages <= 1) return;
+        const pWrap = document.createElement("div");
+        pWrap.className = "pagination-wrap";
+        if (currentPage > 1) {
+          const btn = document.createElement("button");
+          btn.className = "page-btn";
+          btn.textContent = "이전";
+          btn.onclick = () => {
+            currentPage--;
+            renderCards();
+            document.getElementById("cardArea").scrollTop = 0;
+          };
+          pWrap.appendChild(btn);
+        }
+        let startP = Math.max(1, currentPage - 2),
+          endP = Math.min(totalPages, startP + 4);
+        if (endP - startP < 4 && startP > 1) startP = Math.max(1, endP - 4);
+        for (let i = startP; i <= endP; i++) {
+          const btn = document.createElement("button");
+          btn.className = "page-btn" + (i === currentPage ? " active" : "");
+          btn.textContent = i;
+          btn.onclick = () => {
+            currentPage = i;
+            renderCards();
+            document.getElementById("cardArea").scrollTop = 0;
+          };
+          pWrap.appendChild(btn);
+        }
+        if (currentPage < totalPages) {
+          const btn = document.createElement("button");
+          btn.className = "page-btn";
+          btn.textContent = "다음";
+          btn.onclick = () => {
+            currentPage++;
+            renderCards();
+            document.getElementById("cardArea").scrollTop = 0;
+          };
+          pWrap.appendChild(btn);
+        }
+        sentinel.appendChild(pWrap);
+      }
+      function makeCard(t, pMax, idx) {
+        const pct = pMax > 0 ? Math.round((t.price / pMax) * 100) : 50;
+        const barC =
+          pct <= 85
+            ? "var(--green)"
+            : pct <= 100
+              ? "var(--amber)"
+              : "var(--red)";
+        const bdgTxt = pct <= 85 ? "여유" : pct <= 100 ? "적정" : "초과";
+        const bdgCls =
+          pct <= 85 ? "badge-ok" : pct <= 100 ? "badge-edge" : "badge-over";
+        const saved = isSaved(t),
+          py = Math.round(t.area / 3.3),
+          mo = monthsAgo(t);
+        const moStr =
+          mo <= 0
+            ? "이번달"
+            : mo < 12
+              ? Math.round(mo) + "개월 전"
+              : Math.floor(mo / 12) + "년 전";
+        const isNew = parseInt(t.year_built || 0) >= 2020;
+        const e = enc(t);
+        const div = document.createElement("div");
+        div.className = "apt-card" + (viewMode === "list" ? " lv" : "");
+        div.style.animationDelay = `${(idx % itemsPerPage) * 0.01}s`;
+        div.onclick = () => showDet(e);
+        if (viewMode === "list") {
+          div.innerHTML = `<div><div class="card-top"><span class="badge ${bdgCls}">${bdgTxt}</span></div><div class="card-name">${t.apt_name}</div><div class="card-region">${t.region} · ${t.dong || ""}</div><div class="card-tags"><span class="tag">${t.floor}층</span><span class="tag${isNew ? " new" : ""}">${t.year_built}년</span><span class="tag">${t.area}㎡ (${py}평)</span><span class="tag">${moStr}</span></div><div class="bud-bar"><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100, pct)}%;background:${barC}"></div></div><span class="bar-pct">예산 ${pct}%</span></div></div><div class="lv-right"><button class="fav-btn${saved ? " on" : ""}" onclick="event.stopPropagation();toggleFav('${e}',this)">${saved ? "♥" : "♡"}</button><div class="lv-price">${won(t.price)}</div><div class="lv-sub">${won(t.per_pyeong)}/평</div></div>`;
+        } else {
+          div.innerHTML = `<div class="card-top"><span class="badge ${bdgCls}">${bdgTxt}</span><button class="fav-btn${saved ? " on" : ""}" onclick="event.stopPropagation();toggleFav('${e}',this)">${saved ? "♥" : "♡"}</button></div><div class="card-name">${t.apt_name}</div><div class="card-region">${t.region} · ${t.dong || ""}</div><div class="card-price">${won(t.price)}</div><div class="card-sub">${won(t.per_pyeong)}/평 · ${py}평 (${t.area}㎡)</div><div class="card-tags"><span class="tag">${t.floor}층</span><span class="tag${isNew ? " new" : ""}">${t.year_built}년${isNew ? " ★" : ""}</span><span class="tag">${moStr}</span></div><div class="bud-bar"><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100, pct)}%;background:${barC}"></div></div><span class="bar-pct">${pct}%</span></div>`;
+        }
+        return div;
+      }
+
+      /* ── SIDEBAR BUILD ── */
+      function getGroupsWithData(groups) {
+        const hasData = Array.isArray(allTrades) && allTrades.length > 0;
+        if (!hasData) return groups;
+        const entries = Object.entries(groups).filter(([, regs]) =>
+          (regs || []).some((r) => allTrades.some((t) => t.region === r)),
+        );
+        return entries.length ? Object.fromEntries(entries) : groups;
+      }
+      const METRO_ORDER = [
+        "서울",
+        "경기",
+        "인천",
+        "부산",
+        "대구",
+        "광주",
+        "대전",
+        "울산",
+        "세종",
+        "강원",
+        "충북",
+        "충남",
+        "전북",
+        "전남",
+        "경북",
+        "경남",
+        "제주",
+      ];
+      function getOrderedMetroNames(groups) {
+        return Object.keys(groups).sort((a, b) => {
+          const ai = METRO_ORDER.indexOf(a);
+          const bi = METRO_ORDER.indexOf(b);
+          const ar = ai === -1 ? 999 : ai;
+          const br = bi === -1 ? 999 : bi;
+          if (ar !== br) return ar - br;
+          return a.localeCompare(b, "ko");
+        });
+      }
+      function buildSidebar() {
+        const rawGroups = Object.keys(metaData.metro_groups || {}).length
+          ? metaData.metro_groups
+          : METRO_FB;
+        const groups = getGroupsWithData(rawGroups);
+        const metroNames = getOrderedMetroNames(groups);
+        const pills = document.getElementById("metroPills");
+        pills.innerHTML = "";
+        metroNames.forEach((m) => {
+          const b = document.createElement("button");
+          b.className = "metro-pill";
+          b.textContent = m;
+          b.onclick = () => selectMetro(m);
+          pills.appendChild(b);
+        });
+        const ag = document.getElementById("areaGrid");
+        ag.innerHTML = "";
+        const types = (metaData.area_types || []).length
+          ? metaData.area_types
+          : AREAS_FB;
+        types.forEach((at) => {
+          const b = document.createElement("button");
+          b.className = "area-btn";
+          b.textContent = at.label;
+          b.dataset.min = at.min;
+          b.dataset.max = at.max;
+          b.onclick = () => {
+            const k = `${at.min}-${at.max}`;
+            if (selAreas.has(k)) {
+              selAreas.delete(k);
+              b.classList.remove("sel");
+            } else {
+              selAreas.add(k);
+              b.classList.add("sel");
+            }
+            currentPage = 1;
+            debounce("area", applyFilters, 150);
+          };
+          ag.appendChild(b);
+        });
+        selRegions.clear();
+        selMetro = "";
+        const firstMetro = metroNames[0] || "서울";
+        populateRegions(firstMetro, groups);
+      }
+      function selectMetro(m) {
+        const rawGroups = Object.keys(metaData.metro_groups || {}).length
+          ? metaData.metro_groups
+          : METRO_FB;
+        const groups = getGroupsWithData(rawGroups);
+        if (selMetro === m) {
+          selMetro = "";
+          selRegions.clear();
+          document
+            .querySelectorAll(".metro-pill")
+            .forEach((b) => b.classList.remove("sel"));
+          const firstMetro = getOrderedMetroNames(groups)[0] || "서울";
+          populateRegions(firstMetro, groups);
+        } else {
+          selMetro = m;
+          selRegions = new Set(groups[m] || []);
+          document
+            .querySelectorAll(".metro-pill")
+            .forEach((b) => b.classList.toggle("sel", b.textContent === m));
+          populateRegions(m, groups);
+        }
+        currentPage = 1;
+        debounce("metro", applyFilters, 150);
+      }
+      function populateRegions(metro, groups) {
+        const list = document.getElementById("regionList"),
+          regs = groups[metro] || [];
+        if (!regs.length) {
+          list.innerHTML =
+            '<div style="font-size:.7rem;color:var(--ink3);padding:4px">광역시도를 선택하세요</div>';
+          return;
+        }
+        const hasData = Array.isArray(allTrades) && allTrades.length > 0;
+        const visibleRegs = hasData
+          ? regs.filter((r) => allTrades.some((t) => t.region === r))
+          : regs;
+        const sortedVisibleRegs = [...visibleRegs].sort((a, b) =>
+          a.localeCompare(b, "ko"),
+        );
+
+        // 데이터가 들어온 뒤에는 0건 지역을 UI에서 제거 (선택도 자동 정리)
+        if (hasData) {
+          for (const r of [...selRegions]) {
+            if (!visibleRegs.includes(r)) selRegions.delete(r);
+          }
+        }
+
+        list.innerHTML = sortedVisibleRegs
+          .map((r) => {
+            const cnt = allTrades.filter((t) => t.region === r).length;
+            const on = selRegions.has(r);
+            return `<label class="region-item${on ? " on" : ""}" style="cursor:pointer"><div class="ri-left"><input type="checkbox"${on ? " checked" : ""} onchange="toggleReg('${r}',this)"/>${r.replace(metro + " ", "")}</div><span class="ri-cnt">${cnt}</span></label>`;
+          })
+          .join("");
+        const titleEl = document.getElementById("regionTitle");
+        if (titleEl)
+          titleEl.textContent = selRegions.size
+            ? `지역 (${selRegions.size}개 선택)`
+            : "광역시도";
+      }
+      function toggleReg(r, cb) {
+        if (cb.checked) selRegions.add(r);
+        else selRegions.delete(r);
+        cb.closest(".region-item").classList.toggle("on", cb.checked);
+        currentPage = 1;
+        debounce("reg", applyFilters, 150);
+      }
+      function selectAllNation() {
+        const rawGroups = Object.keys(metaData.metro_groups || {}).length
+          ? metaData.metro_groups
+          : METRO_FB;
+        const g = getGroupsWithData(rawGroups);
+        Object.values(g)
+          .flat()
+          .forEach((r) => selRegions.add(r));
+        populateRegions(selMetro || Object.keys(g)[0], g);
+        currentPage = 1;
+        applyFilters();
+        toast(`전국 ${selRegions.size}개 지역 선택`, "ok");
+      }
+      function selectAllRegions() {
+        const rawGroups = Object.keys(metaData.metro_groups || {}).length
+          ? metaData.metro_groups
+          : METRO_FB;
+        const g = getGroupsWithData(rawGroups);
+        if (selMetro) (g[selMetro] || []).forEach((r) => selRegions.add(r));
+        else
+          Object.values(g)
+            .flat()
+            .forEach((r) => selRegions.add(r));
+        populateRegions(selMetro || Object.keys(g)[0], g);
+        currentPage = 1;
+        applyFilters();
+      }
+      function clearAllRegions() {
+        selRegions.clear();
+        const rawGroups = Object.keys(metaData.metro_groups || {}).length
+          ? metaData.metro_groups
+          : METRO_FB;
+        const g = getGroupsWithData(rawGroups);
+        populateRegions(selMetro || Object.keys(g)[0], g);
+        currentPage = 1;
+        applyFilters();
+      }
+
+      /* ── DRAWER ── */
+      function switchDdTab(idx, el) {
+        document
+          .querySelectorAll(".dd-tab")
+          .forEach((t) => t.classList.remove("on"));
+        document
+          .querySelectorAll(".dd-pane")
+          .forEach((p) => p.classList.remove("on"));
+        el.classList.add("on");
+        document.getElementById("ddPane" + idx).classList.add("on");
+        if (idx === 1) loadHistory();
+        if (idx === 2) loadSim();
+      }
+      function showDet(e) {
+        const t = dec(e);
+        if (!t) return;
+        currentDet = t;
+        const pMax = getBudMax(),
+          pct = pMax > 0 ? Math.round((t.price / pMax) * 100) : 50,
+          py = Math.round(t.area / 3.3);
+        const barC =
+          pct <= 85
+            ? "var(--green)"
+            : pct <= 100
+              ? "var(--amber)"
+              : "var(--red)";
+        document.getElementById("ddName").textContent = t.apt_name;
+        document.getElementById("ddRegion").textContent =
+          `${t.region} · ${t.dong || ""}`;
+        document.getElementById("ddPrice").textContent = won(t.price);
+        document.getElementById("ddPriceSub").textContent =
+          `${won(t.per_pyeong)}/평 · ${py}평형 (${t.area}㎡)`;
+        document.getElementById("ddBudLbl").textContent =
+          `최대 예산 ${won(pMax)} 대비`;
+        document.getElementById("ddBudFill").style.cssText =
+          `width:${Math.min(100, pct)}%;background:${barC}`;
+        document.getElementById("ddBudPct").textContent = `${pct}%`;
+        document.getElementById("ddBudPct").style.color = barC;
+        const isNew = parseInt(t.year_built || 0) >= 2020;
+        document.getElementById("ddSpec").innerHTML = [
+          ["전용면적", `${t.area}㎡ (${py}평)`, ""],
+          ["층수", `${t.floor}층`, ""],
+          ["건축연도", `${t.year_built}년${isNew ? " ★" : ""}`, ""],
+          ["거래일", `${t.deal_year}.${t.deal_month}.${t.deal_day}`, ""],
+          ["평당가", won(t.per_pyeong), "blue"],
+          [
+            "가성비",
+            `${(t.area / (t.price / 10000)).toFixed(1)}㎡/억`,
+            "green",
+          ],
+        ]
+          .map(
+            ([l, v, cls]) =>
+              `<div class="spec-item"><div class="spec-lbl">${l}</div><div class="spec-val ${cls}">${v}</div></div>`,
+          )
+          .join("");
+        const enc2 = encodeURIComponent(
+          (t.region || "").split(" ").slice(0, 2).join(" ") + " " + t.apt_name,
+        );
+        document.getElementById("ccPlatform").innerHTML = [
+          {
+            label: "네이버 부동산",
+            icon: "🔍",
+            url: `https://new.land.naver.com/search?sk=${enc2}`,
+          },
+          {
+            label: "직방",
+            icon: "🏠",
+            url: `https://www.zigbang.com/home/apt/map?q=${enc2}`,
+          },
+          {
+            label: "KB부동산",
+            icon: "📊",
+            url: `https://kbland.kr/map/apartment?q=${enc2}`,
+          },
+          {
+            label: "호갱노노",
+            icon: "📈",
+            url: `https://hogangnono.com/search?q=${enc2}`,
+          },
+        ]
+          .map(
+            ({ label, icon, url }) =>
+              `<a class="cc-link" href="${url}" target="_blank" rel="noopener"><div class="cc-link-left"><span>${icon}</span>${label}</div><span class="cc-arrow">→</span></a>`,
+          )
+          .join("");
+        document.getElementById("ccPublic").innerHTML = [
+          {
+            label: "국토부 실거래가",
+            icon: "🏛",
+            url: "https://rt.molit.go.kr",
+          },
+          { label: "인터넷 등기소", icon: "📄", url: "https://www.iros.go.kr" },
+          { label: "토지이음", icon: "🗺", url: "https://www.eum.go.kr" },
+          {
+            label: "국가공간정보포털",
+            icon: "🌐",
+            url: "https://www.nsdi.go.kr",
+          },
+        ]
+          .map(
+            ({ label, icon, url }) =>
+              `<a class="cc-link" href="${url}" target="_blank" rel="noopener"><div class="cc-link-left"><span>${icon}</span>${label}</div><span class="cc-arrow">→</span></a>`,
+          )
+          .join("");
+        document.getElementById("ddMemo").value = memos[memoKey(t)] || "";
+        const saved = isSaved(t),
+          sb = document.getElementById("ddSaveBtn");
+        sb.textContent = saved ? "♥ 저장됨" : "♡ 저장";
+        sb.className = "act-btn outline" + (saved ? " on" : "");
+        document
+          .querySelectorAll(".dd-tab")
+          .forEach((t) => t.classList.remove("on"));
+        document
+          .querySelectorAll(".dd-pane")
+          .forEach((p) => p.classList.remove("on"));
+        document.querySelector(".dd-tab").classList.add("on");
+        document.getElementById("ddPane0").classList.add("on");
+        renderCL(t);
+        loadCharts();
+        document.getElementById("drawerOverlay").classList.add("show");
+        document.getElementById("drawer").classList.add("open");
+        document.getElementById("drawer").scrollTop = 0;
+      }
+      function closeDet() {
+        document.getElementById("drawerOverlay").classList.remove("show");
+        document.getElementById("drawer").classList.remove("open");
+        if (ddChartInst) {
+          ddChartInst.destroy();
+          ddChartInst = null;
+        }
+        if (ddChart2Inst) {
+          ddChart2Inst.destroy();
+          ddChart2Inst = null;
+        }
+      }
+
+      /* ── HISTORY ── */
+      async function loadHistory() {
+        if (!currentDet) return;
+        const el = document.getElementById("ddHist");
+        el.innerHTML =
+          '<div style="text-align:center;padding:2rem;font-size:.8rem;color:var(--ink3)">불러오는 중…</div>';
+        let trades = [];
+        try {
+          const data = await fetch(
+            `${API}/api/complex/${encodeURIComponent(currentDet.apt_name)}?region=${encodeURIComponent(currentDet.region)}`,
+          ).then((r) => r.json());
+          trades = data.trades || [];
+        } catch {
+          trades = allTrades
+            .filter(
+              (t) =>
+                t.apt_name === currentDet.apt_name &&
+                t.region === currentDet.region,
+            )
+            .sort((a, b) => tradeDate(b) - tradeDate(a));
+        }
+        if (!trades.length) {
+          el.innerHTML =
+            '<div style="text-align:center;padding:2rem;font-size:.8rem;color:var(--ink3)">이력 없음</div>';
+          return;
+        }
+        el.innerHTML = trades
+          .map((t, i) => {
+            const prev = trades[i + 1];
+            const diff = prev ? t.price - prev.price : null;
+            const dHtml =
+              diff !== null
+                ? `<div class="hist-change ${diff > 0 ? "up" : "dn"}">${diff > 0 ? "▲" : "▼"} ${won(Math.abs(diff))}</div>`
+                : "";
+            return `<div class="hist-item"><div class="hist-info"><div class="hist-date">${t.deal_year}년 ${t.deal_month}월 ${t.deal_day}일</div><div class="hist-detail">${t.area}㎡ · ${t.floor}층</div>${dHtml}</div><div class="hist-right"><div class="hist-price">${won(t.price)}</div></div></div>`;
+          })
+          .join("");
+      }
+      function loadSim() {
+        if (!currentDet) return;
+        const el = document.getElementById("ddSim");
+        const sim = allTrades
+          .filter(
+            (s) =>
+              s.region === currentDet.region &&
+              s !== currentDet &&
+              Math.abs(s.area - currentDet.area) < 20 &&
+              Math.abs(s.price - currentDet.price) < currentDet.price * 0.35,
+          )
+          .sort(
+            (a, b) =>
+              Math.abs(a.price - currentDet.price) -
+              Math.abs(b.price - currentDet.price),
+          )
+          .slice(0, 5);
+        el.innerHTML = sim.length
+          ? sim
+              .map((s) => {
+                const diff = s.price - currentDet.price;
+                const cls = diff > 0 ? "up" : "dn";
+                return `<div class="sim-card" onclick="showDet('${enc(s)}')"><div><div class="sim-name">${s.apt_name}</div><div class="sim-info">${Math.round(s.area / 3.3)}평 · ${s.floor}층 · ${s.year_built}년</div></div><div><div class="sim-price">${won(s.price)}</div><div class="sim-diff ${cls}">${diff > 0 ? "▲" : "▼"} ${won(Math.abs(diff))}</div></div></div>`;
+              })
+              .join("")
+          : '<div style="font-size:.75rem;color:var(--ink3);padding:16px">유사 매물 없음</div>';
+      }
+
+      /* ── CHARTS ── */
+      async function loadCharts() {
+        if (!currentDet) return;
+        let trades = [];
+        try {
+          const data = await fetch(
+            `${API}/api/complex/${encodeURIComponent(currentDet.apt_name)}?region=${encodeURIComponent(currentDet.region)}`,
+          ).then((r) => r.json());
+          trades = (data.trades || []).sort(
+            (a, b) => tradeDate(a) - tradeDate(b),
+          );
+        } catch {
+          trades = allTrades
+            .filter(
+              (t) =>
+                t.apt_name === currentDet.apt_name &&
+                t.region === currentDet.region,
+            )
+            .sort((a, b) => tradeDate(a) - tradeDate(b));
+        }
+        if (ddChartInst) {
+          ddChartInst.destroy();
+          ddChartInst = null;
+        }
+        const ctx = document.getElementById("ddChart").getContext("2d");
+        const labels = trades.map((t) => `${t.deal_year}.${t.deal_month}`),
+          prices = trades.map((t) => t.price / 10000);
+        ddChartInst = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "거래가(억)",
+                data: prices,
+                borderColor: "#6B5B45",
+                backgroundColor: "rgba(107,91,69,.08)",
+                fill: true,
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: "#6B5B45",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: { label: (c) => `${c.parsed.y.toFixed(1)}억` },
+              },
+            },
+            scales: {
+              x: {
+                ticks: {
+                  color: "#8A8078",
+                  font: { size: 10 },
+                  maxTicksLimit: 6,
+                },
+                grid: { color: "rgba(107,91,69,.06)" },
+              },
+              y: {
+                ticks: {
+                  color: "#8A8078",
+                  font: { size: 10 },
+                  callback: (v) => fmtAok(v),
+                },
+                grid: { color: "rgba(107,91,69,.06)" },
+              },
+            },
+          },
+        });
+        if (ddChart2Inst) {
+          ddChart2Inst.destroy();
+          ddChart2Inst = null;
+        }
+        const ctx2 = document.getElementById("ddChart2").getContext("2d");
+        const regionTrades = allTrades
+          .filter((t) => t.region === currentDet.region)
+          .slice(0, 200);
+        const scatter = regionTrades.map((t) => ({
+          x: Math.round(t.area / 3.3),
+          y: Math.round(t.per_pyeong / 10000),
+        }));
+        ddChart2Inst = new Chart(ctx2, {
+          type: "scatter",
+          data: {
+            datasets: [
+              {
+                label: "평당가(억/평)",
+                data: scatter,
+                backgroundColor: "rgba(61,122,90,.5)",
+                pointRadius: 4,
+                pointHoverRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (c) =>
+                    `${c.parsed.x}평 · ${c.parsed.y.toFixed(1)}억/평`,
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "평수",
+                  color: "#8A8078",
+                  font: { size: 10 },
+                },
+                ticks: { color: "#8A8078", font: { size: 10 } },
+                grid: { color: "rgba(107,91,69,.06)" },
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "평당가(억)",
+                  color: "#8A8078",
+                  font: { size: 10 },
+                },
+                ticks: {
+                  color: "#8A8078",
+                  font: { size: 10 },
+                  callback: (v) => fmtAok(v),
+                },
+                grid: { color: "rgba(107,91,69,.06)" },
+              },
+            },
+          },
+        });
+      }
+
+      /* ── CHECKLIST ── */
+      const CHECKLIST = [
+        {
+          section: "현장 방문 전",
+          items: [
+            {
+              id: "cl01",
+              title: "등기부등본 확인",
+              desc: "근저당·가압류·가처분 등 권리관계 확인. 인터넷 등기소에서 발급.",
+            },
+            {
+              id: "cl02",
+              title: "건축물대장 확인",
+              desc: "불법 증축·용도 변경·위반 건축물 여부 확인.",
+            },
+            {
+              id: "cl03",
+              title: "전세/임대 현황",
+              desc: "기존 임차인 전세권·임차권 등록 여부 확인.",
+            },
+            {
+              id: "cl04",
+              title: "재개발·재건축 구역",
+              desc: "토지이음에서 용도지역 및 정비사업 구역 여부 확인.",
+            },
+          ],
+        },
+        {
+          section: "현장 방문 시",
+          items: [
+            {
+              id: "cl05",
+              warn: true,
+              title: "균열·누수·곰팡이",
+              desc: "벽면·천장·베란다·화장실을 꼼꼼히 살피세요.",
+            },
+            {
+              id: "cl06",
+              warn: true,
+              title: "층간소음 체크",
+              desc: "방문 시 직접 듣거나 이웃에게 확인하세요.",
+            },
+            {
+              id: "cl07",
+              title: "일조량·채광",
+              desc: "낮 시간대 방문으로 실제 채광 확인.",
+            },
+            {
+              id: "cl08",
+              title: "주차장·엘리베이터",
+              desc: "주차 대수 충분 여부, 엘리베이터 노후화 확인.",
+            },
+            {
+              id: "cl09",
+              title: "관리비·장기수선충당금",
+              desc: "관리비 내역서 요청 및 연체 여부 확인.",
+            },
+            {
+              id: "cl10",
+              title: "주변 혐오시설",
+              desc: "쓰레기 처리장·화장장·고압선 등 주변 환경 확인.",
+            },
+          ],
+        },
+        {
+          section: "계약 전",
+          items: [
+            {
+              id: "cl11",
+              title: "실매도인 본인 확인",
+              desc: "등기부상 소유자와 계약 당사자 일치 여부.",
+            },
+            {
+              id: "cl12",
+              title: "계약금 준비 (5~10%)",
+              desc: "통상 매매가의 5~10%가 계약금으로 사용됩니다.",
+            },
+            {
+              id: "cl13",
+              title: "공인중개사 자격 확인",
+              desc: "국가공간정보포털 또는 중개사 협회에서 확인 가능.",
+            },
+            {
+              id: "cl14",
+              title: "특약사항 확인",
+              desc: "수리 요청·잔금 일정·명도 시점 등을 특약에 명시.",
+            },
+            {
+              id: "cl15",
+              title: "담보대출 한도 확인",
+              desc: "DSR 기준 대출 가능 금액을 은행에서 미리 확인.",
+            },
+          ],
+        },
+        {
+          section: "계약 후",
+          items: [
+            {
+              id: "cl16",
+              title: "계약서 원본 보관",
+              desc: "잔금 완료 후에도 최소 5년간 보관하세요.",
+            },
+            {
+              id: "cl17",
+              title: "확정일자 및 전입신고",
+              desc: "잔금일 당일 확정일자와 전입신고를 동시 진행.",
+            },
+            {
+              id: "cl18",
+              title: "취득세 신고",
+              desc: "잔금일로부터 60일 내에 취득세를 신고·납부해야 합니다.",
+            },
+          ],
+        },
+      ];
+      function renderCL(t) {
+        const key = `cl_${t.apt_name}_${t.region}`,
+          state = JSON.parse(localStorage.getItem(key) || "{}");
+        const container = document.getElementById("clContainer");
+        let total = 0,
+          done = 0;
+        CHECKLIST.forEach((sec) => {
+          total += sec.items.length;
+          sec.items.forEach((it) => {
+            if (state[it.id]) done++;
+          });
+        });
+        updateCLProg(done, total);
+        container.innerHTML = CHECKLIST.map(
+          (sec) =>
+            `<div class="cl-section"><div class="cl-sec-title">${sec.section}</div><div class="cl-items">${sec.items
+              .map((it) => {
+                const s = state[it.id] || "",
+                  isDone = s === "done",
+                  isWarn = s === "warn";
+                return `<div class="cl-item${isDone ? " done" : isWarn ? " warn" : ""}" onclick="toggleCL('${key}','${it.id}',this,${!!it.warn})"><div class="cl-checkbox">${isDone ? "✓" : isWarn ? "!" : ""}</div><div class="cl-text"><div class="cl-title">${it.title}</div><div class="cl-desc">${it.desc}</div></div></div>`;
+              })
+              .join("")}</div></div>`,
+        ).join("");
+      }
+      function toggleCL(key, id, el, isWarn) {
+        const state = JSON.parse(localStorage.getItem(key) || "{}");
+        const cur = state[id] || "";
+        if (cur === "") {
+          state[id] = isWarn ? "warn" : "done";
+        } else if (cur === "warn") {
+          state[id] = "done";
+        } else {
+          delete state[id];
+        }
+        localStorage.setItem(key, JSON.stringify(state));
+        if (currentDet) renderCL(currentDet);
+      }
+      function updateCLProg(done, total) {
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        document.getElementById("clTxt").textContent = `${done} / ${total}`;
+        document.getElementById("clFill").style.width = pct + "%";
+        const el = document.getElementById("clPct");
+        el.textContent = pct + "%";
+        el.style.color =
+          pct === 100
+            ? "var(--green)"
+            : pct >= 50
+              ? "var(--amber)"
+              : "var(--ink3)";
+      }
+      document.getElementById("ddMemo").addEventListener("input", () => {
+        if (!currentDet) return;
+        const v = document.getElementById("ddMemo").value,
+          k = memoKey(currentDet);
+        if (v) memos[k] = v;
+        else delete memos[k];
+        localStorage.setItem("memo14", JSON.stringify(memos));
+      });
+
+      /* ── WATCHLIST ── */
+      function isSaved(t) {
+        return watchlist.some(
+          (w) =>
+            w.apt_name === t.apt_name &&
+            w.region === t.region &&
+            w.price === t.price,
+        );
+      }
+      function toggleSaveObj(t) {
+        const idx = watchlist.findIndex(
+          (w) =>
+            w.apt_name === t.apt_name &&
+            w.region === t.region &&
+            w.price === t.price,
+        );
+        if (idx >= 0) {
+          watchlist.splice(idx, 1);
+          toast("저장 해제");
+        } else {
+          watchlist.push(t);
+          toast("저장됨", "ok");
+        }
+        localStorage.setItem("wl14", JSON.stringify(watchlist));
+        renderWL();
+      }
+      function toggleFav(e, btn) {
+        const t = dec(e);
+        if (!t) return;
+        toggleSaveObj(t);
+        const saved = isSaved(t);
+        btn.textContent = saved ? "♥" : "♡";
+        btn.classList.toggle("on", saved);
+      }
+      function toggleSaveFromDet() {
+        if (!currentDet) return;
+        toggleSaveObj(currentDet);
+        const saved = isSaved(currentDet),
+          sb = document.getElementById("ddSaveBtn");
+        sb.textContent = saved ? "♥ 저장됨" : "♡ 저장";
+        sb.className = "act-btn outline" + (saved ? " on" : "");
+      }
+      function addToCompareFromDet() {
+        if (!currentDet) return;
+        if (!isSaved(currentDet)) toggleSaveObj(currentDet);
+        toast("비교 목록에 추가됨", "ok");
+      }
+      function renderWL() {
+        const cnt = watchlist.length;
+        document.getElementById("fabCnt").textContent = cnt;
+        document.getElementById("fabCnt2").textContent = cnt || "";
+        document.getElementById("wlCnt").textContent = cnt + "건";
+        const body = document.getElementById("wlBody");
+        if (!cnt) {
+          body.innerHTML =
+            '<div class="wl-empty">저장한 매물이 없습니다.<br>♡ 버튼으로 관심 매물을 저장하세요.</div>';
+          return;
+        }
+        body.innerHTML = watchlist
+          .map(
+            (t, i) =>
+              `<div class="wl-item"><div><div class="wi-name">${t.apt_name}</div><div class="wi-region">${t.region} · ${t.area}㎡ · ${t.floor}층</div><div class="wi-price">${won(t.price)}</div></div><button class="wi-rm" onclick="rmWL(${i})">✕</button></div>`,
+          )
+          .join("");
+      }
+      function rmWL(i) {
+        watchlist.splice(i, 1);
+        localStorage.setItem("wl14", JSON.stringify(watchlist));
+        renderWL();
+      }
+      function toggleWL() {
+        document.getElementById("wlPanel").classList.toggle("open");
+      }
+      function exportWLCSV() {
+        if (!watchlist.length) {
+          toast("저장한 매물이 없습니다", "err");
+          return;
+        }
+        const hdr = [
+          "아파트명",
+          "지역",
+          "동",
+          "가격(만원)",
+          "평당가",
+          "면적(㎡)",
+          "층수",
+          "건축연도",
+        ];
+        const rows = watchlist.map((t) => [
+          t.apt_name,
+          t.region,
+          t.dong || "",
+          t.price,
+          t.per_pyeong,
+          t.area,
+          t.floor,
+          t.year_built,
+        ]);
+        const csv = [hdr, ...rows].map((r) => r.join(",")).join("\n");
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(
+          new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" }),
+        );
+        a.download = `저장매물_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        toast(`${watchlist.length}건 내보내기 완료`, "ok");
+      }
+      function openCompare() {
+        if (!watchlist.length) {
+          toast("저장한 매물이 없습니다", "err");
+          return;
+        }
+        const fields = [
+          { key: "price", label: "가격", fmt: (v) => won(v), best: "min" },
+          { key: "area", label: "면적", fmt: (v) => v + "㎡", best: "max" },
+          {
+            key: "per_pyeong",
+            label: "평당가",
+            fmt: (v) => won(v),
+            best: "min",
+          },
+          { key: "floor", label: "층수", fmt: (v) => v + "층", best: null },
+          {
+            key: "year_built",
+            label: "건축연도",
+            fmt: (v) => v + "년",
+            best: "max",
+          },
+        ];
+        const bestMap = {};
+        fields.forEach((f) => {
+          if (!f.best) return;
+          const vals = watchlist.map((t) => parseFloat(t[f.key]));
+          bestMap[f.key] = {
+            best: f.best === "min" ? Math.min(...vals) : Math.max(...vals),
+            worst: f.best === "min" ? Math.max(...vals) : Math.min(...vals),
+          };
+        });
+        document.getElementById("cmpGrid").innerHTML = watchlist
+          .map(
+            (t) =>
+              `<div class="cmp-card"><div class="cmp-name">${t.apt_name}</div><div class="cmp-region">${t.region}</div><div class="cmp-price">${won(t.price)}</div>${fields
+                .map((f) => {
+                  const v = parseFloat(t[f.key]),
+                    bm = bestMap[f.key],
+                    cls = bm
+                      ? v === bm.best
+                        ? " cmp-best"
+                        : v === bm.worst
+                          ? " cmp-worst"
+                          : ""
+                      : "";
+                  return `<div class="cmp-row"><span>${f.label}</span><span class="${cls.trim()}">${f.fmt(t[f.key])}</span></div>`;
+                })
+                .join("")}</div>`,
+          )
+          .join("");
+        document.getElementById("cmpModal").classList.add("show");
+      }
+      function closeCompare() {
+        document.getElementById("cmpModal").classList.remove("show");
+      }
+
+      /* ── API 패널 ── */
+      function openApiPanel() {
+        document.getElementById("apiPanelBg").classList.add("show");
+        document.getElementById("apiPanel").classList.add("show");
+        setTimeout(() => document.getElementById("apiKeyInput").focus(), 200);
+      }
+      function closeApiPanel() {
+        document.getElementById("apiPanelBg").classList.remove("show");
+        document.getElementById("apiPanel").classList.remove("show");
+      }
+      async function applyApiKey() {
+        const key = document.getElementById("apiKeyInput").value.trim(),
+          st = document.getElementById("apiStatus");
+        if (!key) {
+          st.textContent = "인증키를 입력해주세요.";
+          st.className = "api-status err";
+          return;
+        }
+        if (!backendOk) {
+          st.textContent = "백엔드 서버를 먼저 실행해주세요. (./run.sh)";
+          st.className = "api-status err";
+          return;
+        }
+        st.textContent = "수집 시작 중…";
+        st.className = "api-status load";
+        try {
+          const r = await fetch(
+            `${API}/api/crawl/auto?api_key=${encodeURIComponent(key)}`,
+            { method: "POST" },
+          ).then((r) => r.json());
+          if (r.ok) {
+            st.textContent = `수집 시작됨 (${r.count.toLocaleString()}건)`;
+            st.className = "api-status ok";
+            toastManager.success("실거래 수집", `${r.count.toLocaleString()}건 수집 시작됨`);
+            setProgress(5, true);
+            pollTimer = setTimeout(pollStatus, 3000);
+            await applyFilters();
+            setTimeout(closeApiPanel, 1400);
+          } else {
+            st.textContent = r.message;
+            st.className = "api-status err";
+            toastManager.error("수집 오류", r.message);
+          }
+        } catch (e) {
+          st.textContent = `오류: ${e.message}`;
+          st.className = "api-status err";
+        }
+      }
+      async function loadSampleData() {
+        const st = document.getElementById("apiStatus");
+        if (st) {
+          st.textContent = "샘플 로드 중…";
+          st.className = "api-status load";
+        }
+        if (backendOk) {
+          try {
+            await fetch(`${API}/api/crawl/sample`, { method: "POST" });
+          } catch {}
+        } else {
+          allTrades = genFallback();
+        }
+        await applyFilters();
+        setNavStatus("demo", "샘플");
+        setNotice(
+          "",
+          "<strong>샘플 데이터</strong> — API 키 설정 시 실거래가로 전환됩니다",
+        );
+        toast("샘플 데이터로 초기화됨");
+        setTimeout(closeApiPanel, 700);
+      }
+
+      /* ── SHARE / CSV ── */
+      function shareApt() {
+        if (!currentDet) return;
+        const url = `${location.origin}${location.pathname}?search=${encodeURIComponent(currentDet.apt_name + " " + (currentDet.dong || ""))}`;
+        const text = `${currentDet.apt_name}\n${currentDet.region} ${currentDet.dong || ""}\n${won(currentDet.price)} (${currentDet.area}㎡)`;
+        if (navigator.share)
+          navigator.share({ title: currentDet.apt_name, text, url });
+        else
+          navigator.clipboard
+            .writeText(text + "\n" + url)
+            .then(() => toast("링크 복사됨", "ok"))
+            .catch(() => toast("링크: " + url));
+      }
+      function exportCSV() {
+        if (!sorted.length) {
+          toast("내보낼 데이터가 없습니다", "err");
+          return;
+        }
+        const hdr = [
+          "아파트명",
+          "지역",
+          "동",
+          "가격(만원)",
+          "평당가(만원)",
+          "면적(㎡)",
+          "층수",
+          "건축연도",
+          "거래연도",
+          "거래월",
+        ];
+        const rows = sorted.map((t) => [
+          t.apt_name,
+          t.region,
+          t.dong || "",
+          t.price,
+          t.per_pyeong,
+          t.area,
+          t.floor,
+          t.year_built,
+          t.deal_year,
+          t.deal_month,
+        ]);
+        const csv = [hdr, ...rows].map((r) => r.join(",")).join("\n");
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(
+          new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" }),
+        );
+        a.download = `집값추적기_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        toast(`${sorted.length}건 CSV 내보내기 완료`, "ok");
+      }
+
+      /* ── KEYBOARD ── */
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeDet();
+          closeCompare();
+          closeApiPanel();
+        }
+        if (
+          e.key === "/" &&
+          !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
+        ) {
+          e.preventDefault();
+          document.getElementById("searchInput").focus();
+        }
+      });
+
+      /* ── INIT ── */
+      async function init() {
+        try {
+          const s = await Promise.race([
+            fetch(`${API}/api/status`).then((r) => r.json()),
+            new Promise((_, rej) => setTimeout(rej, 2000)),
+          ]);
+          backendOk = true;
+          const meta = await fetch(`${API}/api/meta`).then((r) => r.json());
+          metaData = meta;
+          if (s.loading) {
+            setProgress(s.progress, true);
+            pollTimer = setTimeout(pollStatus, 3000);
+          } else if (s.has_real_key) setLive(s.total_trades);
+        } catch {
+          backendOk = false;
+          metaData = { metro_groups: METRO_FB, area_types: AREAS_FB };
+        }
+        if (ENV_KEY && backendOk) {
+          try {
+            const r = await fetch(
+              `${API}/api/crawl/auto?api_key=${encodeURIComponent(ENV_KEY)}`,
+              { method: "POST" },
+            ).then((r) => r.json());
+            if (r.ok) {
+              if (r.loading) {
+                setProgress(5, true);
+                pollTimer = setTimeout(pollStatus, 3000);
+              } else setLive(r.count);
+              toastManager.success("실거래 수집", "자동 수집이 시작되었습니다");
+            }
+          } catch {}
+        }
+        const sp = new URLSearchParams(location.search).get("search");
+        if (sp) document.getElementById("searchInput").value = sp;
+        if (!backendOk) allTrades = genFallback();
+        await applyFilters();
+        buildSidebar();
+        renderWL();
+      }
+      /* ════ TOAST NOTIFICATION SYSTEM ════ */
+      class ToastManager {
+        constructor() {
+          this.container = document.getElementById('toastContainer');
+          this.toasts = new Map();
+        }
+        
+        show(title, message, type = 'info', duration = 4000) {
+          const id = Date.now();
+          const toast = document.createElement('div');
+          toast.className = `toast ${type}`;
+          toast.innerHTML = `
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
+            <button class="toast-close" onclick="toastManager.close(${id})">×</button>
+          `;
+          
+          this.container.appendChild(toast);
+          this.toasts.set(id, toast);
+          
+          // Trigger animation
+          setTimeout(() => toast.classList.add('show'), 10);
+          
+          // Auto remove
+          if (duration > 0) {
+            setTimeout(() => this.close(id), duration);
+          }
+          
+          return id;
+        }
+        
+        close(id) {
+          const toast = this.toasts.get(id);
+          if (toast) {
+            toast.classList.remove('show');
+            setTimeout(() => {
+              if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+              }
+              this.toasts.delete(id);
+            }, 300);
+          }
+        }
+        
+        success(title, message, duration) {
+          return this.show(title, message, 'success', duration);
+        }
+        
+        error(title, message, duration) {
+          return this.show(title, message, 'error', duration);
+        }
+        
+        warning(title, message, duration) {
+          return this.show(title, message, 'warning', duration);
+        }
+        
+        info(title, message, duration) {
+          return this.show(title, message, 'info', duration);
+        }
+      }
+      
+      const toastManager = new ToastManager();
+      
+      /* ════ LOADING MANAGER ════ */
+      class LoadingManager {
+        constructor() {
+          this._overlay = null;
+          this._loadingText = null;
+          this.isLoading = false;
+        }
+
+        get overlay() {
+          if (!this._overlay) this._overlay = document.getElementById('loadingOverlay');
+          return this._overlay;
+        }
+
+        get loadingText() {
+          if (!this._loadingText && this.overlay) this._loadingText = this.overlay.querySelector('.loading-text');
+          return this._loadingText;
+        }
+        
+        show(text = '로딩 중...') {
+          if (this.loadingText) this.loadingText.textContent = text;
+          if (this.overlay) this.overlay.style.display = 'flex';
+          this.isLoading = true;
+          document.body.style.overflow = 'hidden';
+        }
+        
+        hide() {
+          if (this.overlay) this.overlay.style.display = 'none';
+          this.isLoading = false;
+          document.body.style.overflow = '';
+        }
+        
+        setText(text) {
+          if (this.loadingText) this.loadingText.textContent = text;
+        }
+      }
+      
+      const loadingManager = new LoadingManager();
+      
+      /* ════ ENHANCED ERROR HANDLING ════ */
+      function handleError(error, context = '') {
+        console.error(`[Error] ${context}:`, error);
+        
+        let message = '알 수 없는 오류가 발생했습니다.';
+        if (error.message) {
+          message = error.message;
+        } else if (typeof error === 'string') {
+          message = error;
+        }
+        
+        toastManager.error('오류', message);
+        
+        // Hide loading if active
+        if (loadingManager.isLoading) {
+          loadingManager.hide();
+        }
+      }
+      
+      /* ════ PERFORMANCE OPTIMIZATION ════ */
+      class PerformanceOptimizer {
+        constructor() {
+          this.cache = new Map();
+          this.debouncedTimers = new Map();
+          this.throttledTimers = new Map();
+        }
+        
+        // Simple cache with TTL
+        cache(key, data, ttl = 300000) { // 5 minutes default TTL
+          this.cache.set(key, {
+            data,
+            timestamp: Date.now(),
+            ttl
+          });
+        }
+        
+        getCached(key) {
+          const cached = this.cache.get(key);
+          if (!cached) return null;
+          
+          if (Date.now() - cached.timestamp > cached.ttl) {
+            this.cache.delete(key);
+            return null;
+          }
+          
+          return cached.data;
+        }
+        
+        // Debounce function
+        debounce(key, func, delay = 300) {
+          if (this.debouncedTimers.has(key)) {
+            clearTimeout(this.debouncedTimers.get(key));
+          }
+          
+          const timer = setTimeout(() => {
+            func();
+            this.debouncedTimers.delete(key);
+          }, delay);
+          
+          this.debouncedTimers.set(key, timer);
+        }
+        
+        // Throttle function
+        throttle(key, func, delay = 100) {
+          if (this.throttledTimers.has(key)) {
+            return;
+          }
+          
+          func();
+          const timer = setTimeout(() => {
+            this.throttledTimers.delete(key);
+          }, delay);
+          
+          this.throttledTimers.set(key, timer);
+        }
+        
+        // Clear all caches
+        clearCache() {
+          this.cache.clear();
+        }
+        
+        // Get cache stats
+        getCacheStats() {
+          return {
+            size: this.cache.size,
+            entries: Array.from(this.cache.keys())
+          };
+        }
+      }
+      
+      const perfOptimizer = new PerformanceOptimizer();
+      
+      /* ════ ENHANCED ASYNC OPERATIONS ════ */
+      async function withLoading(operation, loadingText = '처리 중...') {
+        try {
+          loadingManager.show(loadingText);
+          const result = await operation();
+          return result;
+        } catch (error) {
+          handleError(error, loadingText);
+          throw error;
+        } finally {
+          loadingManager.hide();
+        }
+      }
+      
+      // Enhanced fetch with caching
+      async function cachedFetch(url, options = {}, cacheKey = null, ttl = 300000) {
+        const key = cacheKey || url;
+        const cached = perfOptimizer.getCached(key);
+        
+        if (cached && !options.method || options.method === 'GET') {
+          return cached;
+        }
+        
+        try {
+          const response = await fetch(url, options);
+          const data = await response.json();
+          
+          if (response.ok && (!options.method || options.method === 'GET')) {
+            perfOptimizer.cache(key, data, ttl);
+          }
+          
+          return data;
+        } catch (error) {
+          // Return cached data if available, even if expired
+          if (cached) {
+            console.warn('Using cached data due to fetch error:', error);
+            return cached;
+          }
+          throw error;
+        }
+      }
+      
+      /* ════ DATA EXPORT MANAGER ════ */
+      class DataExportManager {
+        constructor() {
+          this.supportedFormats = ['csv', 'json', 'xlsx'];
+        }
+        
+        // Export to CSV
+        exportToCSV(data, filename = 'apartment_data.csv') {
+          if (!data || !data.length) {
+            toastManager.warning('내보내기', '내보낼 데이터가 없습니다.');
+            return;
+          }
+          
+          const headers = Object.keys(data[0]);
+          const csvContent = [
+            headers.join(','),
+            ...data.map(row => 
+              headers.map(header => {
+                const value = row[header];
+                // Handle special characters and commas
+                if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+                  return `"${value.replace(/"/g, '""')}"`;
+                }
+                return value;
+              }).join(',')
+            )
+          ].join('\n');
+          
+          this.downloadFile(csvContent, filename, 'text/csv;charset=utf-8;');
+          toastManager.success('내보내기 완료', `${data.length}건의 데이터가 CSV로 내보내기 되었습니다.`);
+        }
+        
+        // Export to JSON
+        exportToJSON(data, filename = 'apartment_data.json') {
+          if (!data || !data.length) {
+            toastManager.warning('내보내기', '내보낼 데이터가 없습니다.');
+            return;
+          }
+          
+          const jsonContent = JSON.stringify(data, null, 2);
+          this.downloadFile(jsonContent, filename, 'application/json;charset=utf-8;');
+          toastManager.success('내보내기 완료', `${data.length}건의 데이터가 JSON으로 내보내기 되었습니다.`);
+        }
+        
+        // Export filtered data
+        exportFilteredData(format = 'csv') {
+          const filteredData = allTrades.filter(trade => {
+            // Apply current filters
+            const matchesSearch = !searchQuery || 
+              trade.apt_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              trade.region.toLowerCase().includes(searchQuery.toLowerCase());
+            
+            const matchesRegion = !selectedRegion || selectedRegion === 'all' || trade.region === selectedRegion;
+            const matchesArea = !selectedArea || selectedArea === 'all' || trade.area >= parseFloat(selectedArea);
+            const matchesPrice = !selectedPrice || selectedPrice === 'all' || trade.price <= parseFloat(selectedPrice);
+            
+            return matchesSearch && matchesRegion && matchesArea && matchesPrice;
+          });
+          
+          if (!filteredData.length) {
+            toastManager.warning('내보내기', '필터링된 데이터가 없습니다.');
+            return;
+          }
+          
+          const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+          const filename = `apartment_data_${timestamp}.${format}`;
+          
+          switch (format) {
+            case 'csv':
+              this.exportToCSV(filteredData, filename);
+              break;
+            case 'json':
+              this.exportToJSON(filteredData, filename);
+              break;
+            default:
+              toastManager.error('내보내기 오류', '지원되지 않는 형식입니다.');
+          }
+        }
+        
+        // Download file helper
+        downloadFile(content, filename, mimeType) {
+          const blob = new Blob([content], { type: mimeType });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        }
+        
+        // Generate summary report
+        generateSummaryReport() {
+          if (!allTrades.length) {
+            toastManager.warning('보고서', '데이터가 없습니다.');
+            return;
+          }
+          
+          const summary = {
+            generated_at: new Date().toISOString(),
+            total_properties: allTrades.length,
+            unique_regions: [...new Set(allTrades.map(t => t.region))].length,
+            price_range: {
+              min: Math.min(...allTrades.map(t => t.price)),
+              max: Math.max(...allTrades.map(t => t.price)),
+              avg: Math.round(allTrades.reduce((sum, t) => sum + t.price, 0) / allTrades.length)
+            },
+            area_range: {
+              min: Math.min(...allTrades.map(t => t.area)),
+              max: Math.max(...allTrades.map(t => t.area)),
+              avg: Math.round(allTrades.reduce((sum, t) => sum + t.area, 0) / allTrades.length * 10) / 10
+            },
+            top_regions: this.getTopRegions(),
+            recent_deals: allTrades.slice(-10).reverse().map(t => ({
+              name: t.apt_name,
+              region: t.region,
+              price: t.price,
+              area: t.area,
+              date: `${t.deal_year}.${t.deal_month}.${t.deal_day}`
+            }))
+          };
+          
+          const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+          this.exportToJSON(summary, `apartment_summary_${timestamp}.json`);
+          toastManager.success('보고서 생성', '요약 보고서가 생성되었습니다.');
+        }
+        
+        getTopRegions() {
+          const regionCounts = {};
+          allTrades.forEach(trade => {
+            regionCounts[trade.region] = (regionCounts[trade.region] || 0) + 1;
+          });
+          
+          return Object.entries(regionCounts)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 10)
+            .map(([region, count]) => ({ region, count }));
+        }
+      }
+      
+      const dataExportManager = new DataExportManager();
+      
+      /* ════ SECURITY & VALIDATION ════ */
+      class SecurityManager {
+        constructor() {
+          this.sanitizePatterns = {
+            xss: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+            sql: /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)/gi,
+            html: /<[^>]*>/g,
+            specialChars: /[<>\"'&]/g
+          };
+        }
+        
+        // Input sanitization
+        sanitizeInput(input, type = 'text') {
+          if (!input || typeof input !== 'string') return '';
+          
+          let sanitized = input.trim();
+          
+          // Remove potential XSS
+          sanitized = sanitized.replace(this.sanitizePatterns.xss, '');
+          
+          // Remove HTML tags
+          sanitized = sanitized.replace(this.sanitizePatterns.html, '');
+          
+          // Handle specific types
+          switch (type) {
+            case 'number':
+              return sanitized.replace(/[^\d.-]/g, '');
+            case 'alpha':
+              return sanitized.replace(/[^a-zA-Z가-힣\s]/g, '');
+            case 'alphanumeric':
+              return sanitized.replace(/[^a-zA-Z0-9가-힣\s]/g, '');
+            case 'search':
+              // Allow search terms but limit length
+              return sanitized.substring(0, 100);
+            default:
+              // Escape special characters
+              return sanitized.replace(this.sanitizePatterns.specialChars, char => {
+                const escapeMap = {
+                  '<': '&lt;',
+                  '>': '&gt;',
+                  '"': '&quot;',
+                  "'": '&#x27;',
+                  '&': '&amp;'
+                };
+                return escapeMap[char] || char;
+              });
+          }
+        }
+        
+        // Validate API key format
+        validateApiKey(key) {
+          if (!key || typeof key !== 'string') return false;
+          
+          // Basic validation - adjust based on actual API key format
+          const keyPattern = /^[a-zA-Z0-9-_]{20,}$/;
+          return keyPattern.test(key);
+        }
+        
+        // Validate numeric inputs
+        validateNumber(value, min = 0, max = Infinity) {
+          const num = parseFloat(value);
+          return !isNaN(num) && num >= min && num <= max;
+        }
+        
+        // Validate date format
+        validateDate(dateString) {
+          const date = new Date(dateString);
+          return date instanceof Date && !isNaN(date);
+        }
+        
+        // Rate limiting for API calls
+        createRateLimiter(maxCalls = 10, windowMs = 60000) {
+          const calls = [];
+          
+          return () => {
+            const now = Date.now();
+            
+            // Remove old calls outside the window
+            while (calls.length > 0 && calls[0] <= now - windowMs) {
+              calls.shift();
+            }
+            
+            if (calls.length >= maxCalls) {
+              throw new Error('요청이 너무 많습니다. 잠시 후 다시 시도해주세요.');
+            }
+            
+            calls.push(now);
+            return true;
+          };
+        }
+        
+        // Content Security Policy helper
+        getCSPHeaders() {
+          return {
+            'Content-Security-Policy': [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com",
+              "connect-src 'self' http://localhost:8000",
+              "img-src 'self' data: https:",
+              "frame-ancestors 'none'",
+              "base-uri 'self'"
+            ].join('; ')
+          };
+        }
+        
+        // Security headers for API requests
+        addSecurityHeaders(headers = {}) {
+          return {
+            ...headers,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          };
+        }
+      }
+      
+      class DataValidator {
+        constructor() {
+          this.rules = {
+            apartmentName: {
+              required: true,
+              minLength: 1,
+              maxLength: 100,
+              pattern: /^[a-zA-Z0-9가-힣\s()\-_]+$/
+            },
+            region: {
+              required: true,
+              minLength: 2,
+              maxLength: 50,
+              pattern: /^[가-힣\s]+$/
+            },
+            price: {
+              required: true,
+              min: 0,
+              max: 10000000, // 100억
+              type: 'number'
+            },
+            area: {
+              required: true,
+              min: 10,
+              max: 500,
+              type: 'number'
+            },
+            year: {
+              required: true,
+              min: 1980,
+              max: new Date().getFullYear() + 1,
+              type: 'number'
+            }
+          };
+        }
+        
+        validate(data, ruleSet = 'apartment') {
+          const errors = [];
+          const rules = this.rules;
+          
+          for (const [field, value] of Object.entries(data)) {
+            const rule = rules[field];
+            if (!rule) continue;
+            
+            // Required validation
+            if (rule.required && (!value || value === '')) {
+              errors.push(`${field} 필드는 필수입니다.`);
+              continue;
+            }
+            
+            if (!value) continue; // Skip optional empty fields
+            
+            // Type validation
+            if (rule.type === 'number') {
+              const num = parseFloat(value);
+              if (isNaN(num)) {
+                errors.push(`${field}는 숫자여야 합니다.`);
+                continue;
+              }
+              
+              // Range validation
+              if (rule.min !== undefined && num < rule.min) {
+                errors.push(`${field}는 ${rule.min} 이상이어야 합니다.`);
+              }
+              if (rule.max !== undefined && num > rule.max) {
+                errors.push(`${field}는 ${rule.max} 이하여야 합니다.`);
+              }
+            }
+            
+            // String validation
+            if (typeof value === 'string') {
+              if (rule.minLength && value.length < rule.minLength) {
+                errors.push(`${field}는 최소 ${rule.minLength}자 이상이어야 합니다.`);
+              }
+              if (rule.maxLength && value.length > rule.maxLength) {
+                errors.push(`${field}는 최대 ${rule.maxLength}자 이하여야 합니다.`);
+              }
+              if (rule.pattern && !rule.pattern.test(value)) {
+                errors.push(`${field} 형식이 올바르지 않습니다.`);
+              }
+            }
+          }
+          
+          return {
+            isValid: errors.length === 0,
+            errors
+          };
+        }
+        
+        sanitize(data) {
+          const sanitized = {};
+          const securityManager = new SecurityManager();
+          
+          for (const [key, value] of Object.entries(data)) {
+            if (typeof value === 'string') {
+              sanitized[key] = securityManager.sanitizeInput(value);
+            } else {
+              sanitized[key] = value;
+            }
+          }
+          
+          return sanitized;
+        }
+      }
+      
+      const securityManager = new SecurityManager();
+      const dataValidator = new DataValidator();
+      
+      // Create rate limiter for API calls
+      const apiRateLimiter = securityManager.createRateLimiter();
+
+      renderWL();
+      init();
+    </script>
+  <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+      <div>
+        <div class="loading-spinner"></div>
+        <div class="loading-text">로딩 중...</div>
+      </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+  </body>
+</html>

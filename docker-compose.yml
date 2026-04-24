@@ -1,0 +1,46 @@
+# ═══════════════════════════════════════════════════════════════
+#  집값추적기 v12 — Docker Compose
+#
+#  개발:  docker compose up
+#  프로덕 (nginx 포함):  docker compose --profile prod up
+# ═══════════════════════════════════════════════════════════════
+
+services:
+
+  # ── 앱 서버 ─────────────────────────────────────────────────
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      MOLIT_KEY: ${MOLIT_KEY:-}
+      WORKERS: ${WORKERS:-4}
+    volumes:
+      # SQLite DB 영구 보존
+      - db_data:/app/data
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/status')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # ── Nginx 리버스 프록시 (--profile prod) ────────────────────
+  nginx:
+    image: nginx:alpine
+    profiles: ["prod"]
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deploy/certs:/etc/nginx/certs:ro        # SSL 인증서 (선택)
+    depends_on:
+      app:
+        condition: service_healthy
+
+volumes:
+  db_data:

@@ -1,0 +1,40 @@
+# ═══════════════════════════════════════════════════════════════
+#  Render.com 배포 설정 (render.yaml)
+#  https://render.com 에서 "New Web Service" → Git 연결 → 자동 배포
+#
+#  환경변수 MOLIT_KEY는 Render 대시보드 > Environment에서 설정
+# ═══════════════════════════════════════════════════════════════
+
+services:
+  - type: web
+    name: jibgap-tracker
+    runtime: python
+    region: singapore   # 한국과 가장 가까운 리전
+    plan: free          # free | starter | standard
+
+    # 빌드
+    buildCommand: |
+      python3 -m venv .venv &&
+      source .venv/bin/activate &&
+      pip install -r requirements.txt &&
+      echo "window.__ENV__ = { MOLIT_KEY: \"$MOLIT_KEY\", generated: \"$(date -u)\" };" > frontend/env.js
+
+    # 실행 (Render는 PORT 환경변수를 자동 주입)
+    startCommand: |
+      source .venv/bin/activate &&
+      uvicorn backend.main:app --host 0.0.0.0 --port $PORT --workers 2 --proxy-headers
+
+    # 헬스체크
+    healthCheckPath: /api/status
+
+    # 디스크 (SQLite 영구 저장 — Starter 플랜↑ 필요)
+    # disk:
+    #   name: jibgap-db
+    #   mountPath: /app/data
+    #   sizeGB: 1
+
+    envVars:
+      - key: MOLIT_KEY
+        sync: false          # Render 대시보드에서 직접 입력
+      - key: PYTHON_VERSION
+        value: "3.11.0"
