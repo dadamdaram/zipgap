@@ -12,6 +12,18 @@
 
 집값추적기는 **국토교통부 실거래가 공공 API** 기반의 전국 아파트 매매 데이터를 다차원적으로 분석합니다. 총 4개의 탭에서 15종류의 그래프를 제공하며, 각 그래프는 특정 가설 검증이나 시장 인사이트 제공을 목적으로 설계되었습니다.
 
+---
+
+## 스택
+
+| 레이어     | 기술                                            |
+| ---------- | ----------------------------------------------- |
+| 백엔드     | Python 3.11 · FastAPI · SQLite                  |
+| 프론트엔드 | Vanilla JS · Chart.js 4 · Plotly.js 2           |
+| 데이터     | 국토교통부 실거래가 공공 API (data.go.kr) · XML |
+| 배포       | Docker · Render · Railway                       |
+
+
 **📋 분석된 그래프 종류**
 
 | 탭 | 그래프 종류 | 목적 |
@@ -74,17 +86,6 @@
 > 📖 **더 상세한 분석**: [GRAPH_ANALYSIS.md](./GRAPH_ANALYSIS.md)에서 모든 그래프의 상세 분석 방법과 용어 해설을 확인하세요.
 
 > 🔧 **구현 코드**: [GRAPH_IMPLEMENTATION_CODE.md](./GRAPH_IMPLEMENTATION_CODE.md)에서 모든 그래프의 상세 구현 코드를 확인하세요.
-
----
-
-## 스택
-
-| 레이어     | 기술                                            |
-| ---------- | ----------------------------------------------- |
-| 백엔드     | Python 3.11 · FastAPI · SQLite                  |
-| 프론트엔드 | Vanilla JS · Chart.js 4 · Plotly.js 2           |
-| 데이터     | 국토교통부 실거래가 공공 API (data.go.kr) · XML |
-| 배포       | Docker · Render · Railway                       |
 
 ---
 
