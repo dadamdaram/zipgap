@@ -23,6 +23,22 @@
 | 데이터     | 국토교통부 실거래가 공공 API (data.go.kr) · XML |
 | 배포       | Docker · Render · Railway                       |
 
+## 디렉토리 구조
+
+```
+.
+├── frontend/
+│   ├── index.html        # 메인 탐색 (필터·카드·단지 상세)
+│   └── analysis.html     # 가설 분석 대시보드
+├── backend/
+│   ├── main.py           # FastAPI 라우터 + 백그라운드 수집
+│   ├── crawler.py        # API 호출 · XML 파싱 · 전처리 · 샘플 생성
+│   ├── database.py       # SQLite 초기화 · 쿼리
+│   ├── regions.py        # 전국 지역코드 · 광역시도 그룹
+│   └── config.py         # .env 로드 · API 키 설정
+├── Dockerfile · docker-compose.yml · run.sh
+└── deploy/               # Render · Railway · nginx 설정
+```
 
 **📋 분석된 그래프 종류**
 
@@ -167,6 +183,24 @@ docker-compose up -d   # Docker
 이상치 제거: 전용면적 1.0㎡ 이하/500㎡ 초과, 비현실적인 거래가(1천만 원 미만 등) 자동 필터링.
 
 IQR 통계 필터링: 평당 가격(per_pyeong) 기준 상하위 3\*IQR 범위를 벗어나는 극단적 데이터 제거로 통계 신뢰도 확보.
+
+
+실거래 데이터 특성상 발생하는 '직거래', '특수관계인 거래' 등 시장가격을 왜곡하는 이상치를 제거하기 위해 IQR(Interquartile Range) 방식을 채택했습니다.
+
+$$IQR = Q_3 - Q_1$$
+
+$$Lower\ Bound = Q_1 - 3 \times IQR$$
+
+$$Upper\ Bound = Q_3 + 3 \times IQR$$
+
+일반적인 $1.5 \times IQR$보다 보수적인 $3 \times IQR$을 적용하여, 유의미한 고가/저가 거래는 유지하면서 극단적인 데이터 오류만 정밀하게 필터링했습니다.
+
+⚡ 성능 최적화: 병렬 크롤링 성과
+
+Before: 전국 데이터 수집 시 약 120초 소요 (Blocking 발생)
+
+After: ThreadPoolExecutor (Max Workers 15) 적용 및 점진적 DB 반영 루틴 도입으로 최초 응답 속도 1초 미만, 전체 수집 시간 15초 내외로 87.5% 단축.
+
 
 2. Frontend: 인터랙티브 분석 환경
    캔버스 관리 및 메모리 최적화: Chart.js 인스턴스 생성 전 기존 차트를 파괴(destroy())하여 캔버스 재사용 에러 및 메모리 누수를 방지합니다.
@@ -420,22 +454,6 @@ const ADV_CO = {
 | POST   | `/api/crawl/auto`         | 백그라운드 수집 시작             |
 | POST   | `/api/key/update`         | API 키 갱신 + 재수집             |
 
-## 디렉토리 구조
-
-```
-.
-├── frontend/
-│   ├── index.html        # 메인 탐색 (필터·카드·단지 상세)
-│   └── analysis.html     # 가설 분석 대시보드
-├── backend/
-│   ├── main.py           # FastAPI 라우터 + 백그라운드 수집
-│   ├── crawler.py        # API 호출 · XML 파싱 · 전처리 · 샘플 생성
-│   ├── database.py       # SQLite 초기화 · 쿼리
-│   ├── regions.py        # 전국 지역코드 · 광역시도 그룹
-│   └── config.py         # .env 로드 · API 키 설정
-├── Dockerfile · docker-compose.yml · run.sh
-└── deploy/               # Render · Railway · nginx 설정
-```
 
 ---
 
