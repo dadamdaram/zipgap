@@ -39,6 +39,18 @@
 ├── Dockerfile · docker-compose.yml · run.sh
 └── deploy/               # Render · Railway · nginx 설정
 ```
+## 주요 API
+
+| 메서드 | 경로                      | 설명                             |
+| ------ | ------------------------- | -------------------------------- |
+| GET    | `/api/status`             | 수집 진행률 · 총 건수            |
+| GET    | `/api/data`               | 필터·정렬·페이지네이션 거래 목록 |
+| GET    | `/api/complex/{apt_name}` | 단지 거래 이력 + 통계            |
+| GET    | `/api/affordable`         | 예산 범위 내 매물                |
+| POST   | `/api/crawl/auto`         | 백그라운드 수집 시작             |
+| POST   | `/api/key/update`         | API 키 갱신 + 재수집             |
+
+
 
 **📋 분석된 그래프 종류**
 
@@ -443,17 +455,6 @@ const ADV_CO = {
   ↓  GET /api/data       서버사이드 필터·정렬·페이지네이션
   ↓  Chart.js / Plotly   클라이언트 렌더링
 ```
-
-## 주요 API
-
-| 메서드 | 경로                      | 설명                             |
-| ------ | ------------------------- | -------------------------------- |
-| GET    | `/api/status`             | 수집 진행률 · 총 건수            |
-| GET    | `/api/data`               | 필터·정렬·페이지네이션 거래 목록 |
-| GET    | `/api/complex/{apt_name}` | 단지 거래 이력 + 통계            |
-| GET    | `/api/affordable`         | 예산 범위 내 매물                |
-| POST   | `/api/crawl/auto`         | 백그라운드 수집 시작             |
-| POST   | `/api/key/update`         | API 키 갱신 + 재수집             |
 
 
 ---
